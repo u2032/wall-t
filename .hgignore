@@ -1,1 +1,4 @@
+syntax: glob
+.idea/workspace.xml
 .m2
+target
