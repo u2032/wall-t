@@ -34,11 +34,11 @@ public enum BuildBackground {
         _runnning = runnning;
     }
 
-    public Background getMain() {
+    public Background getMain( ) {
         return _main;
     }
 
-    public Background getRunnning() {
+    public Background getRunnning( ) {
         return _runnning;
     }
 }

@@ -36,19 +36,19 @@ public class ApiResponseHandler<T extends ApiResponse> extends SimpleChannelInbo
     protected void channelRead0( final ChannelHandlerContext channelHandlerContext, final HttpObject httpObject ) throws Exception {
         if ( httpObject instanceof HttpResponse ) {
             final HttpResponse response = (HttpResponse) httpObject;
-            final HttpResponseStatus status = response.getStatus();
+            final HttpResponseStatus status = response.getStatus( );
             if ( !HttpResponseStatus.OK.equals( status ) ) {
-                _responseFuture.setException( new ApiException( "Api response status code: " + status.code() + " (" + status.reasonPhrase() + ")" ) );
+                _responseFuture.setException( new ApiException( "Api response status code: " + status.code( ) + " (" + status.reasonPhrase( ) + ")" ) );
                 return;
             }
         }
 
         if ( httpObject instanceof HttpContent ) {
             final HttpContent content = (HttpContent) httpObject;
-            final String jsonContent = content.content().toString( CharsetUtil.UTF_8 );
+            final String jsonContent = content.content( ).toString( CharsetUtil.UTF_8 );
             LOGGER.debug( "Response received: " + jsonContent );
 
-            final Gson gson = new GsonBuilder().create();
+            final Gson gson = new GsonBuilder( ).create( );
             final T jsonResponse = gson.fromJson( jsonContent, _class );
             _responseFuture.set( jsonResponse );
         }

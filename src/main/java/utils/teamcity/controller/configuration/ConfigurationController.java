@@ -39,16 +39,16 @@ public class ConfigurationController implements IConfigurationController {
     }
 
     @Override
-    public void saveConfiguration() {
+    public void saveConfiguration( ) {
 
-        updateSavedBuild();
+        updateSavedBuild( );
 
-        final Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        final Gson gson = new GsonBuilder( ).setPrettyPrinting( ).create( );
         final Path configFilePath = Paths.get( "config.json" );
         final Path configTmpFilePath = Paths.get( "config.json.tmp" );
-        try ( FileWriter writer = new FileWriter( configTmpFilePath.toFile() ) ) {
+        try ( FileWriter writer = new FileWriter( configTmpFilePath.toFile( ) ) ) {
             writer.write( gson.toJson( _configuration ) );
-            writer.flush();
+            writer.flush( );
         } catch ( IOException e ) {
             LOGGER.error( "Cannot save configuration file", e );
             return;
@@ -59,14 +59,14 @@ public class ConfigurationController implements IConfigurationController {
         } catch ( IOException e ) {
             LOGGER.error( "Cannot save configuration file", e );
         }
-        LOGGER.info( "Configuration was saved to " + configFilePath.toAbsolutePath() );
+        LOGGER.info( "Configuration was saved to " + configFilePath.toAbsolutePath( ) );
     }
 
-    private void updateSavedBuild() {
-        final List<SavedBuildData> buildToSaved = _buildManager.getBuildTypeList().stream()
+    private void updateSavedBuild( ) {
+        final List<SavedBuildData> buildToSaved = _buildManager.getBuildTypeList( ).stream( )
                 .filter( BuildTypeData::isSelected )
-                .map( data -> new SavedBuildData( data.getId(), data.getName(), data.getProjectName(), data.getAliasName() ) )
-                .collect( Collectors.toList() );
+                .map( data -> new SavedBuildData( data.getId( ), data.getName( ), data.getProjectName( ), data.getAliasName( ) ) )
+                .collect( Collectors.toList( ) );
         _configuration.setSavedBuilds( buildToSaved );
     }
 }

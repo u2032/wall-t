@@ -32,47 +32,47 @@ public final class ConfigurationView extends BorderPane {
         _model = model;
         setStyle( "-fx-background-color:gainsboro;" );
 
-        setTop( titlePane() );
-        setCenter( scollPane() );
+        setTop( titlePane( ) );
+        setCenter( scollPane( ) );
     }
 
-    private Node titlePane() {
-        final HBox titlePane = new HBox();
+    private Node titlePane( ) {
+        final HBox titlePane = new HBox( );
         titlePane.setAlignment( Pos.CENTER );
 
         final Label label = new Label( "Configuration" );
         label.setFont( Font.font( 50 ) );
 
-        titlePane.getChildren().add( label );
+        titlePane.getChildren( ).add( label );
         return titlePane;
     }
 
-    private Node scollPane() {
-        final VBox content = new VBox();
+    private Node scollPane( ) {
+        final VBox content = new VBox( );
         content.setStyle( "-fx-background-color:lightgrey;" );
         content.setAlignment( Pos.TOP_CENTER );
         content.setPadding( new Insets( 30, 0, 50, 0 ) );
         content.setSpacing( 20 );
 
-        final GridPane serverConfigurationPane = serverConfigurationPane();
-        content.widthProperty().addListener( ( o, oldValue, newValue ) -> serverConfigurationPane.setMaxWidth( newValue.doubleValue() * 0.8 ) );
-        content.getChildren().add( serverConfigurationPane );
+        final GridPane serverConfigurationPane = serverConfigurationPane( );
+        content.widthProperty( ).addListener( ( o, oldValue, newValue ) -> serverConfigurationPane.setMaxWidth( newValue.doubleValue( ) * 0.8 ) );
+        content.getChildren( ).add( serverConfigurationPane );
 
-        final Button loadBuildsButton = new Button();
-        loadBuildsButton.setOnAction( ( event ) -> _model.requestLoadingBuilds() );
-        loadBuildsButton.textProperty().bind( createStringBinding( () -> _model.loadingBuildProperty().get() ? "Loading ..." : "Load Builds", _model.loadingBuildProperty() ) );
-        loadBuildsButton.disableProperty().bind( _model.loadingBuildProperty() );
-        content.getChildren().add( loadBuildsButton );
+        final Button loadBuildsButton = new Button( );
+        loadBuildsButton.setOnAction( ( event ) -> _model.requestLoadingBuilds( ) );
+        loadBuildsButton.textProperty( ).bind( createStringBinding( ( ) -> _model.loadingBuildProperty( ).get( ) ? "Loading ..." : "Load Builds", _model.loadingBuildProperty( ) ) );
+        loadBuildsButton.disableProperty( ).bind( _model.loadingBuildProperty( ) );
+        content.getChildren( ).add( loadBuildsButton );
 
-        final TableView<BuildTypeData> buildList = buildTableView();
-        content.widthProperty().addListener( ( o, oldValue, newValue ) -> buildList.setMaxWidth( newValue.doubleValue() * 0.8 ) );
-        buildList.disableProperty().bind( _model.loadingBuildProperty() );
+        final TableView<BuildTypeData> buildList = buildTableView( );
+        content.widthProperty( ).addListener( ( o, oldValue, newValue ) -> buildList.setMaxWidth( newValue.doubleValue( ) * 0.8 ) );
+        buildList.disableProperty( ).bind( _model.loadingBuildProperty( ) );
         VBox.setVgrow( buildList, Priority.SOMETIMES );
-        content.getChildren().add( buildList );
+        content.getChildren( ).add( buildList );
 
         final Button swithToWallButton = new Button( "Switch to wall" );
-        swithToWallButton.setOnAction( ( event ) -> _model.requestSwithToWallScene() );
-        content.getChildren().add( swithToWallButton );
+        swithToWallButton.setOnAction( ( event ) -> _model.requestSwithToWallScene( ) );
+        content.getChildren( ).add( swithToWallButton );
 
         final ScrollPane scrollPane = new ScrollPane( content );
         scrollPane.setFitToWidth( true );
@@ -80,8 +80,8 @@ public final class ConfigurationView extends BorderPane {
         return scrollPane;
     }
 
-    private GridPane serverConfigurationPane() {
-        final GridPane grid = new GridPane();
+    private GridPane serverConfigurationPane( ) {
+        final GridPane grid = new GridPane( );
         grid.setAlignment( Pos.CENTER );
         grid.setPadding( new Insets( 10 ) );
         grid.setHgap( 10 );
@@ -91,13 +91,13 @@ public final class ConfigurationView extends BorderPane {
         credentialsLine( grid );
         apiVersionLine( grid );
 
-        final ColumnConstraints noConstraint = new ColumnConstraints();
-        final ColumnConstraints rightAlignementConstraint = new ColumnConstraints();
+        final ColumnConstraints noConstraint = new ColumnConstraints( );
+        final ColumnConstraints rightAlignementConstraint = new ColumnConstraints( );
         rightAlignementConstraint.setHalignment( HPos.RIGHT );
-        grid.getColumnConstraints().add( rightAlignementConstraint );
-        grid.getColumnConstraints().add( noConstraint );
-        grid.getColumnConstraints().add( rightAlignementConstraint );
-        grid.getColumnConstraints().add( noConstraint );
+        grid.getColumnConstraints( ).add( rightAlignementConstraint );
+        grid.getColumnConstraints( ).add( noConstraint );
+        grid.getColumnConstraints( ).add( rightAlignementConstraint );
+        grid.getColumnConstraints( ).add( noConstraint );
 
         grid.setStyle( "-fx-border-color:white; -fx-border-radius:5;" );
 
@@ -109,8 +109,8 @@ public final class ConfigurationView extends BorderPane {
         final Label lineLabel = new Label( "Server URL:" );
         parent.add( lineLabel, 0, 0 );
 
-        final TextField lineField = new TextField();
-        lineField.textProperty().bindBidirectional( _model.serverUrlProperty() );
+        final TextField lineField = new TextField( );
+        lineField.textProperty( ).bindBidirectional( _model.serverUrlProperty( ) );
         lineLabel.setLabelFor( lineField );
         parent.add( lineField, 1, 0, 3, 1 );
     }
@@ -119,16 +119,16 @@ public final class ConfigurationView extends BorderPane {
         final Label lineLabel = new Label( "User:" );
         parent.add( lineLabel, 0, 1 );
 
-        final TextField lineField = new TextField();
-        lineField.textProperty().bindBidirectional( _model.credentialsUserProperty() );
+        final TextField lineField = new TextField( );
+        lineField.textProperty( ).bindBidirectional( _model.credentialsUserProperty( ) );
         lineLabel.setLabelFor( lineField );
         parent.add( lineField, 1, 1 );
 
         final Label passwordLabel = new Label( "Password:" );
         parent.add( passwordLabel, 2, 1 );
 
-        final TextField passwordField = new PasswordField();
-        passwordField.textProperty().bindBidirectional( _model.credentialsPasswordProperty() );
+        final TextField passwordField = new PasswordField( );
+        passwordField.textProperty( ).bindBidirectional( _model.credentialsPasswordProperty( ) );
         passwordLabel.setLabelFor( passwordField );
         parent.add( passwordField, 3, 1 );
     }
@@ -137,11 +137,11 @@ public final class ConfigurationView extends BorderPane {
         final Label lineLabel = new Label( "Api Version:" );
         parent.add( lineLabel, 0, 2 );
 
-        final ComboBox<ApiVersion> apiVersionBox = new ComboBox<>( FXCollections.observableArrayList( ApiVersion.values() ) );
-        apiVersionBox.converterProperty().setValue( new StringConverter<ApiVersion>() {
+        final ComboBox<ApiVersion> apiVersionBox = new ComboBox<>( FXCollections.observableArrayList( ApiVersion.values( ) ) );
+        apiVersionBox.converterProperty( ).setValue( new StringConverter<ApiVersion>( ) {
             @Override
             public String toString( final ApiVersion object ) {
-                return object.getIdentifier();
+                return object.getIdentifier( );
             }
 
             @Override
@@ -149,14 +149,14 @@ public final class ConfigurationView extends BorderPane {
                 return ApiVersion.valueFrom( string );
             }
         } );
-        apiVersionBox.getSelectionModel().select( _model.getApiVersion() );
-        apiVersionBox.getSelectionModel().selectedItemProperty().addListener( ( o, oldValue, newValue ) -> _model.requestNewApiVersion( newValue ) );
+        apiVersionBox.getSelectionModel( ).select( _model.getApiVersion( ) );
+        apiVersionBox.getSelectionModel( ).selectedItemProperty( ).addListener( ( o, oldValue, newValue ) -> _model.requestNewApiVersion( newValue ) );
         lineLabel.setLabelFor( apiVersionBox );
         parent.add( apiVersionBox, 1, 2, 3, 1 );
     }
 
-    private TableView<BuildTypeData> buildTableView() {
-        final TableView<BuildTypeData> tableview = new TableView<>( _model.getBuildTypes() );
+    private TableView<BuildTypeData> buildTableView( ) {
+        final TableView<BuildTypeData> tableview = new TableView<>( _model.getBuildTypes( ) );
         tableview.setEditable( true );
         tableview.setColumnResizePolicy( TableView.CONSTRAINED_RESIZE_POLICY );
 
@@ -164,30 +164,30 @@ public final class ConfigurationView extends BorderPane {
         selectedColumn.setEditable( true );
         selectedColumn.setMinWidth( 40 );
         selectedColumn.setMaxWidth( 50 );
-        selectedColumn.setCellValueFactory( param -> param.getValue().selectedProperty() );
+        selectedColumn.setCellValueFactory( param -> param.getValue( ).selectedProperty( ) );
         selectedColumn.setCellFactory( CheckBoxTableCell.forTableColumn( selectedColumn ) );
 
         final TableColumn<BuildTypeData, String> idColumn = new TableColumn<>( "id" );
-        idColumn.setCellValueFactory( param -> param.getValue().idProperty() );
+        idColumn.setCellValueFactory( param -> param.getValue( ).idProperty( ) );
 
         final TableColumn<BuildTypeData, String> projectColumn = new TableColumn<>( "Project" );
-        projectColumn.setCellValueFactory( param -> param.getValue().projectNameProperty() );
+        projectColumn.setCellValueFactory( param -> param.getValue( ).projectNameProperty( ) );
 
         final TableColumn<BuildTypeData, String> nameColumn = new TableColumn<>( "Name" );
-        nameColumn.setCellValueFactory( param -> param.getValue().nameProperty() );
+        nameColumn.setCellValueFactory( param -> param.getValue( ).nameProperty( ) );
 
         final TableColumn<BuildTypeData, String> aliasColumns = new TableColumn<>( "Alias" );
         aliasColumns.setEditable( true );
-        aliasColumns.setCellValueFactory( param -> param.getValue().aliasNameProperty() );
-        aliasColumns.setCellFactory( TextFieldTableCell.forTableColumn() );
+        aliasColumns.setCellValueFactory( param -> param.getValue( ).aliasNameProperty( ) );
+        aliasColumns.setCellFactory( TextFieldTableCell.forTableColumn( ) );
         aliasColumns.setOnEditCommit(
                 event -> {
-                    final BuildTypeData buildTypeData = event.getTableView().getItems().get( event.getTablePosition().getRow() );
-                    _model.setAliasName( buildTypeData, event.getNewValue() );
+                    final BuildTypeData buildTypeData = event.getTableView( ).getItems( ).get( event.getTablePosition( ).getRow( ) );
+                    _model.setAliasName( buildTypeData, event.getNewValue( ) );
                 }
         );
 
-        tableview.getColumns().addAll( selectedColumn, idColumn, projectColumn, nameColumn, aliasColumns );
+        tableview.getColumns( ).addAll( selectedColumn, idColumn, projectColumn, nameColumn, aliasColumns );
         return tableview;
     }
 

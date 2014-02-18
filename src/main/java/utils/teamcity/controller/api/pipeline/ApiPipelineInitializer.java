@@ -23,7 +23,7 @@ public class ApiPipelineInitializer extends ChannelInitializer<SocketChannel> {
 
     @Override
     protected void initChannel( final SocketChannel socketChannel ) throws Exception {
-        final ChannelPipeline pipeline = socketChannel.pipeline();
+        final ChannelPipeline pipeline = socketChannel.pipeline( );
 //        pipeline.addLast( "loggingHandler", new LoggingHandler( LogLevel.INFO ) );
         // FIXME SSL Problem
 //                        if ( ssl ) {
@@ -33,8 +33,8 @@ public class ApiPipelineInitializer extends ChannelInitializer<SocketChannel> {
 //                            pipeline.addLast( "ssl", new SslHandler( engine ) );
 //                        }
 
-        pipeline.addLast( "httpCodecHandler", new HttpClientCodec() );
-        pipeline.addLast( "inflaterHandler", new HttpContentDecompressor() );
+        pipeline.addLast( "httpCodecHandler", new HttpClientCodec( ) );
+        pipeline.addLast( "inflaterHandler", new HttpContentDecompressor( ) );
         pipeline.addLast( "aggregatorHandler", new HttpObjectAggregator( 1048576 ) );
         // TODO Handler to handle redirect 301
         pipeline.addLast( "apiResponseHandler", _responseHandler );

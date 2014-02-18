@@ -16,9 +16,9 @@ import static java.util.concurrent.Executors.newScheduledThreadPool;
 final class ThreadingModule extends AbstractModule {
 
     @Override
-    protected void configure() {
-        bind( ListeningExecutorService.class ).toInstance( listeningDecorator( newCachedThreadPool() ) );
-        bind( ListeningScheduledExecutorService.class ).toInstance( listeningDecorator( newScheduledThreadPool( Runtime.getRuntime().availableProcessors() ) ) );
+    protected void configure( ) {
+        bind( ListeningExecutorService.class ).toInstance( listeningDecorator( newCachedThreadPool( ) ) );
+        bind( ListeningScheduledExecutorService.class ).toInstance( listeningDecorator( newScheduledThreadPool( Runtime.getRuntime( ).availableProcessors( ) ) ) );
     }
 
 }

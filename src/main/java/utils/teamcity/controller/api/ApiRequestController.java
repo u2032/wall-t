@@ -38,29 +38,29 @@ final class ApiRequestController implements IApiRequestController {
     @Override
     public <T extends ApiResponse> ListenableFuture<T> sendRequest( final ApiVersion version, final String path, final Class<T> expectedType ) {
 
-        final ApiRequest request = ApiRequestBuilder.newRequest()
-                .to( _configuration.getServerUrl() )
-                .forUser( _configuration.getCredentialsUser() )
-                .withPassword( _configuration.getCredentialsPassword() )
+        final ApiRequest request = ApiRequestBuilder.newRequest( )
+                .to( _configuration.getServerUrl( ) )
+                .forUser( _configuration.getCredentialsUser( ) )
+                .withPassword( _configuration.getCredentialsPassword( ) )
                 .request( path )
                 .apiVersion( version )
-                .build();
+                .build( );
 
         LOGGER.info( "Requesting: {}", request );
 
-        final SettableFuture<T> futureResponse = SettableFuture.create();
+        final SettableFuture<T> futureResponse = SettableFuture.create( );
 
         // Configure the client.
-        final Bootstrap b = new Bootstrap();
+        final Bootstrap b = new Bootstrap( );
         b.group( _eventLoopGroup )
                 .channel( NioSocketChannel.class )
                 .handler( new ApiPipelineInitializer( new ApiResponseHandler<T>( expectedType, futureResponse ) ) );
 
         // Prepare the HTTP request.
-        final HttpRequest httpRequest = new DefaultFullHttpRequest( HttpVersion.HTTP_1_1, HttpMethod.GET, request.getURI() );
-        httpRequest.headers().set( HttpHeaders.Names.HOST, request.getHost() );
-        httpRequest.headers().set( HttpHeaders.Names.CONNECTION, HttpHeaders.Values.CLOSE );
-        httpRequest.headers().set( HttpHeaders.Names.ACCEPT, "application/json" );
+        final HttpRequest httpRequest = new DefaultFullHttpRequest( HttpVersion.HTTP_1_1, HttpMethod.GET, request.getURI( ) );
+        httpRequest.headers( ).set( HttpHeaders.Names.HOST, request.getHost( ) );
+        httpRequest.headers( ).set( HttpHeaders.Names.CONNECTION, HttpHeaders.Values.CLOSE );
+        httpRequest.headers( ).set( HttpHeaders.Names.ACCEPT, "application/json" );
 
         // FIXME Authentification API
 //            String authString = "truc" + ":" + "machin";
@@ -69,12 +69,12 @@ final class ApiRequestController implements IApiRequestController {
 //            request.headers().set( HttpHeaders.Names.AUTHORIZATION,  "Basic " + encodedAuthChannelBuffer.toString(CharsetUtil.UTF_8));
 
         // Send the HTTP request.
-        final ChannelFuture ch = b.connect( request.getHost(), request.getPort() );
+        final ChannelFuture ch = b.connect( request.getHost( ), request.getPort( ) );
         //noinspection Convert2Lambda
-        ch.addListener( new ChannelFutureListener() {
+        ch.addListener( new ChannelFutureListener( ) {
             @Override
             public void operationComplete( final ChannelFuture future ) throws Exception {
-                future.channel().writeAndFlush( httpRequest );
+                future.channel( ).writeAndFlush( httpRequest );
             }
         } );
 

@@ -36,11 +36,11 @@ import static com.google.common.util.concurrent.Futures.addCallback;
  */
 final class ConfigurationViewModel {
 
-    private final StringProperty _serverUrl = new SimpleStringProperty();
-    private final StringProperty _credentialsUser = new SimpleStringProperty();
-    private final StringProperty _credentialsPassword = new SimpleStringProperty();
+    private final StringProperty _serverUrl = new SimpleStringProperty( );
+    private final StringProperty _credentialsUser = new SimpleStringProperty( );
+    private final StringProperty _credentialsPassword = new SimpleStringProperty( );
     private final BooleanProperty _loadingBuild = new SimpleBooleanProperty( false );
-    private final ObservableList<BuildTypeData> _buildTypes = FXCollections.observableArrayList();
+    private final ObservableList<BuildTypeData> _buildTypes = FXCollections.observableArrayList( );
     private final Configuration _configuration;
     private final Provider<IApiController> _apiController;
     private final ListeningExecutorService _executorService;
@@ -54,17 +54,17 @@ final class ConfigurationViewModel {
         _apiController = apiController;
         _executorService = executorService;
         _buildManager = buildManager;
-        updateBuildTypeList();
+        updateBuildTypeList( );
 
-        _serverUrl.setValue( configuration.getServerUrl() );
+        _serverUrl.setValue( configuration.getServerUrl( ) );
         _serverUrl.addListener( ( object, oldValue, newValue ) -> {
             if ( checkUrlServerIsValid( newValue ) ) configuration.setServerUrl( newValue );
         } );
 
-        _credentialsUser.setValue( configuration.getCredentialsUser() );
+        _credentialsUser.setValue( configuration.getCredentialsUser( ) );
         _credentialsUser.addListener( ( object, oldValue, newValue ) -> configuration.setCredentialsUser( newValue ) );
 
-        _credentialsPassword.setValue( configuration.getCredentialsPassword() );
+        _credentialsPassword.setValue( configuration.getCredentialsPassword( ) );
         _credentialsPassword.addListener( ( object, oldValue, newValue ) -> configuration.setCredentialsPassword( newValue ) );
     }
 
@@ -72,7 +72,7 @@ final class ConfigurationViewModel {
         try {
             final URI uri = new URI( url );
 
-            final String scheme = uri.getScheme();
+            final String scheme = uri.getScheme( );
             if ( scheme == null )
                 return false;
 
@@ -85,34 +85,34 @@ final class ConfigurationViewModel {
         return true;
     }
 
-    public StringProperty serverUrlProperty() {
+    public StringProperty serverUrlProperty( ) {
         return _serverUrl;
     }
 
-    StringProperty credentialsPasswordProperty() {
+    StringProperty credentialsPasswordProperty( ) {
         return _credentialsPassword;
     }
 
-    StringProperty credentialsUserProperty() {
+    StringProperty credentialsUserProperty( ) {
         return _credentialsUser;
     }
 
-    BooleanProperty loadingBuildProperty() {
+    BooleanProperty loadingBuildProperty( ) {
         return _loadingBuild;
     }
 
-    ObservableList<BuildTypeData> getBuildTypes() {
+    ObservableList<BuildTypeData> getBuildTypes( ) {
         return _buildTypes;
     }
 
-    public void requestLoadingBuilds() {
+    public void requestLoadingBuilds( ) {
         _loadingBuild.setValue( true );
 
-        final ListenableFuture<ListenableFuture<Void>> future = _executorService.submit( (Callable<ListenableFuture<Void>>) _apiController.get()::loadBuildList );
-        addCallback( future, new FutureCallback<ListenableFuture<Void>>() {
+        final ListenableFuture<ListenableFuture<Void>> future = _executorService.submit( (Callable<ListenableFuture<Void>>) _apiController.get( )::loadBuildList );
+        addCallback( future, new FutureCallback<ListenableFuture<Void>>( ) {
             @Override
             public void onSuccess( final ListenableFuture<Void> result ) {
-                addCallback( result, buildListLoadedCallback() );
+                addCallback( result, buildListLoadedCallback( ) );
             }
 
             @Override
@@ -123,12 +123,12 @@ final class ConfigurationViewModel {
 
     }
 
-    private FutureCallback<Void> buildListLoadedCallback() {
-        return new FutureCallback<Void>() {
+    private FutureCallback<Void> buildListLoadedCallback( ) {
+        return new FutureCallback<Void>( ) {
             @Override
             public void onSuccess( final Void result ) {
-                Platform.runLater( () -> {
-                    updateBuildTypeList();
+                Platform.runLater( ( ) -> {
+                    updateBuildTypeList( );
                     _loadingBuild.setValue( false );
                 } );
             }
@@ -140,25 +140,25 @@ final class ConfigurationViewModel {
         };
     }
 
-    private void updateBuildTypeList() {
-        _buildTypes.clear();
-        _buildTypes.addAll( _buildManager.getBuildTypeList() );
+    private void updateBuildTypeList( ) {
+        _buildTypes.clear( );
+        _buildTypes.addAll( _buildManager.getBuildTypeList( ) );
     }
 
     public void setAliasName( final BuildTypeData buildTypeData, final String aliasName ) {
         buildTypeData.setAliasName( aliasName );
     }
 
-    public void requestSwithToWallScene() {
+    public void requestSwithToWallScene( ) {
         _eventBus.post( new SceneEvent( WallScene.class ) );
     }
 
-    public ApiVersion getApiVersion() {
-        return _configuration.getApiVersion();
+    public ApiVersion getApiVersion( ) {
+        return _configuration.getApiVersion( );
     }
 
     public void requestNewApiVersion( final ApiVersion newValue ) {
-        LoggerFactory.getLogger( Loggers.MAIN ).info( "Switching to api version: " + newValue.getIdentifier() );
+        LoggerFactory.getLogger( Loggers.MAIN ).info( "Switching to api version: " + newValue.getIdentifier( ) );
         _configuration.setApiVersion( newValue );
     }
 }

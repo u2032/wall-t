@@ -12,7 +12,7 @@ import com.google.inject.Scopes;
 final class WallClientApplicationModule extends AbstractModule {
 
     @Override
-    protected void configure() {
+    protected void configure( ) {
         bind( EventBus.class ).in( Scopes.SINGLETON );
     }
 }

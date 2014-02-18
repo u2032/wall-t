@@ -21,23 +21,23 @@ public final class BuildData {
         _percentageComplete = percentageComplete;
     }
 
-    public BuildState getState() {
+    public BuildState getState( ) {
         return _state;
     }
 
-    public BuildStatus getStatus() {
+    public BuildStatus getStatus( ) {
         return _status;
     }
 
-    public int getId() {
+    public int getId( ) {
         return _id;
     }
 
-    public String getBuildTypeId() {
+    public String getBuildTypeId( ) {
         return _buildTypeId;
     }
 
-    public int getPercentageComplete() {
+    public int getPercentageComplete( ) {
         return _percentageComplete;
     }
 }

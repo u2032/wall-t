@@ -15,7 +15,7 @@ public final class SceneEvent {
         _type = type;
     }
 
-    public Class<? extends Scene> getType() {
+    public Class<? extends Scene> getType( ) {
         return _type;
     }
 }

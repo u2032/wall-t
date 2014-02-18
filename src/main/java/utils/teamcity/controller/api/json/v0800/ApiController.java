@@ -41,14 +41,14 @@ public final class ApiController implements IApiController {
     }
 
     @Override
-    public ListenableFuture<Void> loadBuildList() {
+    public ListenableFuture<Void> loadBuildList( ) {
         final ListenableFuture<BuildTypeList> buildListFuture = _apiRequestController.sendRequest( API_8_0, "buildTypes", BuildTypeList.class );
-        addCallback( buildListFuture, new FutureCallback<BuildTypeList>() {
+        addCallback( buildListFuture, new FutureCallback<BuildTypeList>( ) {
             @Override
             public void onSuccess( final BuildTypeList result ) {
-                final List<BuildTypeData> buildTypes = Arrays.asList( result.getBuildTypes() ).stream()
-                        .map( ( btype ) -> new BuildTypeData( btype.getId(), btype.getName(), btype.getProjectName() ) )
-                        .collect( Collectors.toList() );
+                final List<BuildTypeData> buildTypes = Arrays.asList( result.getBuildTypes( ) ).stream( )
+                        .map( ( btype ) -> new BuildTypeData( btype.getId( ), btype.getName( ), btype.getProjectName( ) ) )
+                        .collect( Collectors.toList( ) );
                 _buildManager.registerBuildTypes( buildTypes );
             }
 
@@ -63,39 +63,39 @@ public final class ApiController implements IApiController {
 
     @Override
     public void requestLastBuildStatus( final BuildTypeData buildType ) {
-        final ListenableFuture<BuildList> buildListFuture = _apiRequestController.sendRequest( API_8_0, "builds/?locator=buildType:" + buildType.getId() + ",running:any", BuildList.class );
-        addCallback( buildListFuture, new FutureCallback<BuildList>() {
+        final ListenableFuture<BuildList> buildListFuture = _apiRequestController.sendRequest( API_8_0, "builds/?locator=buildType:" + buildType.getId( ) + ",running:any", BuildList.class );
+        addCallback( buildListFuture, new FutureCallback<BuildList>( ) {
             @Override
             public void onSuccess( final BuildList result ) {
-                if ( result.getBuilds() == null )
+                if ( result.getBuilds( ) == null )
                     return;
 
                 // We consider only 5 last builds
-                final List<Build> buildToRequest = Arrays.asList( result.getBuilds() ).stream()
+                final List<Build> buildToRequest = Arrays.asList( result.getBuilds( ) ).stream( )
                         .limit( 5 )
-                        .collect( Collectors.toList() );
+                        .collect( Collectors.toList( ) );
 
                 // We removed from list builds which status is already known
                 buildToRequest.removeIf( build -> {
-                    final Optional<BuildData> previousBuildStatus = buildType.getBuildById( build.getId() );
-                    return previousBuildStatus.isPresent() && previousBuildStatus.get().getState() == BuildState.finished;
+                    final Optional<BuildData> previousBuildStatus = buildType.getBuildById( build.getId( ) );
+                    return previousBuildStatus.isPresent( ) && previousBuildStatus.get( ).getState( ) == BuildState.finished;
                 } );
 
                 for ( final Build build : buildToRequest ) {
-                    final ListenableFuture<Build> buildStatusFuture = _apiRequestController.sendRequest( API_8_0, "builds/id:" + build.getId(), Build.class );
+                    final ListenableFuture<Build> buildStatusFuture = _apiRequestController.sendRequest( API_8_0, "builds/id:" + build.getId( ), Build.class );
                     addCallback( buildStatusFuture, registerBuildStatus( buildType, build ) );
                 }
             }
 
             @Override
             public void onFailure( final Throwable t ) {
-                LOGGER.error( "Error during loading builds list for build type: " + buildType.getId(), t );
+                LOGGER.error( "Error during loading builds list for build type: " + buildType.getId( ), t );
             }
         } );
     }
 
     private FutureCallback<Build> registerBuildStatus( final BuildTypeData buildType, final Build build ) {
-        return new FutureCallback<Build>() {
+        return new FutureCallback<Build>( ) {
             @Override
             public void onSuccess( final Build result ) {
                 buildType.registerBuild( _toBuildData.apply( result ) );
@@ -103,13 +103,13 @@ public final class ApiController implements IApiController {
 
             @Override
             public void onFailure( final Throwable t ) {
-                LOGGER.error( "Error during loading ull information for build with id " + build.getId() + ", build type: " + buildType.getId(), t );
+                LOGGER.error( "Error during loading ull information for build with id " + build.getId( ) + ", build type: " + buildType.getId( ), t );
             }
         };
     }
 
     private final Function<Build, BuildData> _toBuildData = build ->
-            new BuildData( build.getId(), build.getBuildType(), build.getStatus(), build.isRunning() ? BuildState.running : BuildState.finished, build.isRunning() ? build.getRunningInformation().getPercentageComplete() : 100 );
+            new BuildData( build.getId( ), build.getBuildType( ), build.getStatus( ), build.isRunning( ) ? BuildState.running : BuildState.finished, build.isRunning( ) ? build.getRunningInformation( ).getPercentageComplete( ) : 100 );
 
 
 }

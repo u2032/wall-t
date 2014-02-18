@@ -43,9 +43,9 @@ public final class WallClientApplication extends Application {
     private final EventBus _eventBus;
     private Stage _primaryStage;
 
-    public WallClientApplication() {
+    public WallClientApplication( ) {
         LOGGER.info( "Starting ..." );
-        _injector = Guice.createInjector( modules() );
+        _injector = Guice.createInjector( modules( ) );
         _executorService = _injector.getInstance( ListeningExecutorService.class );
         _scheduledExecutorService = _injector.getInstance( ListeningScheduledExecutorService.class );
         _eventBus = _injector.getInstance( EventBus.class );
@@ -55,22 +55,22 @@ public final class WallClientApplication extends Application {
         Application.launch( WallClientApplication.class, args );
     }
 
-    private Iterable<Module> modules() {
+    private Iterable<Module> modules( ) {
         return ImmutableList.<Module>of(
-                new WallClientApplicationModule(),
-                new ThreadingModule(),
-                new ApiModule(),
-                new BuildDataModule(),
-                new ConfigurationModule(),
-                new ConfigurationViewModule(),
-                new WallViewModule()
+                new WallClientApplicationModule( ),
+                new ThreadingModule( ),
+                new ApiModule( ),
+                new BuildDataModule( ),
+                new ConfigurationModule( ),
+                new ConfigurationViewModule( ),
+                new WallViewModule( )
         );
     }
 
     @Override
-    public void init() throws Exception {
+    public void init( ) throws Exception {
         _eventBus.register( this );
-        super.init();
+        super.init( );
     }
 
     @Override
@@ -83,33 +83,33 @@ public final class WallClientApplication extends Application {
 
         _eventBus.post( new SceneEvent( ConfigurationScene.class ) );
 
-        primaryStage.show();
+        primaryStage.show( );
 
-        _injector.getInstance( IApiMonitoringService.class ).start();
+        _injector.getInstance( IApiMonitoringService.class ).start( );
     }
 
     @Override
-    public void stop() throws Exception {
+    public void stop( ) throws Exception {
         LOGGER.info( "Stopping ..." );
-        _injector.getInstance( IConfigurationController.class ).saveConfiguration();
-        _injector.getInstance( EventLoopGroup.class ).shutdownGracefully();
-        _executorService.shutdownNow();
-        _scheduledExecutorService.shutdownNow();
-        super.stop();
+        _injector.getInstance( IConfigurationController.class ).saveConfiguration( );
+        _injector.getInstance( EventLoopGroup.class ).shutdownGracefully( );
+        _executorService.shutdownNow( );
+        _scheduledExecutorService.shutdownNow( );
+        super.stop( );
     }
 
     @Subscribe
     public void requestScene( final SceneEvent sceneType ) {
-        final Scene scene = _injector.getInstance( sceneType.getType() );
-        scene.getAccelerators().put( new KeyCodeCombination( KeyCode.F11 ),
-                () -> {
-                    _primaryStage.setFullScreen( !_primaryStage.isFullScreen() );
+        final Scene scene = _injector.getInstance( sceneType.getType( ) );
+        scene.getAccelerators( ).put( new KeyCodeCombination( KeyCode.F11 ),
+                ( ) -> {
+                    _primaryStage.setFullScreen( !_primaryStage.isFullScreen( ) );
                 } );
-        scene.getAccelerators().put( new KeyCodeCombination( KeyCode.ESCAPE ),
-                () -> {
+        scene.getAccelerators( ).put( new KeyCodeCombination( KeyCode.ESCAPE ),
+                ( ) -> {
                     _eventBus.post( new SceneEvent( ConfigurationScene.class ) );
                 } );
-        LOGGER.info( "Change scene to " + sceneType.getType().getSimpleName() );
+        LOGGER.info( "Change scene to " + sceneType.getType( ).getSimpleName( ) );
         _primaryStage.setScene( scene );
     }
 }

@@ -19,27 +19,27 @@ public final class ApiRequest {
         _password = password;
     }
 
-    public String getHost() {
-        return _serverUrl.getHost();
+    public String getHost( ) {
+        return _serverUrl.getHost( );
     }
 
-    public int getPort() {
-        final int port = _serverUrl.getPort();
+    public int getPort( ) {
+        final int port = _serverUrl.getPort( );
         if ( port == -1 )
-            return useSSL() ? 443 : 80;
+            return useSSL( ) ? 443 : 80;
         return port;
     }
 
-    public boolean useSSL() {
-        return "https".equalsIgnoreCase( _serverUrl.getScheme() );
+    public boolean useSSL( ) {
+        return "https".equalsIgnoreCase( _serverUrl.getScheme( ) );
     }
 
-    public String getURI() {
-        return _serverUrl.toString();
+    public String getURI( ) {
+        return _serverUrl.toString( );
     }
 
     @Override
-    public String toString() {
+    public String toString( ) {
         return "ApiRequest{" + " '" + _serverUrl + "' }";
     }
 }

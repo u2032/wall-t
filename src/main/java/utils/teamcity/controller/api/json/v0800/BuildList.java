@@ -13,7 +13,7 @@ final class BuildList implements ApiResponse {
     @SerializedName("build")
     private Build[] _builds;
 
-    public Build[] getBuilds() {
+    public Build[] getBuilds( ) {
         return _builds;
     }
 }

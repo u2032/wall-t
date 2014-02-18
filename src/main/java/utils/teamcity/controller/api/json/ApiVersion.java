@@ -18,13 +18,13 @@ public enum ApiVersion {
     }
 
     public static ApiVersion valueFrom( final String string ) {
-        for ( final ApiVersion v : values() )
-            if ( v.getIdentifier().equals( string ) )
+        for ( final ApiVersion v : values( ) )
+            if ( v.getIdentifier( ).equals( string ) )
                 return v;
         return null;
     }
 
-    public String getIdentifier() {
+    public String getIdentifier( ) {
         return _identifier;
     }
 }

@@ -20,17 +20,17 @@ import java.util.Map;
 public final class ApiModule extends AbstractModule {
 
     @Override
-    protected void configure() {
+    protected void configure( ) {
         bind( IApiRequestController.class ).to( ApiRequestController.class ).in( Scopes.SINGLETON );
         bind( ApiControllerProvider.class ).in( Scopes.SINGLETON );
         bind( IApiController.class ).toProvider( ApiControllerProvider.class );
-        bind( IApiMonitoringService.class ).to( ApiMonitoringService.class ).asEagerSingleton();
+        bind( IApiMonitoringService.class ).to( ApiMonitoringService.class ).asEagerSingleton( );
     }
 
     @Provides
     @Singleton
-    public EventLoopGroup eventLoopGroup() {
-        return new NioEventLoopGroup( Runtime.getRuntime().availableProcessors() * 4 );
+    public EventLoopGroup eventLoopGroup( ) {
+        return new NioEventLoopGroup( Runtime.getRuntime( ).availableProcessors( ) * 4 );
     }
 
     @Provides

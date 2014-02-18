@@ -28,19 +28,19 @@ public final class SavedBuildData {
         _aliasName = aliasName;
     }
 
-    public String getId() {
+    public String getId( ) {
         return _id;
     }
 
-    public String getName() {
+    public String getName( ) {
         return _name;
     }
 
-    public String getProjectName() {
+    public String getProjectName( ) {
         return _projectName;
     }
 
-    public String getAliasName() {
+    public String getAliasName( ) {
         return _aliasName;
     }
 }

@@ -11,7 +11,7 @@ import com.google.inject.Scopes;
 public final class ConfigurationViewModule extends AbstractModule {
 
     @Override
-    protected void configure() {
+    protected void configure( ) {
         bind( ConfigurationScene.class ).in( Scopes.SINGLETON );
         bind( ConfigurationView.class ).in( Scopes.SINGLETON );
         bind( ConfigurationViewModel.class ).in( Scopes.SINGLETON );

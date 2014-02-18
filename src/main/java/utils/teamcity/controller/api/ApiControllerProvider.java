@@ -26,7 +26,7 @@ public class ApiControllerProvider implements Provider<IApiController> {
     }
 
     @Override
-    public IApiController get() {
-        return checkNotNull( _controllerByVersion.get( _configuration.getApiVersion() ), "No controller defined for API version %s", _configuration.getApiVersion() );
+    public IApiController get( ) {
+        return checkNotNull( _controllerByVersion.get( _configuration.getApiVersion( ) ), "No controller defined for API version %s", _configuration.getApiVersion( ) );
     }
 }

@@ -22,14 +22,14 @@ public enum BuildImage {
     private Image _image;
 
     BuildImage( final String path ) {
-        try ( final InputStream is = BuildTypeData.class.getClassLoader().getResourceAsStream( path ) ) {
+        try ( final InputStream is = BuildTypeData.class.getClassLoader( ).getResourceAsStream( path ) ) {
             _image = new Image( is );
         } catch ( final IOException e ) {
             LoggerFactory.getLogger( Loggers.MAIN ).warn( "Unable to load image: ", e );
         }
     }
 
-    public Image getImage() {
+    public Image getImage( ) {
         return _image;
     }
 }

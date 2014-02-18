@@ -18,15 +18,15 @@ final class BuildRunningInfo {
     @SerializedName("elapsedSeconds")
     private int _elapsedTime;
 
-    int getPercentageComplete() {
+    int getPercentageComplete( ) {
         return _percentageComplete;
     }
 
-    int getEstimatedTotalTime() {
+    int getEstimatedTotalTime( ) {
         return _estimatedTotalTime;
     }
 
-    int getElapsedTime() {
+    int getElapsedTime( ) {
         return _elapsedTime;
     }
 }

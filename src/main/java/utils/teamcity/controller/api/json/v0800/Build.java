@@ -26,23 +26,23 @@ final class Build implements ApiResponse {
     @SerializedName("running-info")
     private BuildRunningInfo _runningInformation;
 
-    public int getId() {
+    public int getId( ) {
         return _id;
     }
 
-    public String getBuildType() {
+    public String getBuildType( ) {
         return _buildType;
     }
 
-    public BuildStatus getStatus() {
+    public BuildStatus getStatus( ) {
         return _status;
     }
 
-    public boolean isRunning() {
+    public boolean isRunning( ) {
         return _running;
     }
 
-    public BuildRunningInfo getRunningInformation() {
+    public BuildRunningInfo getRunningInformation( ) {
         return _runningInformation;
     }
 }

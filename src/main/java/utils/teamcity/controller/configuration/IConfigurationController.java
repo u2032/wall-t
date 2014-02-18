@@ -7,6 +7,6 @@ package utils.teamcity.controller.configuration;
  */
 public interface IConfigurationController {
 
-    void saveConfiguration();
+    void saveConfiguration( );
 
 }

@@ -26,9 +26,9 @@ public final class Configuration {
     private ApiVersion _apiVersion = ApiVersion.API_8_0;
 
     @SerializedName("monitored_builds")
-    private List<SavedBuildData> _savedBuilds = Lists.newArrayList();
+    private List<SavedBuildData> _savedBuilds = Lists.newArrayList( );
 
-    public String getServerUrl() {
+    public String getServerUrl( ) {
         return _serverUrl;
     }
 
@@ -36,7 +36,7 @@ public final class Configuration {
         _serverUrl = serverUrl;
     }
 
-    public String getCredentialsUser() {
+    public String getCredentialsUser( ) {
         return _credentialsUser;
     }
 
@@ -44,7 +44,7 @@ public final class Configuration {
         _credentialsUser = credentialsUser;
     }
 
-    public String getCredentialsPassword() {
+    public String getCredentialsPassword( ) {
         return _credentialsPassword;
     }
 
@@ -52,7 +52,7 @@ public final class Configuration {
         _credentialsPassword = credentialsPassword;
     }
 
-    public List<SavedBuildData> getSavedBuilds() {
+    public List<SavedBuildData> getSavedBuilds( ) {
         return _savedBuilds;
     }
 
@@ -60,7 +60,7 @@ public final class Configuration {
         _savedBuilds = savedBuilds;
     }
 
-    public ApiVersion getApiVersion() {
+    public ApiVersion getApiVersion( ) {
         return _apiVersion;
     }
 

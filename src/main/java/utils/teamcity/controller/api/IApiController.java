@@ -15,7 +15,7 @@ public interface IApiController {
      *
      * @return Future which can be listened for completion
      */
-    ListenableFuture<Void> loadBuildList();
+    ListenableFuture<Void> loadBuildList( );
 
     /**
      * Request last builds status for specified build type and register them on builtType

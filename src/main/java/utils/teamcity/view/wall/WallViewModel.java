@@ -16,24 +16,24 @@ import java.util.stream.Collectors;
  */
 public final class WallViewModel {
 
-    private final ObservableList<BuildTypeData> _builds = FXCollections.observableArrayList();
+    private final ObservableList<BuildTypeData> _builds = FXCollections.observableArrayList( );
     private final IBuildManager _buildManager;
 
     @Inject
     public WallViewModel( final IBuildManager buildManager ) {
         _buildManager = buildManager;
-        updateBuildList();
+        updateBuildList( );
     }
 
-    private void updateBuildList() {
-        final List<BuildTypeData> builds = _buildManager.getBuildTypeList().stream()
+    private void updateBuildList( ) {
+        final List<BuildTypeData> builds = _buildManager.getBuildTypeList( ).stream( )
                 .filter( BuildTypeData::isSelected )
-                .collect( Collectors.toList() );
-        _builds.clear();
+                .collect( Collectors.toList( ) );
+        _builds.clear( );
         _builds.addAll( builds );
     }
 
-    public ObservableList<BuildTypeData> getBuilds() {
+    public ObservableList<BuildTypeData> getBuilds( ) {
         return _builds;
     }
 }

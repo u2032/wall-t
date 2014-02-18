@@ -9,7 +9,7 @@ public final class Loggers {
 
     public static final String MAIN = "TCWall.Main";
 
-    private Loggers() {
-        throw new UnsupportedOperationException();
+    private Loggers( ) {
+        throw new UnsupportedOperationException( );
     }
 }

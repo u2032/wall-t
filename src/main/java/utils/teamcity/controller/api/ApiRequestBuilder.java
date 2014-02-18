@@ -24,24 +24,24 @@ public final class ApiRequestBuilder {
     private String _password = "";
     private ApiVersion _version;
 
-    private ApiRequestBuilder() {
+    private ApiRequestBuilder( ) {
     }
 
-    public static ApiRequestBuilder newRequest() {
-        return new ApiRequestBuilder();
+    public static ApiRequestBuilder newRequest( ) {
+        return new ApiRequestBuilder( );
     }
 
     public ApiRequestBuilder to( final String serverUrl ) {
         _serverUrl = serverUrl;
         if ( _serverUrl.endsWith( "/" ) )
-            _serverUrl = _serverUrl.substring( 0, _serverUrl.length() - 1 );
+            _serverUrl = _serverUrl.substring( 0, _serverUrl.length( ) - 1 );
         return this;
     }
 
     public ApiRequestBuilder request( final String path ) {
         _path = path;
         if ( _path.endsWith( "/" ) )
-            _path = _path.substring( 0, _path.length() - 1 );
+            _path = _path.substring( 0, _path.length( ) - 1 );
         return this;
     }
 
@@ -61,15 +61,15 @@ public final class ApiRequestBuilder {
         return this;
     }
 
-    public ApiRequest build() {
+    public ApiRequest build( ) {
         checkNotNull( _version, "Api version is not defined." );
 
         final String apiAuthMode = "guest".equalsIgnoreCase( _username ) ? "guestAuth" : "httpAuth";
-        final String url = String.format( API_URL_FORMAT, _serverUrl, apiAuthMode, _version.getIdentifier(), _path );
+        final String url = String.format( API_URL_FORMAT, _serverUrl, apiAuthMode, _version.getIdentifier( ), _path );
 
         try {
             final URI uri = new URI( url );
-            final String s = uri.getScheme();
+            final String s = uri.getScheme( );
             checkArgument( "http".equalsIgnoreCase( s ) || "https".equalsIgnoreCase( s ), "Only HTTP & HTTPS protocols are supported for API" );
 
             return new ApiRequest( uri, _username, _password );

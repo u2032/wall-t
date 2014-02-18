@@ -15,6 +15,6 @@ public interface IBuildManager {
 
     void registerBuildTypes( List<BuildTypeData> typeList );
 
-    List<BuildTypeData> getBuildTypeList();
+    List<BuildTypeData> getBuildTypeList( );
 
 }

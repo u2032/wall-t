@@ -19,15 +19,15 @@ final class BuildType {
     private String _projectName;
 
 
-    public String getId() {
+    public String getId( ) {
         return _id;
     }
 
-    public String getName() {
+    public String getName( ) {
         return _name;
     }
 
-    public String getProjectName() {
+    public String getProjectName( ) {
         return _projectName;
     }
 }

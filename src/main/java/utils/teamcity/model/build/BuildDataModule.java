@@ -11,7 +11,7 @@ import com.google.inject.Scopes;
 public final class BuildDataModule extends AbstractModule {
 
     @Override
-    protected void configure() {
+    protected void configure( ) {
         bind( IBuildManager.class ).to( BuildDataManager.class ).in( Scopes.SINGLETON );
     }
 }

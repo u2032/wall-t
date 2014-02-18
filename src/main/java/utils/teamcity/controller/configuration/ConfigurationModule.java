@@ -22,20 +22,20 @@ import java.nio.file.Paths;
 public class ConfigurationModule extends AbstractModule {
 
     @Override
-    protected void configure() {
+    protected void configure( ) {
         bind( IConfigurationController.class ).to( ConfigurationController.class ).in( Scopes.SINGLETON );
     }
 
     @Provides
     @Singleton
-    Configuration loadConfiguration() {
+    Configuration loadConfiguration( ) {
         final Path configFilePath = Paths.get( "config.json" );
-        try ( FileReader reader = new FileReader( configFilePath.toFile() ) ) {
-            final Gson gson = new Gson();
+        try ( FileReader reader = new FileReader( configFilePath.toFile( ) ) ) {
+            final Gson gson = new Gson( );
             return gson.fromJson( reader, Configuration.class );
         } catch ( IOException ignored ) {
             LoggerFactory.getLogger( Loggers.MAIN ).warn( "No configuration file found: starting with empty configuration" );
-            return new Configuration();
+            return new Configuration( );
         }
     }
 }
