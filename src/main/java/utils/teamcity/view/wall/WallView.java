@@ -121,6 +121,7 @@ public final class WallView extends GridPane {
             transition.setToValue( 0.5 );
             transition.setCycleCount( Timeline.INDEFINITE );
             transition.setAutoReverse( true );
+            _registeredTransition.put( node, transition );
         }
         transition.play();
     }
