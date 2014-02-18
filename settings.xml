@@ -1,0 +1,23 @@
+<settings>
+
+    <localRepository>.m2/repository</localRepository>
+
+    <pluginGroups>
+        <pluginGroup>com.sonatype.maven.plugins</pluginGroup>
+        <pluginGroup>org.sonatype.plugins</pluginGroup>
+    </pluginGroups>
+
+
+    <proxies>
+        <proxy>
+            <id>rubise</id>
+            <active>true</active>
+            <protocol>http</protocol>
+            <host>rubise.ankama.lan</host>
+            <port>8080</port>
+            <username>ced</username>
+            <password>ced1026#</password>
+        </proxy>
+    </proxies>
+    <!---->
+</settings>

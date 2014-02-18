@@ -1,0 +1,29 @@
+<configuration>
+
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>INFO</level>
+        </filter>
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} %thread %-20logger{20} |%X{botName}| %-7level %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="MAIN_FILE" class="ch.qos.logback.core.FileAppender">
+        <file>logs/main.log</file>
+        <append>true</append>
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} | %-7level %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <root level="WARN">
+        <appender-ref ref="CONSOLE"/>
+    </root>
+
+    <logger name="TCWall.Main" additivity="false" level="INFO">
+        <appender-ref ref="MAIN_FILE"/>
+        <appender-ref ref="CONSOLE"/>
+    </logger>
+
+</configuration>
