@@ -23,6 +23,7 @@ import utils.teamcity.controller.configuration.IConfigurationController;
 import utils.teamcity.model.build.BuildDataModule;
 import utils.teamcity.model.event.SceneEvent;
 import utils.teamcity.model.logger.Loggers;
+import utils.teamcity.view.UIUtils;
 import utils.teamcity.view.configuration.ConfigurationScene;
 import utils.teamcity.view.configuration.ConfigurationViewModule;
 import utils.teamcity.view.wall.WallViewModule;
@@ -32,10 +33,10 @@ import utils.teamcity.view.wall.WallViewModule;
  *
  * @author Cedric Longo
  */
-public final class WallClientApplication extends Application {
+public final class WallApplication extends Application {
 
-    public static final int MIN_WIDTH = 800;
-    public static final int MIN_HEIGHT = 600;
+    public static final int MIN_WIDTH = 1024;
+    public static final int MIN_HEIGHT = 800;
     public static final Logger LOGGER = LoggerFactory.getLogger( Loggers.MAIN );
     private final Injector _injector;
     private final ListeningExecutorService _executorService;
@@ -43,7 +44,7 @@ public final class WallClientApplication extends Application {
     private final EventBus _eventBus;
     private Stage _primaryStage;
 
-    public WallClientApplication( ) {
+    public WallApplication() {
         LOGGER.info( "Starting ..." );
         _injector = Guice.createInjector( modules( ) );
         _executorService = _injector.getInstance( ListeningExecutorService.class );
@@ -52,12 +53,12 @@ public final class WallClientApplication extends Application {
     }
 
     public static void main( final String[] args ) {
-        Application.launch( WallClientApplication.class, args );
+        Application.launch( WallApplication.class, args );
     }
 
     private Iterable<Module> modules( ) {
         return ImmutableList.<Module>of(
-                new WallClientApplicationModule( ),
+                new WallApplicationModule( ),
                 new ThreadingModule( ),
                 new ApiModule( ),
                 new BuildDataModule( ),
@@ -78,8 +79,12 @@ public final class WallClientApplication extends Application {
         _primaryStage = primaryStage;
 
         primaryStage.setTitle( "Teamcity Wall" );
+        primaryStage.getIcons().addAll( UIUtils.createImage( "icon.png" ) );
+
         primaryStage.setMinWidth( MIN_WIDTH );
         primaryStage.setMinHeight( MIN_HEIGHT );
+        primaryStage.setWidth( MIN_WIDTH );
+        primaryStage.setHeight( MIN_HEIGHT );
 
         _eventBus.post( new SceneEvent( ConfigurationScene.class ) );
 

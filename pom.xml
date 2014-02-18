@@ -12,7 +12,7 @@
         <java.version>1.8</java.version>
         <java8.home>${env.JAVA8_HOME}</java8.home>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <app.main.class>utils.teamcity.WallClientApplication</app.main.class>
+        <app.main.class>utils.teamcity.WallApplication</app.main.class>
     </properties>
 
 

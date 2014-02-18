@@ -15,6 +15,10 @@ import utils.teamcity.model.build.IBuildManager;
 import utils.teamcity.model.logger.Loggers;
 
 import javax.inject.Inject;
+import java.time.Duration;
+import java.time.temporal.ChronoField;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalUnit;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -109,7 +113,10 @@ public final class ApiController implements IApiController {
     }
 
     private final Function<Build, BuildData> _toBuildData = build ->
-            new BuildData( build.getId( ), build.getBuildType( ), build.getStatus( ), build.isRunning( ) ? BuildState.running : BuildState.finished, build.isRunning( ) ? build.getRunningInformation( ).getPercentageComplete( ) : 100 );
-
+            new BuildData( build.getId( ), build.getBuildType( ), build.getStatus( ),
+                    build.isRunning( ) ? BuildState.running : BuildState.finished,
+                    build.isRunning( ) ? build.getRunningInformation( ).getPercentageComplete( ) : 100,
+                    Optional.ofNullable( build.getFinishedDate( ) ),
+                    Duration.of( build.getEstimatedTime() - build.getElapsedTime(), ChronoUnit.SECONDS ));
 
 }

@@ -3,21 +3,38 @@ package utils.teamcity.view.wall;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Maps;
 import javafx.animation.FadeTransition;
+import javafx.animation.RotateTransition;
 import javafx.animation.Timeline;
+import javafx.beans.binding.Bindings;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.text.Font;
+import javafx.scene.text.TextAlignment;
 import javafx.util.Duration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import utils.teamcity.model.build.BuildTypeData;
+import utils.teamcity.model.logger.Loggers;
+import utils.teamcity.view.UIUtils;
 
 import javax.inject.Inject;
+import java.io.IOException;
+import java.io.InputStream;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Callable;
+
+import static javafx.beans.binding.Bindings.createBooleanBinding;
+import static javafx.beans.binding.Bindings.createStringBinding;
 
 /**
  * Date: 16/02/14
@@ -27,9 +44,8 @@ import java.util.Map;
 public final class WallView extends GridPane {
 
     public static final int MAX_BY_COLUMN = 5;
+    public static final Logger LOGGER = LoggerFactory.getLogger( Loggers.MAIN );
     private final WallViewModel _model;
-
-
     private final Map<Node, FadeTransition> _registeredTransition = Maps.newHashMap( );
 
     @Inject
@@ -87,31 +103,107 @@ public final class WallView extends GridPane {
         tileContent.setSpacing( 10 );
 
         final Label tileTitle = new Label( );
-        tileTitle.setStyle( "-fx-font-weight:bold; -fx-text-fill:white;" );
+        tileTitle.setStyle( "-fx-font-weight:bold; -fx-text-fill:white; -fx-font-size:50px;" );
         tileTitle.setPadding( new Insets( 5 ) );
         tileTitle.setWrapText( true );
         tileTitle.textProperty( ).bind( build.displayedNameProperty( ) );
         tileTitle.prefWidthProperty( ).bind( tile.widthProperty( ) );
         tileTitle.prefHeightProperty( ).bind( tile.heightProperty( ) );
-        tileTitle.setFont( new Font( 50 ) );
         HBox.setHgrow( tileTitle, Priority.SOMETIMES );
 
-        final VBox contextPart = new VBox( );
-        contextPart.setMinWidth( 100 );
-        contextPart.setAlignment( Pos.TOP_CENTER );
-
-        final ImageView image = new ImageView( );
-        image.setPreserveRatio( true );
-        image.setFitHeight( 90 );
-        image.imageProperty( ).bind( build.imageProperty( ) );
-
-        contextPart.getChildren( ).add( image );
-
+        final VBox contextPart = createContextPart( build );
         tileContent.getChildren( ).addAll( tileTitle, contextPart );
 
         tile.getChildren( ).addAll( progressPane, tileContent );
         add( tile, x, y );
     }
+
+    private VBox createContextPart( final BuildTypeData build ) {
+        final VBox contextPart = new VBox( );
+        contextPart.setMinWidth( 150 );
+        contextPart.setMaxWidth( 150 );
+        contextPart.setAlignment( Pos.CENTER );
+
+        final HBox statusBox = new HBox(  );
+        statusBox.setAlignment( Pos.CENTER );
+        statusBox.setSpacing( 5 );
+
+        final ImageView queuedIcon = new ImageView( UIUtils.createImage( "queued.png" ));
+        queuedIcon.setPreserveRatio( true );
+        queuedIcon.setFitWidth( 50 );
+        queuedIcon.visibleProperty( ).bind( build.queuedProperty( ) );
+
+        final RotateTransition transition = new RotateTransition( Duration.seconds( 3 ), queuedIcon );
+        transition.setByAngle( 360 );
+        transition.setCycleCount( Timeline.INDEFINITE );
+        transition.play( );
+
+        final ImageView image = new ImageView( );
+        image.setPreserveRatio( true );
+        image.setFitWidth( 90 );
+        image.imageProperty( ).bind( build.imageProperty( ) );
+        statusBox.getChildren( ).addAll(queuedIcon, image );
+
+        final HBox lastBuildInfoPart = createLastBuildInfoBox( build );
+        lastBuildInfoPart.visibleProperty( ).bind( build.runningProperty( ).not( ) );
+
+        final HBox timeLeftInfoBox = createTimeLeftInfoBox( build );
+        timeLeftInfoBox.visibleProperty( ).bind( build.runningProperty( ) );
+
+        final StackPane infoBox = new StackPane(lastBuildInfoPart, timeLeftInfoBox );
+        infoBox.setAlignment( Pos.CENTER );
+
+        contextPart.getChildren( ).addAll( statusBox, infoBox );
+        return contextPart;
+    }
+
+    private HBox createLastBuildInfoBox( final BuildTypeData build ) {
+        final HBox lastBuildInfoPart = new HBox(  );
+        lastBuildInfoPart.setSpacing( 5 );
+        lastBuildInfoPart.setAlignment( Pos.CENTER );
+
+        final ImageView lastBuildIcon = new ImageView( UIUtils.createImage( "lastBuild.png" ) );
+        lastBuildIcon.setPreserveRatio( true );
+        lastBuildIcon.setFitWidth( 32 );
+
+        final Label lastBuildDate = new Label( );
+        lastBuildDate.setTextAlignment( TextAlignment.CENTER );
+        lastBuildDate.setAlignment( Pos.CENTER );
+        lastBuildDate.setStyle( "-fx-font-weight:bold; -fx-text-fill:white; -fx-font-size:32px;" );
+        lastBuildDate.setWrapText( true );
+        lastBuildDate.textProperty( ).bind( createStringBinding( ( ) -> {
+            final LocalDateTime localDateTime = build.lastFinishedDateProperty( ).get( );
+            if ( localDateTime == null )
+                return "00/00\n00:00";
+            return localDateTime.format( DateTimeFormatter.ofPattern( "dd/MM\nHH:mm" ) );
+        }, build.lastFinishedDateProperty( ) ) );
+
+        lastBuildInfoPart.getChildren( ).addAll( lastBuildIcon, lastBuildDate );
+        return lastBuildInfoPart;
+    }
+
+    private HBox createTimeLeftInfoBox( final BuildTypeData build ) {
+        final HBox lastBuildInfoPart = new HBox(  );
+        lastBuildInfoPart.setSpacing( 5 );
+        lastBuildInfoPart.setAlignment( Pos.CENTER );
+        final ImageView lastBuildIcon = new ImageView( UIUtils.createImage( "timeLeft.png" ) );
+        lastBuildIcon.setPreserveRatio( true );
+        lastBuildIcon.setFitWidth( 32 );
+
+        final Label timeLeftLabel = new Label( );
+        timeLeftLabel.setTextAlignment( TextAlignment.CENTER );
+        timeLeftLabel.setStyle( "-fx-font-weight:bold; -fx-text-fill:white; -fx-font-size:32px;" );
+        timeLeftLabel.setWrapText( true );
+        timeLeftLabel.textProperty( ).bind( createStringBinding( ( ) -> {
+            final java.time.Duration timeLeft = build.timeLeftProperty( ).get( );
+            return (timeLeft.isNegative( ) ? "+ ": "") + (timeLeft.toMinutes( ) + 1) +"\nmin";
+        }, build.timeLeftProperty( ) ) );
+
+        lastBuildInfoPart.getChildren( ).addAll( lastBuildIcon, timeLeftLabel );
+        return lastBuildInfoPart;
+    }
+
+
 
     public void startAnimationOnNode( final Node node ) {
         FadeTransition transition = _registeredTransition.get( node );

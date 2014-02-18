@@ -3,6 +3,7 @@ package utils.teamcity.model.build;
 import javafx.scene.image.Image;
 import org.slf4j.LoggerFactory;
 import utils.teamcity.model.logger.Loggers;
+import utils.teamcity.view.UIUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -19,14 +20,10 @@ public enum BuildImage {
     CLOUD( "weather/cloud.png" ),
     RAIN( "weather/rain.png" ),;
 
-    private Image _image;
+    private final Image _image;
 
     BuildImage( final String path ) {
-        try ( final InputStream is = BuildTypeData.class.getClassLoader( ).getResourceAsStream( path ) ) {
-            _image = new Image( is );
-        } catch ( final IOException e ) {
-            LoggerFactory.getLogger( Loggers.MAIN ).warn( "Unable to load image: ", e );
-        }
+        _image = UIUtils.createImage( path );
     }
 
     public Image getImage( ) {

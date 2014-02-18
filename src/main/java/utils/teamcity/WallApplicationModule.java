@@ -9,7 +9,7 @@ import com.google.inject.Scopes;
  *
  * @author Cedric Longo
  */
-final class WallClientApplicationModule extends AbstractModule {
+final class WallApplicationModule extends AbstractModule {
 
     @Override
     protected void configure( ) {
