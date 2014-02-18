@@ -3,7 +3,6 @@ package utils.teamcity.controller.api;
 import com.google.common.util.concurrent.ListeningScheduledExecutorService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import utils.teamcity.model.build.BuildState;
 import utils.teamcity.model.build.BuildTypeData;
 import utils.teamcity.model.build.IBuildManager;
 import utils.teamcity.model.logger.Loggers;
@@ -34,33 +33,33 @@ public final class ApiMonitoringService implements IApiMonitoringService {
     }
 
     @Override
-    public void start( ) {
-        _executorService.scheduleWithFixedDelay( checkIdleBuildStatus( ), 30, 30, TimeUnit.SECONDS );
-        _executorService.scheduleWithFixedDelay( checkRunningBuildStatus( ), 30, 10, TimeUnit.SECONDS );
+    public void start() {
+        _executorService.scheduleWithFixedDelay( checkIdleBuildStatus(), 30, 30, TimeUnit.SECONDS );
+        _executorService.scheduleWithFixedDelay( checkRunningBuildStatus(), 30, 10, TimeUnit.SECONDS );
         LOGGER.info( "Monitoring service started." );
     }
 
-    private Runnable checkIdleBuildStatus( ) {
-        return ( ) -> {
-            final List<BuildTypeData> monitoredBuilds = _buildManager.getBuildTypeList( ).stream( )
+    private Runnable checkIdleBuildStatus() {
+        return () -> {
+            final List<BuildTypeData> monitoredBuilds = _buildManager.getBuildTypeList().stream()
                     .filter( BuildTypeData::isSelected )
-                    .filter( b -> !b.getLastBuild( BuildState.running ).isPresent( ) )
-                    .collect( Collectors.toList( ) );
+                    .filter( b -> !b.hasRunningBuild() )
+                    .collect( Collectors.toList() );
 
             for ( final BuildTypeData buildType : monitoredBuilds )
-                _apiController.get( ).requestLastBuildStatus( buildType );
+                _apiController.get().requestLastBuildStatus( buildType );
         };
     }
 
-    private Runnable checkRunningBuildStatus( ) {
-        return ( ) -> {
-            final List<BuildTypeData> monitoredBuilds = _buildManager.getBuildTypeList( ).stream( )
+    private Runnable checkRunningBuildStatus() {
+        return () -> {
+            final List<BuildTypeData> monitoredBuilds = _buildManager.getBuildTypeList().stream()
                     .filter( BuildTypeData::isSelected )
-                    .filter( b -> b.getLastBuild( BuildState.running ).isPresent( ) )
-                    .collect( Collectors.toList( ) );
+                    .filter( BuildTypeData::hasRunningBuild )
+                    .collect( Collectors.toList() );
 
             for ( final BuildTypeData buildType : monitoredBuilds )
-                _apiController.get( ).requestLastBuildStatus( buildType );
+                _apiController.get().requestLastBuildStatus( buildType );
         };
     }
 }
