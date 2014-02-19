@@ -24,7 +24,7 @@ public final class UIUtils {
         return null;
     }
 
-    private UIUtils() {
-        throw new UnsupportedOperationException(  );
+    private UIUtils( ) {
+        throw new UnsupportedOperationException( );
     }
 }

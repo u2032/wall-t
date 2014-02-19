@@ -9,13 +9,13 @@ import com.google.gson.annotations.SerializedName;
  */
 final class BuildType {
 
-    @SerializedName("id")
+    @SerializedName( "id" )
     private String _id;
 
-    @SerializedName("name")
+    @SerializedName( "name" )
     private String _name;
 
-    @SerializedName("projectName")
+    @SerializedName( "projectName" )
     private String _projectName;
 
 

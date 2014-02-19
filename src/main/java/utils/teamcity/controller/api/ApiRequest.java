@@ -1,7 +1,5 @@
 package utils.teamcity.controller.api;
 
-import com.google.common.base.Strings;
-
 import java.net.URI;
 
 import static com.google.common.base.Strings.isNullOrEmpty;

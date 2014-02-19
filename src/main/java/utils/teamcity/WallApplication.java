@@ -44,7 +44,7 @@ public final class WallApplication extends Application {
     private final EventBus _eventBus;
     private Stage _primaryStage;
 
-    public WallApplication() {
+    public WallApplication( ) {
         LOGGER.info( "Starting ..." );
         _injector = Guice.createInjector( modules( ) );
         _executorService = _injector.getInstance( ListeningExecutorService.class );
@@ -79,7 +79,7 @@ public final class WallApplication extends Application {
         _primaryStage = primaryStage;
 
         primaryStage.setTitle( "Teamcity Wall" );
-        primaryStage.getIcons().addAll( UIUtils.createImage( "icon.png" ) );
+        primaryStage.getIcons( ).addAll( UIUtils.createImage( "icon.png" ) );
 
         primaryStage.setMinWidth( MIN_WIDTH );
         primaryStage.setMinHeight( MIN_HEIGHT );

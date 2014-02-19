@@ -49,7 +49,7 @@ public final class BuildData {
         return _percentageComplete;
     }
 
-    public Optional<LocalDateTime> getFinishedDate() {
+    public Optional<LocalDateTime> getFinishedDate( ) {
         return _finishedDate;
     }
 

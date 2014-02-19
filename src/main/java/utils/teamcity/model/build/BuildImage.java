@@ -1,12 +1,7 @@
 package utils.teamcity.model.build;
 
 import javafx.scene.image.Image;
-import org.slf4j.LoggerFactory;
-import utils.teamcity.model.logger.Loggers;
 import utils.teamcity.view.UIUtils;
-
-import java.io.IOException;
-import java.io.InputStream;
 
 /**
  * Date: 16/02/14

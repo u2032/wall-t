@@ -33,33 +33,33 @@ public final class ApiMonitoringService implements IApiMonitoringService {
     }
 
     @Override
-    public void start() {
-        _executorService.scheduleWithFixedDelay( checkIdleBuildStatus(), 30, 30, TimeUnit.SECONDS );
-        _executorService.scheduleWithFixedDelay( checkRunningBuildStatus(), 30, 10, TimeUnit.SECONDS );
+    public void start( ) {
+        _executorService.scheduleWithFixedDelay( checkIdleBuildStatus( ), 30, 30, TimeUnit.SECONDS );
+        _executorService.scheduleWithFixedDelay( checkRunningBuildStatus( ), 30, 10, TimeUnit.SECONDS );
         LOGGER.info( "Monitoring service started." );
     }
 
-    private Runnable checkIdleBuildStatus() {
-        return () -> {
-            final List<BuildTypeData> monitoredBuilds = _buildManager.getBuildTypeList().stream()
+    private Runnable checkIdleBuildStatus( ) {
+        return ( ) -> {
+            final List<BuildTypeData> monitoredBuilds = _buildManager.getBuildTypeList( ).stream( )
                     .filter( BuildTypeData::isSelected )
-                    .filter( b -> !b.hasRunningBuild() )
-                    .collect( Collectors.toList() );
+                    .filter( b -> !b.hasRunningBuild( ) )
+                    .collect( Collectors.toList( ) );
 
             for ( final BuildTypeData buildType : monitoredBuilds )
-                _apiController.get().requestLastBuildStatus( buildType );
+                _apiController.get( ).requestLastBuildStatus( buildType );
         };
     }
 
-    private Runnable checkRunningBuildStatus() {
-        return () -> {
-            final List<BuildTypeData> monitoredBuilds = _buildManager.getBuildTypeList().stream()
+    private Runnable checkRunningBuildStatus( ) {
+        return ( ) -> {
+            final List<BuildTypeData> monitoredBuilds = _buildManager.getBuildTypeList( ).stream( )
                     .filter( BuildTypeData::isSelected )
                     .filter( BuildTypeData::hasRunningBuild )
-                    .collect( Collectors.toList() );
+                    .collect( Collectors.toList( ) );
 
             for ( final BuildTypeData buildType : monitoredBuilds )
-                _apiController.get().requestLastBuildStatus( buildType );
+                _apiController.get( ).requestLastBuildStatus( buildType );
         };
     }
 }

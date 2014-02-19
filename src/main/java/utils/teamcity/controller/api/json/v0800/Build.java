@@ -4,12 +4,9 @@ import com.google.gson.annotations.SerializedName;
 import utils.teamcity.controller.api.ApiResponse;
 import utils.teamcity.model.build.BuildStatus;
 
-import java.time.Duration;
 import java.time.LocalDateTime;
-import java.time.chrono.IsoChronology;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
-import java.time.format.ResolverStyle;
 import java.time.temporal.ChronoField;
 
 /**
@@ -19,21 +16,21 @@ import java.time.temporal.ChronoField;
  */
 final class Build implements ApiResponse {
 
-    private static final DateTimeFormatter DATE_TIME_FORMATTER = new DateTimeFormatterBuilder()
-            .parseCaseInsensitive()
+    private static final DateTimeFormatter DATE_TIME_FORMATTER = new DateTimeFormatterBuilder( )
+            .parseCaseInsensitive( )
             .appendValue( ChronoField.YEAR, 4 )
             .appendValue( ChronoField.MONTH_OF_YEAR, 2 )
             .appendValue( ChronoField.DAY_OF_MONTH, 2 )
-            .optionalStart()
+            .optionalStart( )
             .appendLiteral( "T" )
             .appendValue( ChronoField.HOUR_OF_DAY, 2 )
             .appendValue( ChronoField.MINUTE_OF_HOUR, 2 )
             .appendValue( ChronoField.SECOND_OF_MINUTE, 2 )
-            .optionalEnd()
-            .optionalStart()
+            .optionalEnd( )
+            .optionalStart( )
             .appendOffset( "+HHMM", "Z" )
-            .optionalEnd()
-            .toFormatter();
+            .optionalEnd( )
+            .toFormatter( );
 
 
     @SerializedName("id")
@@ -45,39 +42,38 @@ final class Build implements ApiResponse {
     @SerializedName("status")
     private BuildStatus _status = BuildStatus.UNKNOWN;
 
-    @SerializedName( "finishDate" )
+    @SerializedName("finishDate")
     private String _finishedDate;
 
-    @SerializedName("running")
+    @SerializedName( "running" )
     private boolean _running;
 
     @SerializedName( "running-info" )
     private BuildRunningInfo _runningInformation;
 
-    int getId() {
+    int getId( ) {
         return _id;
     }
 
-    String getBuildType() {
+    String getBuildType( ) {
         return _buildType;
     }
 
-    BuildStatus getStatus() {
+    BuildStatus getStatus( ) {
         return _status;
     }
 
-    boolean isRunning() {
+    boolean isRunning( ) {
         return _running;
     }
 
-    BuildRunningInfo getRunningInformation() {
+    BuildRunningInfo getRunningInformation( ) {
         return _runningInformation;
     }
 
-    LocalDateTime getFinishedDate() {
+    LocalDateTime getFinishedDate( ) {
         return _finishedDate == null ? null : LocalDateTime.parse( _finishedDate, DATE_TIME_FORMATTER );
     }
-
 
 
 }
