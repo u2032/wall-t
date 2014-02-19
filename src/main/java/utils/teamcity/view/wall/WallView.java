@@ -26,6 +26,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 
+import static java.lang.Math.abs;
 import static javafx.beans.binding.Bindings.createStringBinding;
 
 /**
@@ -191,7 +192,7 @@ public final class WallView extends GridPane {
         timeLeftLabel.setWrapText( true );
         timeLeftLabel.textProperty( ).bind( createStringBinding( ( ) -> {
             final java.time.Duration timeLeft = build.timeLeftProperty( ).get( );
-            return ( timeLeft.isNegative( ) ? "+ " : "" ) + ( timeLeft.toMinutes( ) + 1 ) + "\nmin";
+            return ( timeLeft.isNegative( ) ? "+ " : "" ) + ( abs( timeLeft.toMinutes( ) ) + 1 ) + "\nmin";
         }, build.timeLeftProperty( ) ) );
 
         lastBuildInfoPart.getChildren( ).addAll( lastBuildIcon, timeLeftLabel );
