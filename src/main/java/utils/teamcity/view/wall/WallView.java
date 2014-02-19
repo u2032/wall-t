@@ -14,10 +14,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.text.TextAlignment;
 import javafx.util.Duration;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import utils.teamcity.model.build.BuildTypeData;
-import utils.teamcity.model.logger.Loggers;
 import utils.teamcity.view.UIUtils;
 
 import javax.inject.Inject;
@@ -37,6 +34,7 @@ import static javafx.beans.binding.Bindings.createStringBinding;
 public final class WallView extends GridPane {
 
     public static final int MAX_BY_COLUMN = 4;
+    public static final int GAP_SPACE = 10;
 
     private final WallViewModel _model;
     private final Map<Node, FadeTransition> _registeredTransition = Maps.newHashMap( );
@@ -45,9 +43,9 @@ public final class WallView extends GridPane {
     public WallView( final WallViewModel model ) {
         _model = model;
 
-        setHgap( 10 );
-        setVgap( 10 );
-        setPadding( new Insets( 10 ) );
+        setHgap( GAP_SPACE );
+        setVgap( GAP_SPACE );
+        setPadding( new Insets( GAP_SPACE ) );
 
         setStyle( "-fx-background-color:black;" );
 
@@ -62,7 +60,7 @@ public final class WallView extends GridPane {
         int y = 0;
         for ( final List<BuildTypeData> buildList : partition ) {
             for ( final BuildTypeData build : buildList ) {
-                createTileForBuildType( build, x, y );
+                createTileForBuildType( build, x, y, nbColums, byColums );
                 y++;
             }
             y = 0;
@@ -70,14 +68,14 @@ public final class WallView extends GridPane {
         }
     }
 
-    private void createTileForBuildType( final BuildTypeData build, final int x, final int y ) {
+    private void createTileForBuildType( final BuildTypeData build, final int x, final int y, final int nbColumns, final int nbRows ) {
         final StackPane tile = new StackPane( );
         tile.setAlignment( Pos.CENTER_LEFT );
         tile.setStyle( "-fx-border-color:white; -fx-border-radius:5;" );
         tile.backgroundProperty( ).bind( build.backgroundProperty( ) );
 
-        tile.prefWidthProperty( ).bind( widthProperty( ) );
-        tile.prefHeightProperty( ).bind( heightProperty( ) );
+        tile.prefWidthProperty( ).bind( widthProperty( ).add( -( nbColumns + 1 ) * GAP_SPACE ).divide( nbColumns ) );
+        tile.prefHeightProperty( ).bind( heightProperty( ).add( -( nbRows + 1 ) * GAP_SPACE ).divide( nbRows ) );
 
         final Pane progressPane = new Pane( );
         progressPane.backgroundProperty( ).bind( build.runningBackgroundProperty( ) );
