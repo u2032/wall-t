@@ -26,7 +26,7 @@ import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
  *
  * @author Cedric Longo
  */
-public class ConfigurationController implements IConfigurationController {
+public final class ConfigurationController implements IConfigurationController {
 
     public static final Logger LOGGER = LoggerFactory.getLogger( Loggers.MAIN );
     private final Configuration _configuration;

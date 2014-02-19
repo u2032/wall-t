@@ -21,7 +21,7 @@ import utils.teamcity.model.logger.Loggers;
  *
  * @author Cedric Longo
  */
-public class ApiResponseHandler<T extends ApiResponse> extends SimpleChannelInboundHandler<HttpObject> {
+public final class ApiResponseHandler<T extends ApiResponse> extends SimpleChannelInboundHandler<HttpObject> {
 
     public static final Logger LOGGER = LoggerFactory.getLogger( Loggers.MAIN );
     private final Class<T> _class;

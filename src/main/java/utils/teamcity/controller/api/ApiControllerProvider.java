@@ -14,7 +14,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  *
  * @author Cedric Longo
  */
-public class ApiControllerProvider implements Provider<IApiController> {
+public final class ApiControllerProvider implements Provider<IApiController> {
 
     private final Configuration _configuration;
     private final Map<ApiVersion, IApiController> _controllerByVersion;

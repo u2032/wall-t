@@ -13,7 +13,7 @@ import utils.teamcity.controller.api.ApiResponse;
  *
  * @author Cedric Longo
  */
-public class ApiPipelineInitializer extends ChannelInitializer<SocketChannel> {
+public final class ApiPipelineInitializer extends ChannelInitializer<SocketChannel> {
 
     private final ApiResponseHandler<? extends ApiResponse> _responseHandler;
 

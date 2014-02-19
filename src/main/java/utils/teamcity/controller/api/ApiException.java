@@ -5,7 +5,7 @@ package utils.teamcity.controller.api;
  *
  * @author Cedric Longo
  */
-public class ApiException extends RuntimeException {
+public final class ApiException extends RuntimeException {
 
     public ApiException( final String message ) {
         super( message );

@@ -19,7 +19,7 @@ import java.nio.file.Paths;
  *
  * @author Cedric Longo
  */
-public class ConfigurationModule extends AbstractModule {
+public final class ConfigurationModule extends AbstractModule {
 
     @Override
     protected void configure( ) {
