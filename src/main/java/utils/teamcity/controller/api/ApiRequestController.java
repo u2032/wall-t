@@ -3,11 +3,15 @@ package utils.teamcity.controller.api;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.SettableFuture;
 import io.netty.bootstrap.Bootstrap;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.handler.codec.base64.Base64;
 import io.netty.handler.codec.http.*;
+import io.netty.util.CharsetUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import utils.teamcity.controller.api.json.ApiVersion;
@@ -62,11 +66,12 @@ final class ApiRequestController implements IApiRequestController {
         httpRequest.headers( ).set( HttpHeaders.Names.CONNECTION, HttpHeaders.Values.CLOSE );
         httpRequest.headers( ).set( HttpHeaders.Names.ACCEPT, "application/json" );
 
-        // FIXME Authentification API
-//            String authString = "truc" + ":" + "machin";
-//            ChannelBuffer authChannelBuffer = Buffers..copiedBuffer(authString, CharsetUtil.UTF_8);
-//            ChannelBuffer encodedAuthChannelBuffer = Base64.encode( authChannelBuffer );
-//            request.headers().set( HttpHeaders.Names.AUTHORIZATION,  "Basic " + encodedAuthChannelBuffer.toString(CharsetUtil.UTF_8));
+        if ( !request.isGuestMode( ) ) {
+            final String authString = request.getUsername( ) + ":" + request.getPassword( );
+            final ByteBuf authChannelBuffer = Unpooled.wrappedBuffer( CharsetUtil.UTF_8.encode( authString ) );
+            final ByteBuf encodedAuthChannelBuffer = Base64.encode( authChannelBuffer );
+            httpRequest.headers( ).set( HttpHeaders.Names.AUTHORIZATION, "Basic " + encodedAuthChannelBuffer.toString( CharsetUtil.UTF_8 ) );
+        }
 
         // Send the HTTP request.
         final ChannelFuture ch = b.connect( request.getHost( ), request.getPort( ) );

@@ -1,6 +1,10 @@
 package utils.teamcity.controller.api;
 
+import com.google.common.base.Strings;
+
 import java.net.URI;
+
+import static com.google.common.base.Strings.isNullOrEmpty;
 
 /**
  * Date: 16/02/14
@@ -8,6 +12,8 @@ import java.net.URI;
  * @author Cedric Longo
  */
 public final class ApiRequest {
+
+    public static final String GUEST_USER = "guest";
 
     private final URI _serverUrl;
     private final String _username;
@@ -38,8 +44,20 @@ public final class ApiRequest {
         return _serverUrl.toString( );
     }
 
+    public String getUsername( ) {
+        return _username;
+    }
+
+    public String getPassword( ) {
+        return _password;
+    }
+
+    public boolean isGuestMode( ) {
+        return GUEST_USER.equals( _username );
+    }
+
     @Override
     public String toString( ) {
-        return "ApiRequest{" + " '" + _serverUrl + "' }";
+        return "ApiRequest{" + " '" + _serverUrl + "', user:" + _username + ( isNullOrEmpty( getPassword( ) ) ? " with no password" : " with password" ) + " }";
     }
 }

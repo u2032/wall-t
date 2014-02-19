@@ -16,11 +16,12 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public final class ApiRequestBuilder {
 
+
     private static final String API_URL_FORMAT = "%s/%s/app/rest/%s/%s";
 
     private String _serverUrl = "";
     private String _path = "";
-    private String _username = "guest";
+    private String _username = ApiRequest.GUEST_USER;
     private String _password = "";
     private ApiVersion _version;
 
@@ -48,6 +49,7 @@ public final class ApiRequestBuilder {
     public ApiRequestBuilder forUser( final String username ) {
         if ( !Strings.isNullOrEmpty( username ) )
             _username = username;
+        else _username = ApiRequest.GUEST_USER;
         return this;
     }
 
@@ -64,7 +66,7 @@ public final class ApiRequestBuilder {
     public ApiRequest build( ) {
         checkNotNull( _version, "Api version is not defined." );
 
-        final String apiAuthMode = "guest".equalsIgnoreCase( _username ) ? "guestAuth" : "httpAuth";
+        final String apiAuthMode = isGuestMode( ) ? "guestAuth" : "httpAuth";
         final String url = String.format( API_URL_FORMAT, _serverUrl, apiAuthMode, _version.getIdentifier( ), _path );
 
         try {
@@ -78,6 +80,10 @@ public final class ApiRequestBuilder {
             throw new IllegalArgumentException( "Unable to build api request: format is not uri-valid for '" + url + "'", e );
         }
 
+    }
+
+    private boolean isGuestMode( ) {
+        return ApiRequest.GUEST_USER.equals( _username );
     }
 
 }
