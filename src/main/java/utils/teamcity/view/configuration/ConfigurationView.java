@@ -90,6 +90,7 @@ public final class ConfigurationView extends BorderPane {
         serverUrlLine( grid );
         credentialsLine( grid );
         apiVersionLine( grid );
+        nbRowsByColumnComboBox( grid );
 
         final ColumnConstraints noConstraint = new ColumnConstraints( );
         final ColumnConstraints rightAlignementConstraint = new ColumnConstraints( );
@@ -152,7 +153,18 @@ public final class ConfigurationView extends BorderPane {
         apiVersionBox.getSelectionModel( ).select( _model.getApiVersion( ) );
         apiVersionBox.getSelectionModel( ).selectedItemProperty( ).addListener( ( o, oldValue, newValue ) -> _model.requestNewApiVersion( newValue ) );
         lineLabel.setLabelFor( apiVersionBox );
-        parent.add( apiVersionBox, 1, 2, 3, 1 );
+        parent.add( apiVersionBox, 1, 2 );
+    }
+
+    private void nbRowsByColumnComboBox( final GridPane parent ) {
+        final Label lineLabel = new Label( "Max by column:" );
+        parent.add( lineLabel, 2, 2 );
+
+        final ComboBox<Integer> apiVersionBox = new ComboBox<>( FXCollections.observableArrayList( 1, 2, 3, 4, 5, 6, 7, 8 ) );
+        apiVersionBox.getSelectionModel( ).select( (Integer) _model.maxRowByColumnProperty( ).get( ) );
+        apiVersionBox.getSelectionModel( ).selectedItemProperty( ).addListener( ( o, oldValue, newValue ) -> _model.maxRowByColumnProperty( ).setValue( newValue ) );
+        lineLabel.setLabelFor( apiVersionBox );
+        parent.add( apiVersionBox, 3, 2 );
     }
 
     private TableView<BuildTypeData> buildTableView( ) {

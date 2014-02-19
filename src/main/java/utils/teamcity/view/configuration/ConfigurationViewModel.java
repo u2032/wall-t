@@ -5,12 +5,10 @@ import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import javafx.application.Platform;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
+import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import utils.teamcity.controller.api.IApiController;
 import utils.teamcity.controller.api.json.ApiVersion;
@@ -23,8 +21,6 @@ import utils.teamcity.view.wall.WallScene;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.concurrent.Callable;
 
 import static com.google.common.util.concurrent.Futures.addCallback;
@@ -36,11 +32,15 @@ import static com.google.common.util.concurrent.Futures.addCallback;
  */
 final class ConfigurationViewModel {
 
+    public static final Logger LOGGER = LoggerFactory.getLogger( Loggers.MAIN );
     private final StringProperty _serverUrl = new SimpleStringProperty( );
     private final StringProperty _credentialsUser = new SimpleStringProperty( );
     private final StringProperty _credentialsPassword = new SimpleStringProperty( );
     private final BooleanProperty _loadingBuild = new SimpleBooleanProperty( false );
+    private final IntegerProperty _maxRowByColumn = new SimpleIntegerProperty( );
+
     private final ObservableList<BuildTypeData> _buildTypes = FXCollections.observableArrayList( );
+
     private final Configuration _configuration;
     private final Provider<IApiController> _apiController;
     private final ListeningExecutorService _executorService;
@@ -57,32 +57,16 @@ final class ConfigurationViewModel {
         updateBuildTypeList( );
 
         _serverUrl.setValue( configuration.getServerUrl( ) );
-        _serverUrl.addListener( ( object, oldValue, newValue ) -> {
-            if ( checkUrlServerIsValid( newValue ) ) configuration.setServerUrl( newValue );
-        } );
+        _serverUrl.addListener( ( object, oldValue, newValue ) -> configuration.setServerUrl( newValue ) );
 
         _credentialsUser.setValue( configuration.getCredentialsUser( ) );
         _credentialsUser.addListener( ( object, oldValue, newValue ) -> configuration.setCredentialsUser( newValue ) );
 
         _credentialsPassword.setValue( configuration.getCredentialsPassword( ) );
         _credentialsPassword.addListener( ( object, oldValue, newValue ) -> configuration.setCredentialsPassword( newValue ) );
-    }
 
-    private static boolean checkUrlServerIsValid( final String url ) {
-        try {
-            final URI uri = new URI( url );
-
-            final String scheme = uri.getScheme( );
-            if ( scheme == null )
-                return false;
-
-            if ( !"http".equalsIgnoreCase( scheme ) && !"https".equalsIgnoreCase( scheme ) )
-                return false;
-
-        } catch ( URISyntaxException ignored ) {
-            return false;
-        }
-        return true;
+        _maxRowByColumn.setValue( configuration.getMaxRowsByColumn( ) );
+        _maxRowByColumn.addListener( ( object, oldValue, newValue ) -> configuration.setMaxRowsByColumn( newValue.intValue( ) ) );
     }
 
     public StringProperty serverUrlProperty( ) {
@@ -99,6 +83,10 @@ final class ConfigurationViewModel {
 
     BooleanProperty loadingBuildProperty( ) {
         return _loadingBuild;
+    }
+
+    IntegerProperty maxRowByColumnProperty( ) {
+        return _maxRowByColumn;
     }
 
     ObservableList<BuildTypeData> getBuildTypes( ) {
@@ -158,7 +146,7 @@ final class ConfigurationViewModel {
     }
 
     public void requestNewApiVersion( final ApiVersion newValue ) {
-        LoggerFactory.getLogger( Loggers.MAIN ).info( "Switching to api version: " + newValue.getIdentifier( ) );
+        LOGGER.info( "Switching to api version: " + newValue.getIdentifier( ) );
         _configuration.setApiVersion( newValue );
     }
 }

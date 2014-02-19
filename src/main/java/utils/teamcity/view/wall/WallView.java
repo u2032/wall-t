@@ -15,6 +15,7 @@ import javafx.scene.layout.*;
 import javafx.scene.text.TextAlignment;
 import javafx.util.Duration;
 import utils.teamcity.model.build.BuildTypeData;
+import utils.teamcity.model.configuration.Configuration;
 import utils.teamcity.view.UIUtils;
 
 import javax.inject.Inject;
@@ -33,14 +34,13 @@ import static javafx.beans.binding.Bindings.createStringBinding;
  */
 public final class WallView extends GridPane {
 
-    public static final int MAX_BY_COLUMN = 4;
     public static final int GAP_SPACE = 10;
 
     private final WallViewModel _model;
     private final Map<Node, FadeTransition> _registeredTransition = Maps.newHashMap( );
 
     @Inject
-    public WallView( final WallViewModel model ) {
+    public WallView( final WallViewModel model, final Configuration configuration ) {
         _model = model;
 
         setHgap( GAP_SPACE );
@@ -51,8 +51,11 @@ public final class WallView extends GridPane {
 
         setAlignment( Pos.CENTER );
 
+        // CODEREVIEW Do not link directly to model, use ModelView ?
         final ObservableList<BuildTypeData> builds = _model.getBuilds( );
-        final int nbColums = builds.size( ) / MAX_BY_COLUMN + ( ( builds.size( ) % MAX_BY_COLUMN > 0 ? 1 : 0 ) );
+
+        final int maxRowsByColumn = configuration.getMaxRowsByColumn( );
+        final int nbColums = builds.size( ) / maxRowsByColumn + ( ( builds.size( ) % maxRowsByColumn > 0 ? 1 : 0 ) );
         final int byColums = builds.size( ) / nbColums + ( ( builds.size( ) % nbColums > 0 ? 1 : 0 ) );
 
         final Iterable<List<BuildTypeData>> partition = Iterables.partition( builds, byColums );

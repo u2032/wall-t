@@ -25,6 +25,9 @@ public final class Configuration {
     @SerializedName("api_version")
     private ApiVersion _apiVersion = ApiVersion.API_8_0;
 
+    @SerializedName( "pref_max_rows_by_column" )
+    private int _maxRowsByColumn = 4;
+
     @SerializedName("monitored_builds")
     private List<SavedBuildData> _savedBuilds = Lists.newArrayList( );
 
@@ -64,7 +67,15 @@ public final class Configuration {
         return _apiVersion;
     }
 
-    public void setApiVersion( ApiVersion apiVersion ) {
+    public int getMaxRowsByColumn( ) {
+        return _maxRowsByColumn;
+    }
+
+    public void setMaxRowsByColumn( final int maxRowsByColumn ) {
+        _maxRowsByColumn = maxRowsByColumn;
+    }
+
+    public void setApiVersion( final ApiVersion apiVersion ) {
         _apiVersion = apiVersion;
     }
 }
