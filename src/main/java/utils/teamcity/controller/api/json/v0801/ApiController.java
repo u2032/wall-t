@@ -1,4 +1,4 @@
-package utils.teamcity.controller.api.json.v0800;
+package utils.teamcity.controller.api.json.v0801;
 
 import com.google.common.base.Function;
 import com.google.common.util.concurrent.FutureCallback;
@@ -22,7 +22,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.google.common.util.concurrent.Futures.addCallback;
-import static utils.teamcity.controller.api.json.ApiVersion.API_8_0;
+import static utils.teamcity.controller.api.json.ApiVersion.API_8_1;
 
 /**
  * Date: 15/02/14
@@ -32,7 +32,7 @@ import static utils.teamcity.controller.api.json.ApiVersion.API_8_0;
 public final class ApiController implements IApiController {
 
     public static final Logger LOGGER = LoggerFactory.getLogger( Loggers.MAIN );
-    public static final int MAX_BUILDS_TO_CONSIDER = 5;
+    private static final int MAX_BUILDS_TO_CONSIDER = 5;
     private final IBuildManager _buildManager;
     private final IApiRequestController _apiRequestController;
 
@@ -44,7 +44,7 @@ public final class ApiController implements IApiController {
 
     @Override
     public ListenableFuture<Void> loadBuildList( ) {
-        final ListenableFuture<BuildTypeList> buildListFuture = _apiRequestController.sendRequest( API_8_0, "buildTypes", BuildTypeList.class );
+        final ListenableFuture<BuildTypeList> buildListFuture = _apiRequestController.sendRequest( API_8_1, "buildTypes", BuildTypeList.class );
         addCallback( buildListFuture, new FutureCallback<BuildTypeList>( ) {
             @Override
             public void onSuccess( final BuildTypeList result ) {
@@ -65,12 +65,27 @@ public final class ApiController implements IApiController {
 
     @Override
     public void requestQueuedBuilds( ) {
-        // Do nothing : API 8.0 doesn't support requesting build queue
+        final ListenableFuture<QueuedBuildList> buildQueueFuture = _apiRequestController.sendRequest( API_8_1, "buildQueue", QueuedBuildList.class );
+        addCallback( buildQueueFuture, new FutureCallback<QueuedBuildList>( ) {
+            @Override
+            public void onSuccess( final QueuedBuildList queuedBuildList ) {
+                final List<String> buildTypesInQueue = queuedBuildList.getQueueBuild( ).stream( )
+                        .map( QueueBuild::getBuildTypeId )
+                        .collect( Collectors.toList( ) );
+                _buildManager.registerBuildTypesInQueue( buildTypesInQueue );
+            }
+
+            @Override
+            public void onFailure( final Throwable throwable ) {
+                LOGGER.error( "Error during loading build queue:", throwable );
+            }
+        } );
     }
+
 
     @Override
     public void requestLastBuildStatus( final BuildTypeData buildType ) {
-        final ListenableFuture<BuildList> buildListFuture = _apiRequestController.sendRequest( API_8_0, "builds/?locator=buildType:" + buildType.getId( ) + ",running:any,count:" + MAX_BUILDS_TO_CONSIDER, BuildList.class );
+        final ListenableFuture<BuildList> buildListFuture = _apiRequestController.sendRequest( API_8_1, "builds/?locator=buildType:" + buildType.getId( ) + ",running:any,count:" + MAX_BUILDS_TO_CONSIDER, BuildList.class );
         addCallback( buildListFuture, new FutureCallback<BuildList>( ) {
             @Override
             public void onSuccess( final BuildList result ) {
@@ -89,7 +104,7 @@ public final class ApiController implements IApiController {
                 } );
 
                 for ( final Build build : buildToRequest ) {
-                    final ListenableFuture<Build> buildStatusFuture = _apiRequestController.sendRequest( API_8_0, "builds/id:" + build.getId( ), Build.class );
+                    final ListenableFuture<Build> buildStatusFuture = _apiRequestController.sendRequest( API_8_1, "builds/id:" + build.getId( ), Build.class );
                     addCallback( buildStatusFuture, registerBuildStatus( buildType, build ) );
                 }
             }
@@ -117,9 +132,9 @@ public final class ApiController implements IApiController {
 
     private final Function<Build, BuildData> _toBuildData = build ->
             new BuildData( build.getId( ), build.getBuildType( ), build.getStatus( ),
-                    build.isRunning( ) ? BuildState.running : BuildState.finished,
-                    build.isRunning( ) ? build.getRunningInformation( ).getPercentageComplete( ) : 100,
+                    build.getState( ),
+                    build.getState( ) == BuildState.running ? build.getRunningInformation( ).getPercentageComplete( ) : 100,
                     Optional.ofNullable( build.getFinishedDate( ) ),
-                    build.isRunning( ) ? Duration.of( build.getRunningInformation( ).getEstimatedTotalTime( ) - build.getRunningInformation( ).getElapsedTime( ), ChronoUnit.SECONDS ) : Duration.ZERO );
+                    build.getState( ) == BuildState.running ? Duration.of( build.getRunningInformation( ).getEstimatedTotalTime( ) - build.getRunningInformation( ).getElapsedTime( ), ChronoUnit.SECONDS ) : Duration.ZERO );
 
 }

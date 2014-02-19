@@ -8,7 +8,6 @@ package utils.teamcity.model.build;
 public enum BuildState {
 
     finished,
-    running,
-    queued;
+    running;
 
 }

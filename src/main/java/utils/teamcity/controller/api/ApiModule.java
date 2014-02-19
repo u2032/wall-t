@@ -8,7 +8,6 @@ import com.google.inject.Singleton;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import utils.teamcity.controller.api.json.ApiVersion;
-import utils.teamcity.controller.api.json.v0800.ApiController;
 
 import java.util.Map;
 
@@ -33,10 +32,14 @@ public final class ApiModule extends AbstractModule {
         return new NioEventLoopGroup( Runtime.getRuntime( ).availableProcessors( ) * 4 );
     }
 
+    @SuppressWarnings( { "UnnecessaryFullyQualifiedName", "TypeMayBeWeakened" } )
     @Provides
     @Singleton
-    public Map<ApiVersion, IApiController> controllerByApiVersion( final ApiController apiController0800 ) {
-        return ImmutableMap.<ApiVersion, IApiController>of(
-                ApiVersion.API_8_0, apiController0800 );
+    public Map<ApiVersion, IApiController> controllerByApiVersion(
+            final utils.teamcity.controller.api.json.v0800.ApiController apiController0800,
+            final utils.teamcity.controller.api.json.v0801.ApiController apiController0801 ) {
+        return ImmutableMap.of(
+                ApiVersion.API_8_0, apiController0800,
+                ApiVersion.API_8_1, apiController0801 );
     }
 }

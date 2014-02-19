@@ -15,6 +15,7 @@ public interface IBuildManager {
 
     void registerBuildTypes( List<BuildTypeData> typeList );
 
-    List<BuildTypeData> getBuildTypeList( );
+    void registerBuildTypesInQueue( List<String> buildTypesInQueue );
 
+    List<BuildTypeData> getBuildTypeList( );
 }

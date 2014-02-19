@@ -1,8 +1,9 @@
-package utils.teamcity.controller.api.json.v0800;
+package utils.teamcity.controller.api.json.v0801;
 
 import com.google.gson.annotations.SerializedName;
 import utils.teamcity.controller.api.ApiResponse;
 import utils.teamcity.controller.api.json.ApiUtils;
+import utils.teamcity.model.build.BuildState;
 import utils.teamcity.model.build.BuildStatus;
 
 import java.time.LocalDateTime;
@@ -14,20 +15,20 @@ import java.time.LocalDateTime;
  */
 final class Build implements ApiResponse {
 
-    @SerializedName("id")
+    @SerializedName( "id" )
     private int _id;
 
-    @SerializedName("buildTypeId")
+    @SerializedName( "buildTypeId" )
     private String _buildType;
 
-    @SerializedName("status")
+    @SerializedName( "status" )
     private BuildStatus _status = BuildStatus.UNKNOWN;
 
-    @SerializedName("finishDate")
-    private String _finishedDate;
+    @SerializedName( "state" )
+    private BuildState _state;
 
-    @SerializedName( "running" )
-    private boolean _running;
+    @SerializedName( "finishDate" )
+    private String _finishedDate;
 
     @SerializedName( "running-info" )
     private BuildRunningInfo _runningInformation;
@@ -44,8 +45,8 @@ final class Build implements ApiResponse {
         return _status;
     }
 
-    boolean isRunning( ) {
-        return _running;
+    BuildState getState( ) {
+        return _state;
     }
 
     BuildRunningInfo getRunningInformation( ) {

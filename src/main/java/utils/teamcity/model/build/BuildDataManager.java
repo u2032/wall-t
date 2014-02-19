@@ -57,6 +57,21 @@ final class BuildDataManager implements IBuildManager {
     }
 
     @Override
+    public void registerBuildTypesInQueue( final List<String> buildTypesIdInQueue ) {
+        // Setting all queued property to false
+        _buildTypes.stream( ).forEach( buildTypeData -> {
+            buildTypeData.queuedProperty( ).setValue( false );
+        } );
+        // Setting queued property for builds in queue
+        for ( final String buildTypeId : buildTypesIdInQueue ) {
+            final Optional<BuildTypeData> build = getBuild( buildTypeId );
+            if ( !build.isPresent( ) )
+                continue;
+            build.get( ).queuedProperty( ).setValue( true );
+        }
+    }
+
+    @Override
     public List<BuildTypeData> getBuildTypeList( ) {
         return ImmutableList.copyOf( _buildTypes );
     }

@@ -1,4 +1,4 @@
-package utils.teamcity.controller.api.json.v0800;
+package utils.teamcity.controller.api.json.v0801;
 
 import com.google.gson.annotations.SerializedName;
 import utils.teamcity.controller.api.ApiResponse;
@@ -13,10 +13,10 @@ import java.util.List;
  */
 final class BuildTypeList implements ApiResponse {
 
-    @SerializedName("buildType")
+    @SerializedName( "buildType" )
     private List<BuildType> _builds = Collections.emptyList( );
 
-    List<BuildType> getBuildTypes( ) {
+    public List<BuildType> getBuildTypes( ) {
         return _builds;
     }
 }

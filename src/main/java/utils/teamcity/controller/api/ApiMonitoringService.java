@@ -36,6 +36,7 @@ public final class ApiMonitoringService implements IApiMonitoringService {
     public void start( ) {
         _executorService.scheduleWithFixedDelay( checkIdleBuildStatus( ), 30, 30, TimeUnit.SECONDS );
         _executorService.scheduleWithFixedDelay( checkRunningBuildStatus( ), 30, 10, TimeUnit.SECONDS );
+        _executorService.scheduleWithFixedDelay( checkQueuedBuildStatus( ), 30, 10, TimeUnit.SECONDS );
         LOGGER.info( "Monitoring service started." );
     }
 
@@ -60,6 +61,12 @@ public final class ApiMonitoringService implements IApiMonitoringService {
 
             for ( final BuildTypeData buildType : monitoredBuilds )
                 _apiController.get( ).requestLastBuildStatus( buildType );
+        };
+    }
+
+    private Runnable checkQueuedBuildStatus( ) {
+        return ( ) -> {
+            _apiController.get( ).requestQueuedBuilds( );
         };
     }
 }

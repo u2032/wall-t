@@ -7,9 +7,8 @@ package utils.teamcity.controller.api.json;
  */
 public enum ApiVersion {
 
-    API_8_0( "8.0" ),
-//    API_8_1( "8.1" )
-    ;
+    API_8_1( "8.1" ),
+    API_8_0( "8.0" ),;
 
     private final String _identifier;
 

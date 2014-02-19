@@ -24,4 +24,10 @@ public interface IApiController {
      */
     void requestLastBuildStatus( final BuildTypeData buildType );
 
+
+    /**
+     * Request build types in queue and flag them into IBuildManager
+     */
+    void requestQueuedBuilds( );
+
 }
