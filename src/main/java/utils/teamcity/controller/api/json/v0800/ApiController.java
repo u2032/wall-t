@@ -16,9 +16,7 @@ import utils.teamcity.model.logger.Loggers;
 
 import javax.inject.Inject;
 import java.time.Duration;
-import java.time.temporal.ChronoField;
 import java.time.temporal.ChronoUnit;
-import java.time.temporal.TemporalUnit;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -117,6 +115,6 @@ public final class ApiController implements IApiController {
                     build.isRunning( ) ? BuildState.running : BuildState.finished,
                     build.isRunning( ) ? build.getRunningInformation( ).getPercentageComplete( ) : 100,
                     Optional.ofNullable( build.getFinishedDate( ) ),
-                    Duration.of( build.getEstimatedTime() - build.getElapsedTime(), ChronoUnit.SECONDS ));
+                    build.isRunning( ) ? Duration.of( build.getRunningInformation( ).getEstimatedTotalTime( ) - build.getRunningInformation( ).getElapsedTime( ), ChronoUnit.SECONDS ) : Duration.ZERO );
 
 }

@@ -48,12 +48,6 @@ final class Build implements ApiResponse {
     @SerializedName( "finishDate" )
     private String _finishedDate;
 
-    @SerializedName( "estimatedTotalSeconds" )
-    private int _estimatedTime;
-
-    @SerializedName( "elapsedSeconds" )
-    private int _elapsedTime;
-
     @SerializedName("running")
     private boolean _running;
 
@@ -84,11 +78,6 @@ final class Build implements ApiResponse {
         return _finishedDate == null ? null : LocalDateTime.parse( _finishedDate, DATE_TIME_FORMATTER );
     }
 
-    int getEstimatedTime() {
-        return _estimatedTime;
-    }
 
-    int getElapsedTime() {
-        return _elapsedTime;
-    }
+
 }

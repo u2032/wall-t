@@ -5,16 +5,13 @@ import com.google.common.collect.Maps;
 import javafx.animation.FadeTransition;
 import javafx.animation.RotateTransition;
 import javafx.animation.Timeline;
-import javafx.beans.binding.Bindings;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
-import javafx.scene.text.Font;
 import javafx.scene.text.TextAlignment;
 import javafx.util.Duration;
 import org.slf4j.Logger;
@@ -24,16 +21,11 @@ import utils.teamcity.model.logger.Loggers;
 import utils.teamcity.view.UIUtils;
 
 import javax.inject.Inject;
-import java.io.IOException;
-import java.io.InputStream;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Callable;
 
-import static javafx.beans.binding.Bindings.createBooleanBinding;
 import static javafx.beans.binding.Bindings.createStringBinding;
 
 /**
@@ -43,8 +35,8 @@ import static javafx.beans.binding.Bindings.createStringBinding;
  */
 public final class WallView extends GridPane {
 
-    public static final int MAX_BY_COLUMN = 5;
-    public static final Logger LOGGER = LoggerFactory.getLogger( Loggers.MAIN );
+    public static final int MAX_BY_COLUMN = 4;
+
     private final WallViewModel _model;
     private final Map<Node, FadeTransition> _registeredTransition = Maps.newHashMap( );
 
@@ -124,11 +116,11 @@ public final class WallView extends GridPane {
         contextPart.setMaxWidth( 150 );
         contextPart.setAlignment( Pos.CENTER );
 
-        final HBox statusBox = new HBox(  );
+        final HBox statusBox = new HBox( );
         statusBox.setAlignment( Pos.CENTER );
         statusBox.setSpacing( 5 );
 
-        final ImageView queuedIcon = new ImageView( UIUtils.createImage( "queued.png" ));
+        final ImageView queuedIcon = new ImageView( UIUtils.createImage( "queued.png" ) );
         queuedIcon.setPreserveRatio( true );
         queuedIcon.setFitWidth( 50 );
         queuedIcon.visibleProperty( ).bind( build.queuedProperty( ) );
@@ -142,7 +134,7 @@ public final class WallView extends GridPane {
         image.setPreserveRatio( true );
         image.setFitWidth( 90 );
         image.imageProperty( ).bind( build.imageProperty( ) );
-        statusBox.getChildren( ).addAll(queuedIcon, image );
+        statusBox.getChildren( ).addAll( queuedIcon, image );
 
         final HBox lastBuildInfoPart = createLastBuildInfoBox( build );
         lastBuildInfoPart.visibleProperty( ).bind( build.runningProperty( ).not( ) );
@@ -150,7 +142,7 @@ public final class WallView extends GridPane {
         final HBox timeLeftInfoBox = createTimeLeftInfoBox( build );
         timeLeftInfoBox.visibleProperty( ).bind( build.runningProperty( ) );
 
-        final StackPane infoBox = new StackPane(lastBuildInfoPart, timeLeftInfoBox );
+        final StackPane infoBox = new StackPane( lastBuildInfoPart, timeLeftInfoBox );
         infoBox.setAlignment( Pos.CENTER );
 
         contextPart.getChildren( ).addAll( statusBox, infoBox );
@@ -158,7 +150,7 @@ public final class WallView extends GridPane {
     }
 
     private HBox createLastBuildInfoBox( final BuildTypeData build ) {
-        final HBox lastBuildInfoPart = new HBox(  );
+        final HBox lastBuildInfoPart = new HBox( );
         lastBuildInfoPart.setSpacing( 5 );
         lastBuildInfoPart.setAlignment( Pos.CENTER );
 
@@ -167,6 +159,7 @@ public final class WallView extends GridPane {
         lastBuildIcon.setFitWidth( 32 );
 
         final Label lastBuildDate = new Label( );
+        lastBuildDate.setMinWidth( 110 );
         lastBuildDate.setTextAlignment( TextAlignment.CENTER );
         lastBuildDate.setAlignment( Pos.CENTER );
         lastBuildDate.setStyle( "-fx-font-weight:bold; -fx-text-fill:white; -fx-font-size:32px;" );
@@ -183,7 +176,7 @@ public final class WallView extends GridPane {
     }
 
     private HBox createTimeLeftInfoBox( final BuildTypeData build ) {
-        final HBox lastBuildInfoPart = new HBox(  );
+        final HBox lastBuildInfoPart = new HBox( );
         lastBuildInfoPart.setSpacing( 5 );
         lastBuildInfoPart.setAlignment( Pos.CENTER );
         final ImageView lastBuildIcon = new ImageView( UIUtils.createImage( "timeLeft.png" ) );
@@ -191,18 +184,19 @@ public final class WallView extends GridPane {
         lastBuildIcon.setFitWidth( 32 );
 
         final Label timeLeftLabel = new Label( );
+        timeLeftLabel.setMinWidth( 110 );
         timeLeftLabel.setTextAlignment( TextAlignment.CENTER );
+        timeLeftLabel.setAlignment( Pos.CENTER );
         timeLeftLabel.setStyle( "-fx-font-weight:bold; -fx-text-fill:white; -fx-font-size:32px;" );
         timeLeftLabel.setWrapText( true );
         timeLeftLabel.textProperty( ).bind( createStringBinding( ( ) -> {
             final java.time.Duration timeLeft = build.timeLeftProperty( ).get( );
-            return (timeLeft.isNegative( ) ? "+ ": "") + (timeLeft.toMinutes( ) + 1) +"\nmin";
+            return ( timeLeft.isNegative( ) ? "+ " : "" ) + ( timeLeft.toMinutes( ) + 1 ) + "\nmin";
         }, build.timeLeftProperty( ) ) );
 
         lastBuildInfoPart.getChildren( ).addAll( lastBuildIcon, timeLeftLabel );
         return lastBuildInfoPart;
     }
-
 
 
     public void startAnimationOnNode( final Node node ) {
@@ -213,6 +207,7 @@ public final class WallView extends GridPane {
             transition.setToValue( 0.5 );
             transition.setCycleCount( Timeline.INDEFINITE );
             transition.setAutoReverse( true );
+            transition.setOnFinished( ( ae ) -> node.setOpacity( 1 ) );
             _registeredTransition.put( node, transition );
         }
         transition.play( );
