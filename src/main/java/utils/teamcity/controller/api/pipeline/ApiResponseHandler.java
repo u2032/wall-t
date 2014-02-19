@@ -5,10 +5,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
-import io.netty.handler.codec.http.HttpContent;
-import io.netty.handler.codec.http.HttpObject;
-import io.netty.handler.codec.http.HttpResponse;
-import io.netty.handler.codec.http.HttpResponseStatus;
+import io.netty.handler.codec.http.*;
 import io.netty.util.CharsetUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,6 +34,11 @@ public final class ApiResponseHandler<T extends ApiResponse> extends SimpleChann
         if ( httpObject instanceof HttpResponse ) {
             final HttpResponse response = (HttpResponse) httpObject;
             final HttpResponseStatus status = response.getStatus( );
+            if ( isRedirection( status ) ) {
+                // TODO Handle Redirection properly
+                final String redirectTo = response.headers( ).get( HttpHeaders.Names.LOCATION );
+            }
+            /* else */
             if ( !HttpResponseStatus.OK.equals( status ) ) {
                 _responseFuture.setException( new ApiException( "Api response status code: " + status.code( ) + " (" + status.reasonPhrase( ) + ")" ) );
                 return;
@@ -52,6 +54,16 @@ public final class ApiResponseHandler<T extends ApiResponse> extends SimpleChann
             final T jsonResponse = gson.fromJson( jsonContent, _class );
             _responseFuture.set( jsonResponse );
         }
+    }
+
+    private boolean isRedirection( final HttpResponseStatus status ) {
+        if ( HttpResponseStatus.MOVED_PERMANENTLY.equals( status ) )
+            return true;
+        if ( HttpResponseStatus.FOUND.equals( status ) )
+            return true;
+        if ( HttpResponseStatus.TEMPORARY_REDIRECT.equals( status ) )
+            return true;
+        return false;
     }
 
 }

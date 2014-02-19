@@ -41,7 +41,6 @@ final class ApiRequestController implements IApiRequestController {
 
     @Override
     public <T extends ApiResponse> ListenableFuture<T> sendRequest( final ApiVersion version, final String path, final Class<T> expectedType ) {
-
         final ApiRequest request = ApiRequestBuilder.newRequest( )
                 .to( _configuration.getServerUrl( ) )
                 .forUser( _configuration.getCredentialsUser( ) )

@@ -25,7 +25,7 @@ public final class ApiPipelineInitializer extends ChannelInitializer<SocketChann
     protected void initChannel( final SocketChannel socketChannel ) throws Exception {
         final ChannelPipeline pipeline = socketChannel.pipeline( );
 //        pipeline.addLast( "loggingHandler", new LoggingHandler( LogLevel.INFO ) );
-        // FIXME SSL Problem
+        // TODO Support SSL
 //                        if ( ssl ) {
 //                            final SSLEngine engine =
 //                                    SecureChatSslContextFactory.getClientContext().createSSLEngine();
