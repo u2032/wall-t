@@ -13,20 +13,26 @@ import java.util.List;
  */
 public final class Configuration {
 
-    @SerializedName("server_url")
+    @SerializedName("server.url")
     private String _serverUrl;
 
-    @SerializedName("credentials_user")
+    @SerializedName("credentials.user")
     private String _credentialsUser = "guest";
 
-    @SerializedName("credentials_password")
+    @SerializedName("credentials.password")
     private String _credentialsPassword;
 
-    @SerializedName("api_version")
+    @SerializedName("api.version")
     private ApiVersion _apiVersion = ApiVersion.API_8_0;
 
-    @SerializedName( "pref_max_rows_by_column" )
+    @SerializedName("pref.max.tiles.by.column")
     private int _maxRowsByColumn = 4;
+
+    @SerializedName( "pref.max.tiles.by.screen" )
+    private int _maxTilesByScreen = 16;
+
+    @SerializedName( "pref.light.mode" )
+    private boolean _lightMode;
 
     @SerializedName("monitored_builds")
     private List<SavedBuildData> _savedBuilds = Lists.newArrayList( );
@@ -77,5 +83,21 @@ public final class Configuration {
 
     public void setApiVersion( final ApiVersion apiVersion ) {
         _apiVersion = apiVersion;
+    }
+
+    public int getMaxTilesByScreen( ) {
+        return _maxTilesByScreen;
+    }
+
+    public void setMaxTilesByScreen( final int maxTilesByScreen ) {
+        _maxTilesByScreen = maxTilesByScreen;
+    }
+
+    public boolean isLightMode( ) {
+        return _lightMode;
+    }
+
+    public void setLightMode( final boolean lightMode ) {
+        _lightMode = lightMode;
     }
 }

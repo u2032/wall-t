@@ -70,6 +70,10 @@ public final class ConfigurationView extends BorderPane {
         VBox.setVgrow( buildList, Priority.SOMETIMES );
         content.getChildren( ).add( buildList );
 
+        final GridPane preferenceConfigurationPane = preferenceConfigurationPane( );
+        content.widthProperty( ).addListener( ( o, oldValue, newValue ) -> preferenceConfigurationPane.setMaxWidth( newValue.doubleValue( ) * 0.8 ) );
+        content.getChildren( ).add( preferenceConfigurationPane );
+
         final Button swithToWallButton = new Button( "Switch to wall" );
         swithToWallButton.setOnAction( ( event ) -> _model.requestSwithToWallScene( ) );
         content.getChildren( ).add( swithToWallButton );
@@ -90,7 +94,6 @@ public final class ConfigurationView extends BorderPane {
         serverUrlLine( grid );
         credentialsLine( grid );
         apiVersionLine( grid );
-        nbRowsByColumnComboBox( grid );
 
         final ColumnConstraints noConstraint = new ColumnConstraints( );
         final ColumnConstraints rightAlignementConstraint = new ColumnConstraints( );
@@ -104,7 +107,6 @@ public final class ConfigurationView extends BorderPane {
 
         return grid;
     }
-
 
     private void serverUrlLine( final GridPane parent ) {
         final Label lineLabel = new Label( "Server URL:" );
@@ -156,16 +158,51 @@ public final class ConfigurationView extends BorderPane {
         parent.add( apiVersionBox, 1, 2 );
     }
 
-    private void nbRowsByColumnComboBox( final GridPane parent ) {
-        final Label lineLabel = new Label( "Max by column:" );
-        parent.add( lineLabel, 2, 2 );
 
-        final ComboBox<Integer> apiVersionBox = new ComboBox<>( FXCollections.observableArrayList( 1, 2, 3, 4, 5, 6, 7, 8 ) );
+    private GridPane preferenceConfigurationPane( ) {
+        final GridPane grid = new GridPane( );
+        grid.setAlignment( Pos.CENTER );
+        grid.setPadding( new Insets( 10 ) );
+        grid.setHgap( 10 );
+        grid.setVgap( 20 );
+
+        lightModeCheckBox( grid );
+        nbTilesByColumnComboBox( grid );
+
+        final ColumnConstraints noConstraint = new ColumnConstraints( );
+        final ColumnConstraints rightAlignementConstraint = new ColumnConstraints( );
+        rightAlignementConstraint.setHalignment( HPos.RIGHT );
+        grid.getColumnConstraints( ).add( rightAlignementConstraint );
+        grid.getColumnConstraints( ).add( noConstraint );
+        grid.getColumnConstraints( ).add( rightAlignementConstraint );
+        grid.getColumnConstraints( ).add( noConstraint );
+
+        grid.setStyle( "-fx-border-color:white; -fx-border-radius:5;" );
+
+        return grid;
+    }
+
+    private void lightModeCheckBox( final GridPane parent ) {
+        final Label lineLabel = new Label( "Light Mode:" );
+        parent.add( lineLabel, 0, 0 );
+
+        final CheckBox lightModeCheckbox = new CheckBox( );
+        lightModeCheckbox.selectedProperty( ).bindBidirectional( _model.lightModeProperty( ) );
+        lineLabel.setLabelFor( lightModeCheckbox );
+        parent.add( lightModeCheckbox, 1, 0 );
+    }
+
+    private void nbTilesByColumnComboBox( final GridPane parent ) {
+        final Label lineLabel = new Label( "Max tiles by column:" );
+        parent.add( lineLabel, 0, 1 );
+
+        final ComboBox<Integer> apiVersionBox = new ComboBox<>( FXCollections.observableArrayList( 2, 3, 4, 5, 6, 7, 8 ) );
         apiVersionBox.getSelectionModel( ).select( (Integer) _model.maxRowByColumnProperty( ).get( ) );
         apiVersionBox.getSelectionModel( ).selectedItemProperty( ).addListener( ( o, oldValue, newValue ) -> _model.maxRowByColumnProperty( ).setValue( newValue ) );
         lineLabel.setLabelFor( apiVersionBox );
-        parent.add( apiVersionBox, 3, 2 );
+        parent.add( apiVersionBox, 1, 1 );
     }
+
 
     private TableView<BuildTypeData> buildTableView( ) {
         final TableView<BuildTypeData> tableview = new TableView<>( _model.getBuildTypes( ) );

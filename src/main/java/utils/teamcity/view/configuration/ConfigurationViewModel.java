@@ -36,8 +36,9 @@ final class ConfigurationViewModel {
     private final StringProperty _serverUrl = new SimpleStringProperty( );
     private final StringProperty _credentialsUser = new SimpleStringProperty( );
     private final StringProperty _credentialsPassword = new SimpleStringProperty( );
-    private final BooleanProperty _loadingBuild = new SimpleBooleanProperty( false );
+    private final BooleanProperty _loadingBuild = new SimpleBooleanProperty( );
     private final IntegerProperty _maxRowByColumn = new SimpleIntegerProperty( );
+    private final BooleanProperty _lightMode = new SimpleBooleanProperty( );
 
     private final ObservableList<BuildTypeData> _buildTypes = FXCollections.observableArrayList( );
 
@@ -67,6 +68,9 @@ final class ConfigurationViewModel {
 
         _maxRowByColumn.setValue( configuration.getMaxRowsByColumn( ) );
         _maxRowByColumn.addListener( ( object, oldValue, newValue ) -> configuration.setMaxRowsByColumn( newValue.intValue( ) ) );
+
+        _lightMode.setValue( configuration.isLightMode( ) );
+        _lightMode.addListener( ( object, oldValue, newValue ) -> configuration.setLightMode( newValue ) );
     }
 
     public StringProperty serverUrlProperty( ) {
@@ -87,6 +91,10 @@ final class ConfigurationViewModel {
 
     IntegerProperty maxRowByColumnProperty( ) {
         return _maxRowByColumn;
+    }
+
+    BooleanProperty lightModeProperty( ) {
+        return _lightMode;
     }
 
     ObservableList<BuildTypeData> getBuildTypes( ) {
@@ -149,4 +157,5 @@ final class ConfigurationViewModel {
         LOGGER.info( "Switching to api version: " + newValue.getIdentifier( ) );
         _configuration.setApiVersion( newValue );
     }
+
 }

@@ -104,9 +104,12 @@ public final class WallView extends GridPane {
         tileTitle.prefWidthProperty( ).bind( tile.widthProperty( ) );
         tileTitle.prefHeightProperty( ).bind( tile.heightProperty( ) );
         HBox.setHgrow( tileTitle, Priority.SOMETIMES );
+        tileContent.getChildren( ).add( tileTitle );
 
-        final VBox contextPart = createContextPart( build );
-        tileContent.getChildren( ).addAll( tileTitle, contextPart );
+        if ( !_model.lightModeProperty( ).get( ) ) {
+            final VBox contextPart = createContextPart( build );
+            tileContent.getChildren( ).add( contextPart );
+        }
 
         tile.getChildren( ).addAll( progressPane, tileContent );
         add( tile, x, y );
@@ -122,15 +125,7 @@ public final class WallView extends GridPane {
         statusBox.setAlignment( Pos.CENTER );
         statusBox.setSpacing( 5 );
 
-        final ImageView queuedIcon = new ImageView( UIUtils.createImage( "queued.png" ) );
-        queuedIcon.setPreserveRatio( true );
-        queuedIcon.setFitWidth( 50 );
-        queuedIcon.visibleProperty( ).bind( build.queuedProperty( ) );
-
-        final RotateTransition transition = new RotateTransition( Duration.seconds( 3 ), queuedIcon );
-        transition.setByAngle( 360 );
-        transition.setCycleCount( Timeline.INDEFINITE );
-        transition.play( );
+        final ImageView queuedIcon = queueImageView( build );
 
         final ImageView image = new ImageView( );
         image.setPreserveRatio( true );
@@ -146,9 +141,24 @@ public final class WallView extends GridPane {
 
         final StackPane infoBox = new StackPane( lastBuildInfoPart, timeLeftInfoBox );
         infoBox.setAlignment( Pos.CENTER );
+        infoBox.visibleProperty( ).bind( contextPart.heightProperty( ).greaterThan( 150 ) );
 
         contextPart.getChildren( ).addAll( statusBox, infoBox );
         return contextPart;
+    }
+
+    private ImageView queueImageView( final BuildTypeData build ) {
+        final ImageView queuedIcon = new ImageView( UIUtils.createImage( "queued.png" ) );
+        queuedIcon.setPreserveRatio( true );
+        queuedIcon.setFitWidth( 50 );
+        queuedIcon.visibleProperty( ).bind( build.queuedProperty( ) );
+
+        final RotateTransition transition = new RotateTransition( Duration.seconds( 3 ), queuedIcon );
+        transition.setByAngle( 360 );
+        transition.setCycleCount( Timeline.INDEFINITE );
+        transition.play( );
+
+        return queuedIcon;
     }
 
     private HBox createLastBuildInfoBox( final BuildTypeData build ) {
