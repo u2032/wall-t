@@ -15,8 +15,6 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.text.TextAlignment;
 import javafx.util.Duration;
-import org.slf4j.LoggerFactory;
-import utils.teamcity.model.logger.Loggers;
 import utils.teamcity.view.UIUtils;
 
 import javax.inject.Inject;
@@ -61,6 +59,8 @@ final class WallView extends GridPane {
     }
 
     private void updateLayout( final Collection<TileViewModel> builds ) {
+        getChildren( ).clear( );
+
         final int maxRowsByColumn = _model.getMaxRowsByColumn( );
         final int nbColums = max( 1, builds.size( ) / maxRowsByColumn + ( ( builds.size( ) % maxRowsByColumn > 0 ? 1 : 0 ) ) );
         final int byColums = max( 1, builds.size( ) / nbColums + ( ( builds.size( ) % nbColums > 0 ? 1 : 0 ) ) );
