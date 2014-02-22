@@ -3,6 +3,7 @@ package utils.teamcity.model.build;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * Date: 16/02/14
@@ -11,11 +12,17 @@ import java.util.Optional;
  */
 public interface IBuildManager {
 
-    Optional<BuildTypeData> getBuild( String id );
-
     void registerBuildTypes( List<BuildTypeData> typeList );
 
-    void registerBuildTypesInQueue( List<String> buildTypesInQueue );
+    List<BuildTypeData> getBuildTypes( );
 
-    List<BuildTypeData> getBuildTypeList( );
+    List<BuildTypeData> getMonitoredBuildTypes( );
+
+    Optional<BuildTypeData> getBuild( String id );
+
+    void activateMonitoring( BuildTypeData buildTypeData );
+
+    void unactivateMonitoring( BuildTypeData buildTypeData );
+
+    List<BuildTypeData> registerBuildTypesInQueue( Set<String> buildTypesInQueue );
 }

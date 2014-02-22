@@ -11,7 +11,8 @@ import utils.teamcity.model.build.BuildTypeData;
 public interface IApiController {
 
     /**
-     * Request all build type list, and populate IBuildManager with {@link BuildTypeData}
+     * Request all build type list, and populate {@link IBuildManager} with {@link BuildTypeData}
+     * Moreover, this method must dispath to {@link EventBus} the {@link IBuildManager} if needs view update
      *
      * @return Future which can be listened for completion
      */
@@ -19,6 +20,7 @@ public interface IApiController {
 
     /**
      * Request last builds status for specified build type and register them on builtType
+     * Moreover, this method must dispath to {@link EventBus} the {@link BuildTypeData} if needs view update
      *
      * @param buildType Build type which is concerned
      */
@@ -27,6 +29,7 @@ public interface IApiController {
 
     /**
      * Request build types in queue and flag them into IBuildManager
+     * Moreover, this method must dispath to {@link EventBus} all {@link BuildTypeData} which need view update
      */
     void requestQueuedBuilds( );
 

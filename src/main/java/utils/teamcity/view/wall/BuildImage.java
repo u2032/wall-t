@@ -1,4 +1,4 @@
-package utils.teamcity.model.build;
+package utils.teamcity.view.wall;
 
 import javafx.scene.image.Image;
 import utils.teamcity.view.UIUtils;
@@ -8,7 +8,7 @@ import utils.teamcity.view.UIUtils;
  *
  * @author Cedric Longo
  */
-public enum BuildImage {
+enum BuildImage {
 
     SUN( "weather/sun.png" ),
     CLOUDY_SUN( "weather/cloudy_sun.png" ),

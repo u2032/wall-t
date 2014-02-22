@@ -1,9 +1,9 @@
 package utils.teamcity.view.configuration;
 
 import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.ListenableFuture;
-import com.google.common.util.concurrent.ListeningExecutorService;
 import javafx.application.Platform;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
@@ -12,7 +12,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import utils.teamcity.controller.api.IApiController;
 import utils.teamcity.controller.api.json.ApiVersion;
-import utils.teamcity.model.build.BuildTypeData;
 import utils.teamcity.model.build.IBuildManager;
 import utils.teamcity.model.configuration.Configuration;
 import utils.teamcity.model.event.SceneEvent;
@@ -21,7 +20,8 @@ import utils.teamcity.view.wall.WallScene;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
-import java.util.concurrent.Callable;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.google.common.util.concurrent.Futures.addCallback;
 
@@ -40,22 +40,19 @@ final class ConfigurationViewModel {
     private final IntegerProperty _maxRowByColumn = new SimpleIntegerProperty( );
     private final BooleanProperty _lightMode = new SimpleBooleanProperty( );
 
-    private final ObservableList<BuildTypeData> _buildTypes = FXCollections.observableArrayList( );
+    private final ObservableList<BuildTypeViewModel> _buildTypes = FXCollections.observableArrayList( );
 
     private final Configuration _configuration;
     private final Provider<IApiController> _apiController;
-    private final ListeningExecutorService _executorService;
-    private final IBuildManager _buildManager;
+    private final BuildTypeViewModel.Factory _buildTypeViewModelFactory;
     private final EventBus _eventBus;
 
     @Inject
-    ConfigurationViewModel( final Configuration configuration, final Provider<IApiController> apiController, final ListeningExecutorService executorService, final IBuildManager buildManager, final EventBus eventBus ) {
+    ConfigurationViewModel( final Configuration configuration, final Provider<IApiController> apiController, final EventBus eventBus, final IBuildManager buildManager, final BuildTypeViewModel.Factory buildTypeViewModelFactory ) {
         _configuration = configuration;
         _eventBus = eventBus;
         _apiController = apiController;
-        _executorService = executorService;
-        _buildManager = buildManager;
-        updateBuildTypeList( );
+        _buildTypeViewModelFactory = buildTypeViewModelFactory;
 
         _serverUrl.setValue( configuration.getServerUrl( ) );
         _serverUrl.addListener( ( object, oldValue, newValue ) -> configuration.setServerUrl( newValue ) );
@@ -71,6 +68,8 @@ final class ConfigurationViewModel {
 
         _lightMode.setValue( configuration.isLightMode( ) );
         _lightMode.addListener( ( object, oldValue, newValue ) -> configuration.setLightMode( newValue ) );
+
+        updateBuildTypeList( buildManager );
     }
 
     public StringProperty serverUrlProperty( ) {
@@ -97,26 +96,15 @@ final class ConfigurationViewModel {
         return _lightMode;
     }
 
-    ObservableList<BuildTypeData> getBuildTypes( ) {
+    ObservableList<BuildTypeViewModel> getBuildTypes( ) {
         return _buildTypes;
     }
 
     public void requestLoadingBuilds( ) {
         _loadingBuild.setValue( true );
 
-        final ListenableFuture<ListenableFuture<Void>> future = _executorService.submit( (Callable<ListenableFuture<Void>>) _apiController.get( )::loadBuildList );
-        addCallback( future, new FutureCallback<ListenableFuture<Void>>( ) {
-            @Override
-            public void onSuccess( final ListenableFuture<Void> result ) {
-                addCallback( result, buildListLoadedCallback( ) );
-            }
-
-            @Override
-            public void onFailure( final Throwable t ) {
-
-            }
-        } );
-
+        final ListenableFuture<Void> future = _apiController.get( ).loadBuildList( );
+        addCallback( future, buildListLoadedCallback( ) );
     }
 
     private FutureCallback<Void> buildListLoadedCallback( ) {
@@ -124,25 +112,27 @@ final class ConfigurationViewModel {
             @Override
             public void onSuccess( final Void result ) {
                 Platform.runLater( ( ) -> {
-                    updateBuildTypeList( );
                     _loadingBuild.setValue( false );
                 } );
             }
 
             @Override
             public void onFailure( final Throwable t ) {
-
+                Platform.runLater( ( ) -> {
+                    _loadingBuild.setValue( false );
+                } );
             }
         };
     }
 
-    private void updateBuildTypeList( ) {
-        _buildTypes.clear( );
-        _buildTypes.addAll( _buildManager.getBuildTypeList( ) );
-    }
-
-    public void setAliasName( final BuildTypeData buildTypeData, final String aliasName ) {
-        buildTypeData.setAliasName( aliasName );
+    @Subscribe
+    public void updateBuildTypeList( final IBuildManager buildManager ) {
+        Platform.runLater( ( ) -> {
+            _buildTypes.setAll(
+                    (List<BuildTypeViewModel>) buildManager.getBuildTypes( ).stream( )
+                            .map( _buildTypeViewModelFactory::fromBuildTypeData )
+                            .collect( Collectors.toList( ) ) );
+        } );
     }
 
     public void requestSwithToWallScene( ) {
@@ -156,6 +146,11 @@ final class ConfigurationViewModel {
     public void requestNewApiVersion( final ApiVersion newValue ) {
         LOGGER.info( "Switching to api version: " + newValue.getIdentifier( ) );
         _configuration.setApiVersion( newValue );
+    }
+
+    @Inject
+    public void registerToEventBus( final EventBus eventBus ) {
+        eventBus.register( this );
     }
 
 }

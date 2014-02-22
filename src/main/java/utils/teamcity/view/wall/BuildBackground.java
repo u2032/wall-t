@@ -1,4 +1,4 @@
-package utils.teamcity.model.build;
+package utils.teamcity.view.wall;
 
 import javafx.geometry.Insets;
 import javafx.scene.layout.Background;
@@ -11,7 +11,7 @@ import javafx.scene.paint.Paint;
  *
  * @author Cedric Longo
  */
-public enum BuildBackground {
+enum BuildBackground {
 
     UNKNOWN(
             new Background( new BackgroundFill( Paint.valueOf( "grey" ), new CornerRadii( 5 ), new Insets( 0 ) ) ),

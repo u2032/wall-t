@@ -5,6 +5,7 @@ import com.google.common.collect.Maps;
 import javafx.animation.FadeTransition;
 import javafx.animation.RotateTransition;
 import javafx.animation.Timeline;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -14,17 +15,19 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.text.TextAlignment;
 import javafx.util.Duration;
-import utils.teamcity.model.build.BuildTypeData;
-import utils.teamcity.model.configuration.Configuration;
+import org.slf4j.LoggerFactory;
+import utils.teamcity.model.logger.Loggers;
 import utils.teamcity.view.UIUtils;
 
 import javax.inject.Inject;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
 import static java.lang.Math.abs;
+import static java.lang.Math.max;
 import static javafx.beans.binding.Bindings.createStringBinding;
 
 /**
@@ -32,7 +35,7 @@ import static javafx.beans.binding.Bindings.createStringBinding;
  *
  * @author Cedric Longo
  */
-public final class WallView extends GridPane {
+final class WallView extends GridPane {
 
     public static final int GAP_SPACE = 10;
 
@@ -40,7 +43,7 @@ public final class WallView extends GridPane {
     private final Map<Node, FadeTransition> _registeredTransition = Maps.newHashMap( );
 
     @Inject
-    public WallView( final WallViewModel model, final Configuration configuration ) {
+    WallView( final WallViewModel model ) {
         _model = model;
 
         setHgap( GAP_SPACE );
@@ -51,18 +54,22 @@ public final class WallView extends GridPane {
 
         setAlignment( Pos.CENTER );
 
-        // CODEREVIEW Do not link directly to model, use ModelView ?
-        final ObservableList<BuildTypeData> builds = _model.getBuilds( );
+        final ObservableList<TileViewModel> builds = _model.getBuilds( );
+        builds.addListener( (ListChangeListener<TileViewModel>) c -> {
+            updateLayout( (Collection<TileViewModel>) c.getList( ) );
+        } );
+    }
 
-        final int maxRowsByColumn = configuration.getMaxRowsByColumn( );
-        final int nbColums = builds.size( ) / maxRowsByColumn + ( ( builds.size( ) % maxRowsByColumn > 0 ? 1 : 0 ) );
-        final int byColums = builds.size( ) / nbColums + ( ( builds.size( ) % nbColums > 0 ? 1 : 0 ) );
+    private void updateLayout( final Collection<TileViewModel> builds ) {
+        final int maxRowsByColumn = _model.getMaxRowsByColumn( );
+        final int nbColums = max( 1, builds.size( ) / maxRowsByColumn + ( ( builds.size( ) % maxRowsByColumn > 0 ? 1 : 0 ) ) );
+        final int byColums = max( 1, builds.size( ) / nbColums + ( ( builds.size( ) % nbColums > 0 ? 1 : 0 ) ) );
 
-        final Iterable<List<BuildTypeData>> partition = Iterables.partition( builds, byColums );
+        final Iterable<List<TileViewModel>> partition = Iterables.partition( builds, byColums );
         int x = 0;
         int y = 0;
-        for ( final List<BuildTypeData> buildList : partition ) {
-            for ( final BuildTypeData build : buildList ) {
+        for ( final List<TileViewModel> buildList : partition ) {
+            for ( final TileViewModel build : buildList ) {
                 createTileForBuildType( build, x, y, nbColums, byColums );
                 y++;
             }
@@ -71,7 +78,7 @@ public final class WallView extends GridPane {
         }
     }
 
-    private void createTileForBuildType( final BuildTypeData build, final int x, final int y, final int nbColumns, final int nbRows ) {
+    private void createTileForBuildType( final TileViewModel build, final int x, final int y, final int nbColumns, final int nbRows ) {
         final StackPane tile = new StackPane( );
         tile.setAlignment( Pos.CENTER_LEFT );
         tile.setStyle( "-fx-border-color:white; -fx-border-radius:5;" );
@@ -115,7 +122,7 @@ public final class WallView extends GridPane {
         add( tile, x, y );
     }
 
-    private VBox createContextPart( final BuildTypeData build ) {
+    private VBox createContextPart( final TileViewModel build ) {
         final VBox contextPart = new VBox( );
         contextPart.setMinWidth( 150 );
         contextPart.setMaxWidth( 150 );
@@ -147,7 +154,7 @@ public final class WallView extends GridPane {
         return contextPart;
     }
 
-    private ImageView queueImageView( final BuildTypeData build ) {
+    private ImageView queueImageView( final TileViewModel build ) {
         final ImageView queuedIcon = new ImageView( UIUtils.createImage( "queued.png" ) );
         queuedIcon.setPreserveRatio( true );
         queuedIcon.setFitWidth( 50 );
@@ -161,7 +168,7 @@ public final class WallView extends GridPane {
         return queuedIcon;
     }
 
-    private HBox createLastBuildInfoBox( final BuildTypeData build ) {
+    private HBox createLastBuildInfoBox( final TileViewModel build ) {
         final HBox lastBuildInfoPart = new HBox( );
         lastBuildInfoPart.setSpacing( 5 );
         lastBuildInfoPart.setAlignment( Pos.CENTER );
@@ -187,7 +194,7 @@ public final class WallView extends GridPane {
         return lastBuildInfoPart;
     }
 
-    private HBox createTimeLeftInfoBox( final BuildTypeData build ) {
+    private HBox createTimeLeftInfoBox( final TileViewModel build ) {
         final HBox lastBuildInfoPart = new HBox( );
         lastBuildInfoPart.setSpacing( 5 );
         lastBuildInfoPart.setAlignment( Pos.CENTER );

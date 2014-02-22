@@ -34,7 +34,7 @@ public final class ApiMonitoringService implements IApiMonitoringService {
 
     @Override
     public void start( ) {
-        _executorService.scheduleWithFixedDelay( checkIdleBuildStatus( ), 30, 30, TimeUnit.SECONDS );
+        _executorService.scheduleWithFixedDelay( checkIdleBuildStatus( ), 10, 30, TimeUnit.SECONDS );
         _executorService.scheduleWithFixedDelay( checkRunningBuildStatus( ), 30, 10, TimeUnit.SECONDS );
         _executorService.scheduleWithFixedDelay( checkQueuedBuildStatus( ), 30, 10, TimeUnit.SECONDS );
         LOGGER.info( "Monitoring service started." );
@@ -42,8 +42,7 @@ public final class ApiMonitoringService implements IApiMonitoringService {
 
     private Runnable checkIdleBuildStatus( ) {
         return ( ) -> {
-            final List<BuildTypeData> monitoredBuilds = _buildManager.getBuildTypeList( ).stream( )
-                    .filter( BuildTypeData::isSelected )
+            final List<BuildTypeData> monitoredBuilds = _buildManager.getMonitoredBuildTypes( ).stream( )
                     .filter( b -> !b.hasRunningBuild( ) )
                     .collect( Collectors.toList( ) );
 
@@ -54,8 +53,7 @@ public final class ApiMonitoringService implements IApiMonitoringService {
 
     private Runnable checkRunningBuildStatus( ) {
         return ( ) -> {
-            final List<BuildTypeData> monitoredBuilds = _buildManager.getBuildTypeList( ).stream( )
-                    .filter( BuildTypeData::isSelected )
+            final List<BuildTypeData> monitoredBuilds = _buildManager.getMonitoredBuildTypes( ).stream( )
                     .filter( BuildTypeData::hasRunningBuild )
                     .collect( Collectors.toList( ) );
 

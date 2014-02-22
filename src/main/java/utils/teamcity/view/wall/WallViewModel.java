@@ -1,10 +1,12 @@
 package utils.teamcity.view.wall;
 
+import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
+import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import utils.teamcity.model.build.BuildTypeData;
 import utils.teamcity.model.build.IBuildManager;
 import utils.teamcity.model.configuration.Configuration;
 
@@ -17,35 +19,50 @@ import java.util.stream.Collectors;
  *
  * @author Cedric Longo
  */
-public final class WallViewModel {
+final class WallViewModel {
 
-    private final ObservableList<BuildTypeData> _builds = FXCollections.observableArrayList( );
-    private final IBuildManager _buildManager;
+    private final EventBus _eventBus;
+    private final TileViewModel.Factory _tileViewModeFactory;
 
+    private final ObservableList<TileViewModel> _builds = FXCollections.observableArrayList( );
     private final BooleanProperty _lightMode = new SimpleBooleanProperty( );
-
+    private final int _maxRowsByColumn;
 
     @Inject
-    public WallViewModel( final IBuildManager buildManager, final Configuration configuration ) {
+    WallViewModel( final EventBus eventBus, final Configuration configuration, final IBuildManager buildManager, final TileViewModel.Factory tileViewModeFactory ) {
+        _eventBus = eventBus;
+        _tileViewModeFactory = tileViewModeFactory;
+        _maxRowsByColumn = configuration.getMaxRowsByColumn( );
         _lightMode.setValue( configuration.isLightMode( ) );
 
-        _buildManager = buildManager;
-        updateBuildList( );
+        updateBuildList( buildManager );
     }
 
-    private void updateBuildList( ) {
-        final List<BuildTypeData> builds = _buildManager.getBuildTypeList( ).stream( )
-                .filter( BuildTypeData::isSelected )
-                .collect( Collectors.toList( ) );
-        _builds.clear( );
-        _builds.addAll( builds );
+    @Subscribe
+    public void updateBuildList( final IBuildManager buildManager ) {
+        Platform.runLater( ( ) -> {
+            _builds.forEach( _eventBus::unregister );
+            _builds.setAll( (List<TileViewModel>) buildManager.getMonitoredBuildTypes( ).stream( )
+                    .map( _tileViewModeFactory::forBuildTypeData )
+                    .collect( Collectors.toList( ) ) );
+            _builds.forEach( _eventBus::register );
+        } );
     }
 
-    public ObservableList<BuildTypeData> getBuilds( ) {
+    public ObservableList<TileViewModel> getBuilds( ) {
         return _builds;
     }
 
     public BooleanProperty lightModeProperty( ) {
         return _lightMode;
+    }
+
+    public int getMaxRowsByColumn( ) {
+        return _maxRowsByColumn;
+    }
+
+    @Inject
+    public void registerToEventBus( final EventBus eventBus ) {
+        eventBus.register( this );
     }
 }

@@ -10,7 +10,6 @@ import com.google.inject.Injector;
 import com.google.inject.Module;
 import com.ning.http.client.AsyncHttpClient;
 import com.ning.http.client.AsyncHttpClientConfig;
-import com.ning.http.client.ConnectionsPool;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
@@ -29,8 +28,6 @@ import utils.teamcity.view.UIUtils;
 import utils.teamcity.view.configuration.ConfigurationScene;
 import utils.teamcity.view.configuration.ConfigurationViewModule;
 import utils.teamcity.view.wall.WallViewModule;
-
-import java.util.concurrent.Executors;
 
 /**
  * Date: 09/02/14

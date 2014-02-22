@@ -1,6 +1,7 @@
 package utils.teamcity.controller.api.json.v0800;
 
 import com.google.common.base.Function;
+import com.google.common.eventbus.EventBus;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -34,12 +35,14 @@ public final class ApiController implements IApiController {
     public static final Logger LOGGER = LoggerFactory.getLogger( Loggers.MAIN );
     public static final int MAX_BUILDS_TO_CONSIDER = 5;
     private final IBuildManager _buildManager;
+    private final EventBus _eventBus;
     private final IApiRequestController _apiRequestController;
 
     @Inject
-    public ApiController( final IBuildManager buildManager, final IApiRequestController apiRequestController ) {
+    public ApiController( final IBuildManager buildManager, final IApiRequestController apiRequestController, final EventBus eventBus ) {
         _apiRequestController = apiRequestController;
         _buildManager = buildManager;
+        _eventBus = eventBus;
     }
 
     @Override
@@ -52,6 +55,7 @@ public final class ApiController implements IApiController {
                         .map( ( btype ) -> new BuildTypeData( btype.getId( ), btype.getName( ), btype.getProjectName( ) ) )
                         .collect( Collectors.toList( ) );
                 _buildManager.registerBuildTypes( buildTypes );
+                _eventBus.post( _buildManager );
             }
 
             @Override
@@ -106,6 +110,7 @@ public final class ApiController implements IApiController {
             @Override
             public void onSuccess( final Build result ) {
                 buildType.registerBuild( _toBuildData.apply( result ) );
+                _eventBus.post( buildType );
             }
 
             @Override

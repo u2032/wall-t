@@ -63,8 +63,7 @@ public final class ConfigurationController implements IConfigurationController {
     }
 
     private void updateSavedBuild( ) {
-        final List<SavedBuildData> buildToSaved = _buildManager.getBuildTypeList( ).stream( )
-                .filter( BuildTypeData::isSelected )
+        final List<SavedBuildData> buildToSaved = _buildManager.getMonitoredBuildTypes( ).stream( )
                 .map( data -> new SavedBuildData( data.getId( ), data.getName( ), data.getProjectName( ), data.getAliasName( ) ) )
                 .collect( Collectors.toList( ) );
         _configuration.setSavedBuilds( buildToSaved );

@@ -2,6 +2,7 @@ package utils.teamcity.view.configuration;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Scopes;
+import com.google.inject.assistedinject.FactoryModuleBuilder;
 
 /**
  * Date: 15/02/14
@@ -15,5 +16,10 @@ public final class ConfigurationViewModule extends AbstractModule {
         bind( ConfigurationScene.class ).in( Scopes.SINGLETON );
         bind( ConfigurationView.class ).in( Scopes.SINGLETON );
         bind( ConfigurationViewModel.class ).in( Scopes.SINGLETON );
+
+        install( new FactoryModuleBuilder( )
+                .implement( BuildTypeViewModel.class, BuildTypeViewModel.class )
+                .build( BuildTypeViewModel.Factory.class ) );
     }
+
 }

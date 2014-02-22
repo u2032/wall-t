@@ -1,6 +1,7 @@
 package utils.teamcity.controller.api.json.v0801;
 
 import com.google.common.base.Function;
+import com.google.common.eventbus.EventBus;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -19,6 +20,7 @@ import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.google.common.util.concurrent.Futures.addCallback;
@@ -34,12 +36,14 @@ public final class ApiController implements IApiController {
     public static final Logger LOGGER = LoggerFactory.getLogger( Loggers.MAIN );
     private static final int MAX_BUILDS_TO_CONSIDER = 5;
     private final IBuildManager _buildManager;
+    private final EventBus _eventBus;
     private final IApiRequestController _apiRequestController;
 
     @Inject
-    public ApiController( final IBuildManager buildManager, final IApiRequestController apiRequestController ) {
+    public ApiController( final IBuildManager buildManager, final IApiRequestController apiRequestController, final EventBus eventBus ) {
         _apiRequestController = apiRequestController;
         _buildManager = buildManager;
+        _eventBus = eventBus;
     }
 
     @Override
@@ -52,6 +56,7 @@ public final class ApiController implements IApiController {
                         .map( ( btype ) -> new BuildTypeData( btype.getId( ), btype.getName( ), btype.getProjectName( ) ) )
                         .collect( Collectors.toList( ) );
                 _buildManager.registerBuildTypes( buildTypes );
+                _eventBus.post( _buildManager );
             }
 
             @Override
@@ -69,10 +74,12 @@ public final class ApiController implements IApiController {
         addCallback( buildQueueFuture, new FutureCallback<QueuedBuildList>( ) {
             @Override
             public void onSuccess( final QueuedBuildList queuedBuildList ) {
-                final List<String> buildTypesInQueue = queuedBuildList.getQueueBuild( ).stream( )
+                final Set<String> buildTypesInQueue = queuedBuildList.getQueueBuild( ).stream( )
                         .map( QueueBuild::getBuildTypeId )
-                        .collect( Collectors.toList( ) );
-                _buildManager.registerBuildTypesInQueue( buildTypesInQueue );
+                        .collect( Collectors.toSet( ) );
+                final List<BuildTypeData> modifiedStatusBuilds = _buildManager.registerBuildTypesInQueue( buildTypesInQueue );
+                for ( final BuildTypeData buildType : modifiedStatusBuilds )
+                    _eventBus.post( buildType );
             }
 
             @Override
@@ -121,6 +128,7 @@ public final class ApiController implements IApiController {
             @Override
             public void onSuccess( final Build result ) {
                 buildType.registerBuild( _toBuildData.apply( result ) );
+                _eventBus.post( buildType );
             }
 
             @Override

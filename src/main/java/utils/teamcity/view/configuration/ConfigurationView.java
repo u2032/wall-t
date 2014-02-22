@@ -12,7 +12,6 @@ import javafx.scene.layout.*;
 import javafx.scene.text.Font;
 import javafx.util.StringConverter;
 import utils.teamcity.controller.api.json.ApiVersion;
-import utils.teamcity.model.build.BuildTypeData;
 
 import javax.inject.Inject;
 
@@ -23,7 +22,7 @@ import static javafx.beans.binding.Bindings.createStringBinding;
  *
  * @author Cedric Longo
  */
-public final class ConfigurationView extends BorderPane {
+final class ConfigurationView extends BorderPane {
 
     private final ConfigurationViewModel _model;
 
@@ -64,7 +63,7 @@ public final class ConfigurationView extends BorderPane {
         loadBuildsButton.disableProperty( ).bind( _model.loadingBuildProperty( ) );
         content.getChildren( ).add( loadBuildsButton );
 
-        final TableView<BuildTypeData> buildList = buildTableView( );
+        final TableView<BuildTypeViewModel> buildList = buildTableView( );
         content.widthProperty( ).addListener( ( o, oldValue, newValue ) -> buildList.setMaxWidth( newValue.doubleValue( ) * 0.8 ) );
         buildList.disableProperty( ).bind( _model.loadingBuildProperty( ) );
         VBox.setVgrow( buildList, Priority.SOMETIMES );
@@ -204,35 +203,35 @@ public final class ConfigurationView extends BorderPane {
     }
 
 
-    private TableView<BuildTypeData> buildTableView( ) {
-        final TableView<BuildTypeData> tableview = new TableView<>( _model.getBuildTypes( ) );
+    private TableView<BuildTypeViewModel> buildTableView( ) {
+        final TableView<BuildTypeViewModel> tableview = new TableView<>( _model.getBuildTypes( ) );
         tableview.setEditable( true );
         tableview.setColumnResizePolicy( TableView.CONSTRAINED_RESIZE_POLICY );
 
-        final TableColumn<BuildTypeData, Boolean> selectedColumn = new TableColumn<>( "" );
+        final TableColumn<BuildTypeViewModel, Boolean> selectedColumn = new TableColumn<>( "" );
         selectedColumn.setEditable( true );
         selectedColumn.setMinWidth( 40 );
         selectedColumn.setMaxWidth( 50 );
         selectedColumn.setCellValueFactory( param -> param.getValue( ).selectedProperty( ) );
         selectedColumn.setCellFactory( CheckBoxTableCell.forTableColumn( selectedColumn ) );
 
-        final TableColumn<BuildTypeData, String> idColumn = new TableColumn<>( "id" );
+        final TableColumn<BuildTypeViewModel, String> idColumn = new TableColumn<>( "id" );
         idColumn.setCellValueFactory( param -> param.getValue( ).idProperty( ) );
 
-        final TableColumn<BuildTypeData, String> projectColumn = new TableColumn<>( "Project" );
+        final TableColumn<BuildTypeViewModel, String> projectColumn = new TableColumn<>( "Project" );
         projectColumn.setCellValueFactory( param -> param.getValue( ).projectNameProperty( ) );
 
-        final TableColumn<BuildTypeData, String> nameColumn = new TableColumn<>( "Name" );
+        final TableColumn<BuildTypeViewModel, String> nameColumn = new TableColumn<>( "Name" );
         nameColumn.setCellValueFactory( param -> param.getValue( ).nameProperty( ) );
 
-        final TableColumn<BuildTypeData, String> aliasColumns = new TableColumn<>( "Alias" );
+        final TableColumn<BuildTypeViewModel, String> aliasColumns = new TableColumn<>( "Alias" );
         aliasColumns.setEditable( true );
         aliasColumns.setCellValueFactory( param -> param.getValue( ).aliasNameProperty( ) );
         aliasColumns.setCellFactory( TextFieldTableCell.forTableColumn( ) );
         aliasColumns.setOnEditCommit(
                 event -> {
-                    final BuildTypeData buildTypeData = event.getTableView( ).getItems( ).get( event.getTablePosition( ).getRow( ) );
-                    _model.setAliasName( buildTypeData, event.getNewValue( ) );
+                    final BuildTypeViewModel buildTypeData = event.getTableView( ).getItems( ).get( event.getTablePosition( ).getRow( ) );
+                    buildTypeData.setAliasName( event.getNewValue( ) );
                 }
         );
 
