@@ -3,8 +3,6 @@ package utils.teamcity;
 import com.google.common.collect.ImmutableList;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
-import com.google.common.util.concurrent.ListeningExecutorService;
-import com.google.common.util.concurrent.ListeningScheduledExecutorService;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Module;
@@ -29,6 +27,9 @@ import utils.teamcity.view.configuration.ConfigurationScene;
 import utils.teamcity.view.configuration.ConfigurationViewModule;
 import utils.teamcity.view.wall.WallViewModule;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ScheduledExecutorService;
+
 /**
  * Date: 09/02/14
  *
@@ -40,16 +41,16 @@ public final class WallApplication extends Application {
     public static final int MIN_HEIGHT = 800;
     public static final Logger LOGGER = LoggerFactory.getLogger( Loggers.MAIN );
     private final Injector _injector;
-    private final ListeningExecutorService _executorService;
-    private final ListeningScheduledExecutorService _scheduledExecutorService;
+    private final ExecutorService _executorService;
+    private final ScheduledExecutorService _scheduledExecutorService;
     private final EventBus _eventBus;
     private Stage _primaryStage;
 
     public WallApplication( ) {
         LOGGER.info( "Starting ..." );
         _injector = Guice.createInjector( modules( ) );
-        _executorService = _injector.getInstance( ListeningExecutorService.class );
-        _scheduledExecutorService = _injector.getInstance( ListeningScheduledExecutorService.class );
+        _executorService = _injector.getInstance( ExecutorService.class );
+        _scheduledExecutorService = _injector.getInstance( ScheduledExecutorService.class );
         _eventBus = _injector.getInstance( EventBus.class );
     }
 

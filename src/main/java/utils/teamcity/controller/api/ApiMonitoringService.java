@@ -1,6 +1,5 @@
 package utils.teamcity.controller.api;
 
-import com.google.common.util.concurrent.ListeningScheduledExecutorService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import utils.teamcity.model.build.BuildTypeData;
@@ -10,6 +9,7 @@ import utils.teamcity.model.logger.Loggers;
 import javax.inject.Inject;
 import javax.inject.Provider;
 import java.util.List;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -21,12 +21,12 @@ import java.util.stream.Collectors;
 public final class ApiMonitoringService implements IApiMonitoringService {
 
     public static final Logger LOGGER = LoggerFactory.getLogger( Loggers.MAIN );
-    private final ListeningScheduledExecutorService _executorService;
+    private final ScheduledExecutorService _executorService;
     private final Provider<IApiController> _apiController;
     private final IBuildManager _buildManager;
 
     @Inject
-    public ApiMonitoringService( final ListeningScheduledExecutorService executorService, final Provider<IApiController> apiController, final IBuildManager buildManager ) {
+    public ApiMonitoringService( final ScheduledExecutorService executorService, final Provider<IApiController> apiController, final IBuildManager buildManager ) {
         _executorService = executorService;
         _apiController = apiController;
         _buildManager = buildManager;

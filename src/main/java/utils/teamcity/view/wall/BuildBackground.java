@@ -24,7 +24,7 @@ enum BuildBackground {
     FAILURE(
             new Background( new BackgroundFill( Paint.valueOf( "firebrick" ), new CornerRadii( 5 ), new Insets( 0 ) ) ),
             new Background( new BackgroundFill( Paint.valueOf( "red" ), new CornerRadii( 5 ), new Insets( 0 ) ) )
-    ),;
+    );
 
     private final Background _main;
     private final Background _runnning;

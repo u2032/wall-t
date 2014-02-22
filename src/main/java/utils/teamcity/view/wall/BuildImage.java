@@ -13,7 +13,7 @@ enum BuildImage {
     SUN( "weather/sun.png" ),
     CLOUDY_SUN( "weather/cloudy_sun.png" ),
     CLOUD( "weather/cloud.png" ),
-    RAIN( "weather/rain.png" ),;
+    RAIN( "weather/rain.png" );
 
     private final Image _image;
 

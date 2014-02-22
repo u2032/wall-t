@@ -6,7 +6,10 @@ import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.SettableFuture;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.ning.http.client.*;
+import com.ning.http.client.AsyncCompletionHandler;
+import com.ning.http.client.AsyncHttpClient;
+import com.ning.http.client.Realm;
+import com.ning.http.client.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import utils.teamcity.controller.api.json.ApiVersion;
@@ -45,7 +48,7 @@ final class ApiRequestController implements IApiRequestController {
 
         LOGGER.info( "Requesting: {}", request );
 
-        final AsyncHttpClient.BoundRequestBuilder httpRequest =  _httpClient
+        final AsyncHttpClient.BoundRequestBuilder httpRequest = _httpClient
                 .prepareGet( request.getURI( ) )
                 .addHeader( HttpHeaders.ACCEPT, "application/json" );
 
@@ -71,7 +74,7 @@ final class ApiRequestController implements IApiRequestController {
                 @Override
                 public void onThrowable( final Throwable t ) {
                     super.onThrowable( t );
-                    apiResponseFuture.setException( t );
+                    apiResponseFuture.setException( new RuntimeException( "Error during " + request, t ) );
                 }
 
                 @Override

@@ -53,7 +53,7 @@ public final class ApiModule extends AbstractModule {
     public Map<ApiVersion, IApiController> controllerByApiVersion(
             final utils.teamcity.controller.api.json.v0800.ApiController apiController0800,
             final utils.teamcity.controller.api.json.v0801.ApiController apiController0801 ) {
-        return ImmutableMap.of(
+        return ImmutableMap.<ApiVersion, IApiController>of(
                 ApiVersion.API_8_0, apiController0800,
                 ApiVersion.API_8_1, apiController0801 );
     }

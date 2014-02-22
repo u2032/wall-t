@@ -3,23 +3,21 @@ package utils.teamcity.controller.api.json.v0800;
 import com.google.common.base.Function;
 import com.google.common.eventbus.EventBus;
 import com.google.common.util.concurrent.FutureCallback;
-import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import utils.teamcity.controller.api.IApiController;
+import com.google.common.util.concurrent.SettableFuture;
 import utils.teamcity.controller.api.IApiRequestController;
+import utils.teamcity.controller.api.json.ApiControllerBase;
 import utils.teamcity.model.build.BuildData;
 import utils.teamcity.model.build.BuildState;
 import utils.teamcity.model.build.BuildTypeData;
 import utils.teamcity.model.build.IBuildManager;
-import utils.teamcity.model.logger.Loggers;
 
 import javax.inject.Inject;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.ExecutorService;
 import java.util.stream.Collectors;
 
 import static com.google.common.util.concurrent.Futures.addCallback;
@@ -30,41 +28,39 @@ import static utils.teamcity.controller.api.json.ApiVersion.API_8_0;
  *
  * @author Cedric Longo
  */
-public final class ApiController implements IApiController {
-
-    public static final Logger LOGGER = LoggerFactory.getLogger( Loggers.MAIN );
-    public static final int MAX_BUILDS_TO_CONSIDER = 5;
-    private final IBuildManager _buildManager;
-    private final EventBus _eventBus;
-    private final IApiRequestController _apiRequestController;
+public final class ApiController extends ApiControllerBase {
 
     @Inject
-    public ApiController( final IBuildManager buildManager, final IApiRequestController apiRequestController, final EventBus eventBus ) {
-        _apiRequestController = apiRequestController;
-        _buildManager = buildManager;
-        _eventBus = eventBus;
+    public ApiController( final IBuildManager buildManager, final IApiRequestController apiRequestController, final EventBus eventBus, final ExecutorService executorService ) {
+        super( buildManager, apiRequestController, eventBus, executorService );
     }
 
     @Override
     public ListenableFuture<Void> loadBuildList( ) {
-        final ListenableFuture<BuildTypeList> buildListFuture = _apiRequestController.sendRequest( API_8_0, "buildTypes", BuildTypeList.class );
-        addCallback( buildListFuture, new FutureCallback<BuildTypeList>( ) {
-            @Override
-            public void onSuccess( final BuildTypeList result ) {
-                final List<BuildTypeData> buildTypes = result.getBuildTypes( ).stream( )
-                        .map( ( btype ) -> new BuildTypeData( btype.getId( ), btype.getName( ), btype.getProjectName( ) ) )
-                        .collect( Collectors.toList( ) );
-                _buildManager.registerBuildTypes( buildTypes );
-                _eventBus.post( _buildManager );
-            }
+        final SettableFuture<Void> ackFuture = SettableFuture.create( );
 
-            @Override
-            public void onFailure( final Throwable t ) {
-                LOGGER.error( "Error during loading build type list:", t );
-            }
+        runInWorkerThread( ( ) -> {
+            final ListenableFuture<BuildTypeList> buildListFuture = getApiRequestController( ).sendRequest( API_8_0, "buildTypes", BuildTypeList.class );
+            addCallback( buildListFuture, new FutureCallback<BuildTypeList>( ) {
+                @Override
+                public void onSuccess( final BuildTypeList result ) {
+                    final List<BuildTypeData> buildTypes = result.getBuildTypes( ).stream( )
+                            .map( ( btype ) -> new BuildTypeData( btype.getId( ), btype.getName( ), btype.getProjectName( ) ) )
+                            .collect( Collectors.toList( ) );
+                    getBuildManager( ).registerBuildTypes( buildTypes );
+                    getEventBus( ).post( getBuildManager( ) );
+                    ackFuture.set( null );
+                }
+
+                @Override
+                public void onFailure( final Throwable t ) {
+                    getLogger( ).error( "Error during loading build type list:", t );
+                    ackFuture.setException( t );
+                }
+            } );
         } );
 
-        return Futures.transform( buildListFuture, (Function<BuildTypeList, Void>) buildTypeList -> null );
+        return ackFuture;
     }
 
     @Override
@@ -74,34 +70,36 @@ public final class ApiController implements IApiController {
 
     @Override
     public void requestLastBuildStatus( final BuildTypeData buildType ) {
-        final ListenableFuture<BuildList> buildListFuture = _apiRequestController.sendRequest( API_8_0, "builds/?locator=buildType:" + buildType.getId( ) + ",running:any,count:" + MAX_BUILDS_TO_CONSIDER, BuildList.class );
-        addCallback( buildListFuture, new FutureCallback<BuildList>( ) {
-            @Override
-            public void onSuccess( final BuildList result ) {
-                if ( result.getBuilds( ) == null )
-                    return;
+        runInWorkerThread( ( ) -> {
+            final ListenableFuture<BuildList> buildListFuture = getApiRequestController( ).sendRequest( API_8_0, "builds/?locator=buildType:" + buildType.getId( ) + ",running:any,count:" + MAX_BUILDS_TO_CONSIDER, BuildList.class );
+            addCallback( buildListFuture, new FutureCallback<BuildList>( ) {
+                @Override
+                public void onSuccess( final BuildList result ) {
+                    if ( result.getBuilds( ) == null )
+                        return;
 
-                // We consider only 5 last builds
-                final List<Build> buildToRequest = result.getBuilds( ).stream( )
-                        .limit( MAX_BUILDS_TO_CONSIDER )
-                        .collect( Collectors.toList( ) );
+                    // We consider only 5 last builds
+                    final List<Build> buildToRequest = result.getBuilds( ).stream( )
+                            .limit( MAX_BUILDS_TO_CONSIDER )
+                            .collect( Collectors.toList( ) );
 
-                // We removed from list builds which status is already known
-                buildToRequest.removeIf( build -> {
-                    final Optional<BuildData> previousBuildStatus = buildType.getBuildById( build.getId( ) );
-                    return previousBuildStatus.isPresent( ) && previousBuildStatus.get( ).getState( ) == BuildState.finished;
-                } );
+                    // We removed from list builds which status is already known
+                    buildToRequest.removeIf( build -> {
+                        final Optional<BuildData> previousBuildStatus = buildType.getBuildById( build.getId( ) );
+                        return previousBuildStatus.isPresent( ) && previousBuildStatus.get( ).getState( ) == BuildState.finished;
+                    } );
 
-                for ( final Build build : buildToRequest ) {
-                    final ListenableFuture<Build> buildStatusFuture = _apiRequestController.sendRequest( API_8_0, "builds/id:" + build.getId( ), Build.class );
-                    addCallback( buildStatusFuture, registerBuildStatus( buildType, build ) );
+                    for ( final Build build : buildToRequest ) {
+                        final ListenableFuture<Build> buildStatusFuture = getApiRequestController( ).sendRequest( API_8_0, "builds/id:" + build.getId( ), Build.class );
+                        addCallback( buildStatusFuture, registerBuildStatus( buildType, build ) );
+                    }
                 }
-            }
 
-            @Override
-            public void onFailure( final Throwable t ) {
-                LOGGER.error( "Error during loading builds list for build type: " + buildType.getId( ), t );
-            }
+                @Override
+                public void onFailure( final Throwable t ) {
+                    getLogger( ).error( "Error during loading builds list for build type: " + buildType.getId( ), t );
+                }
+            } );
         } );
     }
 
@@ -110,12 +108,12 @@ public final class ApiController implements IApiController {
             @Override
             public void onSuccess( final Build result ) {
                 buildType.registerBuild( _toBuildData.apply( result ) );
-                _eventBus.post( buildType );
+                getEventBus( ).post( buildType );
             }
 
             @Override
             public void onFailure( final Throwable t ) {
-                LOGGER.error( "Error during loading ull information for build with id " + build.getId( ) + ", build type: " + buildType.getId( ), t );
+                getLogger( ).error( "Error during loading full information for build with id " + build.getId( ) + ", build type: " + buildType.getId( ), t );
             }
         };
     }
