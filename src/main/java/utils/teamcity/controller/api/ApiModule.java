@@ -5,8 +5,8 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.Scopes;
 import com.google.inject.Singleton;
-import io.netty.channel.EventLoopGroup;
-import io.netty.channel.nio.NioEventLoopGroup;
+import com.ning.http.client.AsyncHttpClient;
+import com.ning.http.client.AsyncHttpClientConfig;
 import utils.teamcity.controller.api.json.ApiVersion;
 
 import java.util.Map;
@@ -28,11 +28,26 @@ public final class ApiModule extends AbstractModule {
 
     @Provides
     @Singleton
-    public EventLoopGroup eventLoopGroup( ) {
-        return new NioEventLoopGroup( Runtime.getRuntime( ).availableProcessors( ) * 4 );
+    public AsyncHttpClientConfig httpClientConfig( ) {
+        return new AsyncHttpClientConfig.Builder( )
+                .setFollowRedirects( true )
+                .setUserAgent( "TeamCity Wall Client" )
+                .setAllowPoolingConnection( true )
+                .setAllowSslConnectionPool( true )
+                .setMaxConnectionLifeTimeInMs( 60000 )
+                .setMaximumNumberOfRedirects( 5 )
+                .setRequestTimeoutInMs( 20000 )
+                .setMaximumConnectionsPerHost( 5 )
+                .build( );
     }
 
-    @SuppressWarnings( { "UnnecessaryFullyQualifiedName", "TypeMayBeWeakened" } )
+    @Provides
+    @Singleton
+    public AsyncHttpClient httpClient( final AsyncHttpClientConfig config ) {
+        return new AsyncHttpClient( config );
+    }
+
+    @SuppressWarnings({ "UnnecessaryFullyQualifiedName", "TypeMayBeWeakened" })
     @Provides
     @Singleton
     public Map<ApiVersion, IApiController> controllerByApiVersion(

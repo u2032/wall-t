@@ -8,7 +8,9 @@ import com.google.common.util.concurrent.ListeningScheduledExecutorService;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Module;
-import io.netty.channel.EventLoopGroup;
+import com.ning.http.client.AsyncHttpClient;
+import com.ning.http.client.AsyncHttpClientConfig;
+import com.ning.http.client.ConnectionsPool;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
@@ -27,6 +29,8 @@ import utils.teamcity.view.UIUtils;
 import utils.teamcity.view.configuration.ConfigurationScene;
 import utils.teamcity.view.configuration.ConfigurationViewModule;
 import utils.teamcity.view.wall.WallViewModule;
+
+import java.util.concurrent.Executors;
 
 /**
  * Date: 09/02/14
@@ -97,7 +101,9 @@ public final class WallApplication extends Application {
     public void stop( ) throws Exception {
         LOGGER.info( "Stopping ..." );
         _injector.getInstance( IConfigurationController.class ).saveConfiguration( );
-        _injector.getInstance( EventLoopGroup.class ).shutdownGracefully( );
+        _injector.getInstance( AsyncHttpClientConfig.class ).executorService( ).shutdownNow( );
+        _injector.getInstance( AsyncHttpClient.class ).close( );
+
         _executorService.shutdownNow( );
         _scheduledExecutorService.shutdownNow( );
         super.stop( );
