@@ -5,12 +5,9 @@ import com.google.common.eventbus.EventBus;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.SettableFuture;
-import utils.teamcity.controller.api.IApiRequestController;
 import utils.teamcity.controller.api.ApiControllerBase;
-import utils.teamcity.model.build.BuildData;
-import utils.teamcity.model.build.BuildState;
-import utils.teamcity.model.build.BuildTypeData;
-import utils.teamcity.model.build.IBuildManager;
+import utils.teamcity.controller.api.IApiRequestController;
+import utils.teamcity.model.build.*;
 
 import javax.inject.Inject;
 import java.time.Duration;
@@ -31,12 +28,12 @@ import static utils.teamcity.controller.api.json.ApiVersion.API_8_0;
 public final class ApiController extends ApiControllerBase {
 
     @Inject
-    public ApiController( final IBuildManager buildManager, final IApiRequestController apiRequestController, final EventBus eventBus, final ExecutorService executorService ) {
-        super( buildManager, apiRequestController, eventBus, executorService );
+    public ApiController( final IProjectManager projectManager, final IBuildManager buildManager, final IApiRequestController apiRequestController, final EventBus eventBus, final ExecutorService executorService ) {
+        super( projectManager, buildManager, apiRequestController, eventBus, executorService );
     }
 
     @Override
-    public ListenableFuture<Void> loadBuildList( ) {
+    public ListenableFuture<Void> loadBuildTypeList( ) {
         final SettableFuture<Void> ackFuture = SettableFuture.create( );
 
         runInWorkerThread( ( ) -> {
@@ -55,6 +52,34 @@ public final class ApiController extends ApiControllerBase {
                 @Override
                 public void onFailure( final Throwable t ) {
                     getLogger( ).error( "Error during loading build type list:", t );
+                    ackFuture.setException( t );
+                }
+            } );
+        } );
+
+        return ackFuture;
+    }
+
+    @Override
+    public ListenableFuture<Void> loadProjectList( ) {
+        final SettableFuture<Void> ackFuture = SettableFuture.create( );
+
+        runInWorkerThread( ( ) -> {
+            final ListenableFuture<ProjectList> buildListFuture = getApiRequestController( ).sendRequest( API_8_0, "projects", ProjectList.class );
+            addCallback( buildListFuture, new FutureCallback<ProjectList>( ) {
+                @Override
+                public void onSuccess( final ProjectList result ) {
+                    final List<ProjectData> projects = result.getProjects( ).stream( )
+                            .map( ( project ) -> new ProjectData( project.getId( ), project.getName( ) ) )
+                            .collect( Collectors.toList( ) );
+                    getProjectManager( ).registerProjects( projects );
+                    getEventBus( ).post( getProjectManager( ) );
+                    ackFuture.set( null );
+                }
+
+                @Override
+                public void onFailure( final Throwable t ) {
+                    getLogger( ).error( "Error during loading project list:", t );
                     ackFuture.setException( t );
                 }
             } );

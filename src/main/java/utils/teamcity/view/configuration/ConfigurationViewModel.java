@@ -4,6 +4,7 @@ import com.google.common.collect.Ordering;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import javafx.application.Platform;
 import javafx.beans.property.*;
@@ -15,6 +16,7 @@ import utils.teamcity.controller.api.IApiController;
 import utils.teamcity.controller.api.json.ApiVersion;
 import utils.teamcity.controller.configuration.IConfigurationController;
 import utils.teamcity.model.build.IBuildManager;
+import utils.teamcity.model.build.IProjectManager;
 import utils.teamcity.model.configuration.Configuration;
 import utils.teamcity.model.event.SceneEvent;
 import utils.teamcity.model.logger.Loggers;
@@ -56,19 +58,22 @@ final class ConfigurationViewModel {
     private final StringProperty _loadingInformation = new SimpleStringProperty( );
 
     private final ObservableList<BuildTypeViewModel> _buildTypes = FXCollections.observableArrayList( );
+    private final ObservableList<ProjectViewModel> _project = FXCollections.observableArrayList( );
 
     private final Configuration _configuration;
     private final Provider<IApiController> _apiController;
     private final BuildTypeViewModel.Factory _buildTypeViewModelFactory;
+    private final ProjectViewModel.Factory _projectViewModelFactory;
     private final IConfigurationController _configurationController;
     private final EventBus _eventBus;
 
     @Inject
-    ConfigurationViewModel( final Configuration configuration, final Provider<IApiController> apiController, final EventBus eventBus, final IBuildManager buildManager, final BuildTypeViewModel.Factory buildTypeViewModelFactory, final IConfigurationController configurationController ) {
+    ConfigurationViewModel( IProjectManager projectManager, final Configuration configuration, final Provider<IApiController> apiController, final EventBus eventBus, final IBuildManager buildManager, final BuildTypeViewModel.Factory buildTypeViewModelFactory, final ProjectViewModel.Factory projectViewModelFactory, final IConfigurationController configurationController ) {
         _configuration = configuration;
         _eventBus = eventBus;
         _apiController = apiController;
         _buildTypeViewModelFactory = buildTypeViewModelFactory;
+        _projectViewModelFactory = projectViewModelFactory;
         _configurationController = configurationController;
 
         _proxyUse.setValue( _configuration.isUseProxy( ) );
@@ -105,6 +110,7 @@ final class ConfigurationViewModel {
         _lightMode.addListener( ( object, oldValue, newValue ) -> configuration.setLightMode( newValue ) );
 
         updateBuildTypeList( buildManager );
+        updateProjectList( projectManager );
     }
 
     BooleanProperty proxyUseProperty( ) {
@@ -171,19 +177,26 @@ final class ConfigurationViewModel {
         return _buildTypes;
     }
 
+    ObservableList<ProjectViewModel> getProject( ) {
+        return _project;
+    }
+
     void requestLoadingBuilds( ) {
         _loading.setValue( true );
         _loadingFailure.setValue( true );
         _loadingInformation.setValue( "Trying to connect..." );
 
-        final ListenableFuture<Void> future = _apiController.get( ).loadBuildList( );
-        addCallback( future, buildListLoadedCallback( ) );
+        final ListenableFuture<Void> loadBuildTypesfuture = _apiController.get( ).loadBuildTypeList( );
+        final ListenableFuture<Void> loadProjectsFuture = _apiController.get( ).loadProjectList( );
+
+        //noinspection unchecked
+        addCallback( Futures.<Void>allAsList( loadBuildTypesfuture, loadProjectsFuture ), buildListLoadedCallback( ) );
     }
 
-    private FutureCallback<Void> buildListLoadedCallback( ) {
-        return new FutureCallback<Void>( ) {
+    private FutureCallback<List<Void>> buildListLoadedCallback( ) {
+        return new FutureCallback<List<Void>>( ) {
             @Override
-            public void onSuccess( final Void result ) {
+            public void onSuccess( final List<Void> result ) {
                 _configurationController.saveConfiguration( );
                 Platform.runLater( ( ) -> {
                     _loadingFailure.setValue( false );
@@ -216,6 +229,22 @@ final class ConfigurationViewModel {
                             .compound( comparing( ( BuildTypeViewModel value ) -> value.getName( ) ) );
 
             _buildTypes.setAll( ordering.sortedCopy( viewModels ) );
+        } );
+    }
+
+
+    @Subscribe
+    public void updateProjectList( final IProjectManager projectManager ) {
+        Platform.runLater( ( ) -> {
+            final List<ProjectViewModel> viewModels = projectManager.getProjects( ).stream( )
+                    .map( _projectViewModelFactory::fromProjectData )
+                    .collect( Collectors.toList( ) );
+
+            final Ordering<ProjectViewModel> ordering =
+                    Ordering.from( comparingInt( ( ProjectViewModel value ) -> value.getPosition( ) ) )
+                            .compound( comparing( ( ProjectViewModel value ) -> value.getName( ) ) );
+
+            _project.setAll( ordering.sortedCopy( viewModels ) );
         } );
     }
 

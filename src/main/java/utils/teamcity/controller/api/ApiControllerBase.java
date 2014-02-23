@@ -4,6 +4,7 @@ import com.google.common.eventbus.EventBus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import utils.teamcity.model.build.IBuildManager;
+import utils.teamcity.model.build.IProjectManager;
 import utils.teamcity.model.logger.Loggers;
 
 import java.util.concurrent.ExecutorService;
@@ -21,10 +22,12 @@ public abstract class ApiControllerBase implements IApiController {
     private final IBuildManager _buildManager;
     private final EventBus _eventBus;
     private final ExecutorService _executorService;
+    private final IProjectManager _projectManager;
     private final IApiRequestController _apiRequestController;
 
 
-    protected ApiControllerBase( final IBuildManager buildManager, final IApiRequestController apiRequestController, final EventBus eventBus, final ExecutorService executorService ) {
+    protected ApiControllerBase( final IProjectManager projectManager, final IBuildManager buildManager, final IApiRequestController apiRequestController, final EventBus eventBus, final ExecutorService executorService ) {
+        _projectManager = projectManager;
         _apiRequestController = apiRequestController;
         _buildManager = buildManager;
         _eventBus = eventBus;
@@ -37,6 +40,10 @@ public abstract class ApiControllerBase implements IApiController {
 
     protected EventBus getEventBus( ) {
         return _eventBus;
+    }
+
+    public IProjectManager getProjectManager( ) {
+        return _projectManager;
     }
 
     protected IBuildManager getBuildManager( ) {

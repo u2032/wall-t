@@ -50,7 +50,10 @@ public final class Configuration {
     private boolean _lightMode;
 
     @SerializedName("monitored_builds")
-    private List<SavedBuildData> _savedBuilds = Lists.newArrayList( );
+    private List<SavedBuildTypeData> _savedBuilds = Lists.newArrayList( );
+
+    @SerializedName("monitored_projects")
+    private List<SavedProjectData> _savedProjects = Lists.newArrayList( );
 
     public String getServerUrl( ) {
         return _serverUrl;
@@ -76,12 +79,20 @@ public final class Configuration {
         _credentialsPassword = credentialsPassword;
     }
 
-    public List<SavedBuildData> getSavedBuilds( ) {
+    public List<SavedBuildTypeData> getSavedBuilds( ) {
         return _savedBuilds;
     }
 
-    public void setSavedBuilds( final List<SavedBuildData> savedBuilds ) {
+    public void setSavedBuilds( final List<SavedBuildTypeData> savedBuilds ) {
         _savedBuilds = savedBuilds;
+    }
+
+    public List<SavedProjectData> getSavedProjects( ) {
+        return _savedProjects;
+    }
+
+    public void setSavedProjects( final List<SavedProjectData> savedProjects ) {
+        _savedProjects = savedProjects;
     }
 
     public ApiVersion getApiVersion( ) {

@@ -7,8 +7,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import utils.teamcity.model.build.BuildTypeData;
 import utils.teamcity.model.build.IBuildManager;
+import utils.teamcity.model.build.IProjectManager;
+import utils.teamcity.model.build.ProjectData;
 import utils.teamcity.model.configuration.Configuration;
-import utils.teamcity.model.configuration.SavedBuildData;
+import utils.teamcity.model.configuration.SavedBuildTypeData;
+import utils.teamcity.model.configuration.SavedProjectData;
 import utils.teamcity.model.logger.Loggers;
 
 import javax.inject.Inject;
@@ -33,17 +36,20 @@ public final class ConfigurationController implements IConfigurationController {
     public static final Logger LOGGER = LoggerFactory.getLogger( Loggers.MAIN );
     private final Configuration _configuration;
     private final IBuildManager _buildManager;
+    private final IProjectManager _projectManager;
 
     @Inject
-    public ConfigurationController( final Configuration configuration, final IBuildManager buildManager ) {
+    public ConfigurationController( final Configuration configuration, final IBuildManager buildManager, final IProjectManager projectManager ) {
         _configuration = configuration;
         _buildManager = buildManager;
+        _projectManager = projectManager;
     }
 
     @Override
     public void saveConfiguration( ) {
 
-        updateSavedBuild( );
+        updateSavedBuildTypes( );
+        updateSavedProjects( );
 
         final Gson gson = new GsonBuilder( ).setPrettyPrinting( ).create( );
         final Path configFilePath = Paths.get( "config.json" );
@@ -64,15 +70,28 @@ public final class ConfigurationController implements IConfigurationController {
         LOGGER.info( "Configuration was saved to " + configFilePath.toAbsolutePath( ) );
     }
 
-    private void updateSavedBuild( ) {
+    private void updateSavedBuildTypes( ) {
         final List<BuildTypeData> monitoredBuildTypes = _buildManager.getMonitoredBuildTypes( );
 
-        final Ordering<BuildTypeData> ordering = Ordering.from( Comparator.comparingInt( ( BuildTypeData data ) -> _buildManager.getPosition( data ) ) );
+        final Ordering<BuildTypeData> ordering = Ordering.from( Comparator.comparingInt( _buildManager::getPosition ) );
 
-        final List<SavedBuildData> buildToSaved = ordering.sortedCopy( monitoredBuildTypes ).stream( )
-                .map( data -> new SavedBuildData( data.getId( ), data.getName( ), data.getProjectName( ), data.getAliasName( ) ) )
+        final List<SavedBuildTypeData> buildToSaved = ordering.sortedCopy( monitoredBuildTypes ).stream( )
+                .map( data -> new SavedBuildTypeData( data.getId( ), data.getName( ), data.getProjectName( ), data.getAliasName( ) ) )
                 .collect( Collectors.toList( ) );
 
         _configuration.setSavedBuilds( buildToSaved );
+    }
+
+
+    private void updateSavedProjects( ) {
+        final List<ProjectData> monitoredProjects = _projectManager.getMonitoredProjects( );
+
+        final Ordering<ProjectData> ordering = Ordering.from( Comparator.comparingInt( _projectManager::getPosition ) );
+
+        final List<SavedProjectData> projectToSaved = ordering.sortedCopy( monitoredProjects ).stream( )
+                .map( data -> new SavedProjectData( data.getId( ), data.getName( ), data.getAliasName( ) ) )
+                .collect( Collectors.toList( ) );
+
+        _configuration.setSavedProjects( projectToSaved );
     }
 }

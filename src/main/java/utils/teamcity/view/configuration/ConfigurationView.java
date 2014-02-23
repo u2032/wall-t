@@ -80,17 +80,29 @@ final class ConfigurationView extends BorderPane {
         final HBox connectionInformation = connexionStatusInformation( );
         content.getChildren( ).add( connectionInformation );
 
-        final TableView<BuildTypeViewModel> buildList = buildTableView( );
-        content.widthProperty( ).addListener( ( o, oldValue, newValue ) -> buildList.setMaxWidth( newValue.doubleValue( ) * 0.9 ) );
-        buildList.disableProperty( ).bind( _model.loadingProperty( ) );
-        VBox.setVgrow( buildList, Priority.SOMETIMES );
-        content.getChildren( ).add( buildList );
+        final Label buildTypesListLabel = new Label( "Monitored Build types" );
+        buildTypesListLabel.setStyle( "-fx-font-weight:bold; -fx-font-size:20px;" );
+        final TableView<BuildTypeViewModel> buildTypesList = buildBuildTypesListTableView( );
+        content.widthProperty( ).addListener( ( o, oldValue, newValue ) -> buildTypesList.setMaxWidth( newValue.doubleValue( ) * 0.9 ) );
+        buildTypesList.disableProperty( ).bind( _model.loadingProperty( ) );
+        VBox.setVgrow( buildTypesList, Priority.SOMETIMES );
+        content.getChildren( ).addAll( buildTypesListLabel, buildTypesList );
+
+        final Label projectListLabel = new Label( "Monitored Projects" );
+        projectListLabel.setStyle( "-fx-font-weight:bold; -fx-font-size:20px;" );
+        final TableView<ProjectViewModel> projectList = buildProjectListTableView( );
+        content.widthProperty( ).addListener( ( o, oldValue, newValue ) -> projectList.setMaxWidth( newValue.doubleValue( ) * 0.9 ) );
+        projectList.disableProperty( ).bind( _model.loadingProperty( ) );
+        VBox.setVgrow( projectList, Priority.SOMETIMES );
+        content.getChildren( ).addAll( projectListLabel, projectList );
+
 
         final Button swithToWallButton = new Button( "Switch to wall" );
         swithToWallButton.setOnAction( ( event ) -> _model.requestSwithToWallScene( ) );
         content.getChildren( ).add( swithToWallButton );
 
-        buildList.disableProperty( ).bind( _model.loadingFailureProperty( ) );
+        buildTypesList.disableProperty( ).bind( _model.loadingFailureProperty( ) );
+        projectList.disableProperty( ).bind( _model.loadingFailureProperty( ) );
         swithToWallButton.disableProperty( ).bind( _model.loadingFailureProperty( ) );
 
         final ScrollPane scrollPane = new ScrollPane( content );
@@ -349,10 +361,9 @@ final class ConfigurationView extends BorderPane {
     }
 
 
-
-    private TableView<BuildTypeViewModel> buildTableView( ) {
+    private TableView<BuildTypeViewModel> buildBuildTypesListTableView( ) {
         final TableView<BuildTypeViewModel> tableview = new TableView<>( _model.getBuildTypes( ) );
-        tableview.setMinHeight( 500 );
+        tableview.setMinHeight( 300 );
         tableview.setEditable( true );
         tableview.setColumnResizePolicy( TableView.CONSTRAINED_RESIZE_POLICY );
 
@@ -364,12 +375,12 @@ final class ConfigurationView extends BorderPane {
         selectedColumn.setCellValueFactory( param -> param.getValue( ).selectedProperty( ) );
         selectedColumn.setCellFactory( CheckBoxTableCell.forTableColumn( selectedColumn ) );
 
-        final TableColumn<BuildTypeViewModel, BuildTypeViewModel> moveColumn = new TableColumn<>( "" );
+        final TableColumn<BuildTypeViewModel, IPositionable> moveColumn = new TableColumn<>( "" );
         moveColumn.setSortable( false );
         moveColumn.setMinWidth( 50 );
         moveColumn.setMaxWidth( 50 );
-        moveColumn.setCellValueFactory( param -> new SimpleObjectProperty<>( param.getValue( ) ) );
-        moveColumn.setCellFactory( param -> positionMoveButtonsTableCell( ) );
+        moveColumn.setCellValueFactory( param -> new SimpleObjectProperty<IPositionable>( param.getValue( ) ) );
+        moveColumn.setCellFactory( param -> positionMoveButtonsTableCell( BuildTypeViewModel.class ) );
 
         final TableColumn<BuildTypeViewModel, String> idColumn = new TableColumn<>( "id" );
         idColumn.setSortable( false );
@@ -399,10 +410,57 @@ final class ConfigurationView extends BorderPane {
         return tableview;
     }
 
-    private TableCell<BuildTypeViewModel, BuildTypeViewModel> positionMoveButtonsTableCell( ) {
-        return new TableCell<BuildTypeViewModel, BuildTypeViewModel>( ) {
+
+    private TableView<ProjectViewModel> buildProjectListTableView( ) {
+        final TableView<ProjectViewModel> tableview = new TableView<>( _model.getProject( ) );
+        tableview.setMinHeight( 200 );
+        tableview.setEditable( true );
+        tableview.setColumnResizePolicy( TableView.CONSTRAINED_RESIZE_POLICY );
+
+        final TableColumn<ProjectViewModel, Boolean> selectedColumn = new TableColumn<>( "" );
+        selectedColumn.setSortable( false );
+        selectedColumn.setEditable( true );
+        selectedColumn.setMinWidth( 40 );
+        selectedColumn.setMaxWidth( 40 );
+        selectedColumn.setCellValueFactory( param -> param.getValue( ).selectedProperty( ) );
+        selectedColumn.setCellFactory( CheckBoxTableCell.forTableColumn( selectedColumn ) );
+
+        final TableColumn<ProjectViewModel, IPositionable> moveColumn = new TableColumn<>( "" );
+        moveColumn.setSortable( false );
+        moveColumn.setMinWidth( 50 );
+        moveColumn.setMaxWidth( 50 );
+        moveColumn.setCellValueFactory( param -> new SimpleObjectProperty<IPositionable>( param.getValue( ) ) );
+        moveColumn.setCellFactory( param -> positionMoveButtonsTableCell( ProjectViewModel.class ) );
+
+        final TableColumn<ProjectViewModel, String> idColumn = new TableColumn<>( "id" );
+        idColumn.setSortable( false );
+        idColumn.setCellValueFactory( param -> param.getValue( ).idProperty( ) );
+
+        final TableColumn<ProjectViewModel, String> nameColumn = new TableColumn<>( "Name" );
+        nameColumn.setSortable( false );
+        nameColumn.setCellValueFactory( param -> param.getValue( ).nameProperty( ) );
+
+        final TableColumn<ProjectViewModel, String> aliasColumns = new TableColumn<>( "Alias" );
+        aliasColumns.setSortable( false );
+        aliasColumns.setEditable( true );
+        aliasColumns.setCellValueFactory( param -> param.getValue( ).aliasNameProperty( ) );
+        aliasColumns.setCellFactory( TextFieldTableCell.forTableColumn( ) );
+        aliasColumns.setOnEditCommit(
+                event -> {
+                    final ProjectViewModel buildTypeData = event.getTableView( ).getItems( ).get( event.getTablePosition( ).getRow( ) );
+                    buildTypeData.setAliasName( event.getNewValue( ) );
+                }
+        );
+
+        tableview.getColumns( ).addAll( selectedColumn, moveColumn, idColumn, nameColumn, aliasColumns );
+        return tableview;
+    }
+
+
+    private <T> TableCell<T, IPositionable> positionMoveButtonsTableCell( Class<T> type ) {
+        return new TableCell<T, IPositionable>( ) {
             @Override
-            protected void updateItem( final BuildTypeViewModel item, final boolean empty ) {
+            protected void updateItem( final IPositionable item, final boolean empty ) {
                 super.updateItem( item, empty );
                 setContentDisplay( ContentDisplay.GRAPHIC_ONLY );
                 if ( empty || item.getPosition( ) == Integer.MAX_VALUE ) {
@@ -429,5 +487,6 @@ final class ConfigurationView extends BorderPane {
             }
         };
     }
+
 
 }

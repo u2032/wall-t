@@ -20,6 +20,10 @@ public final class ConfigurationViewModule extends AbstractModule {
         install( new FactoryModuleBuilder( )
                 .implement( BuildTypeViewModel.class, BuildTypeViewModel.class )
                 .build( BuildTypeViewModel.Factory.class ) );
+
+        install( new FactoryModuleBuilder( )
+                .implement( ProjectViewModel.class, ProjectViewModel.class )
+                .build( ProjectViewModel.Factory.class ) );
     }
 
 }

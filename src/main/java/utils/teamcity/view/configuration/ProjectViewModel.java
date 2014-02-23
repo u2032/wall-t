@@ -3,54 +3,52 @@ package utils.teamcity.view.configuration;
 import com.google.common.eventbus.EventBus;
 import com.google.inject.assistedinject.Assisted;
 import javafx.beans.property.*;
-import utils.teamcity.model.build.BuildTypeData;
-import utils.teamcity.model.build.IBuildManager;
+import utils.teamcity.model.build.IProjectManager;
+import utils.teamcity.model.build.ProjectData;
 
 import javax.inject.Inject;
 
 /**
- * Date: 22/02/14
+ * Date: 23/02/14
  *
  * @author Cedric Longo
  */
-final class BuildTypeViewModel implements IPositionable {
+public class ProjectViewModel implements IPositionable {
 
     private final StringProperty _id = new SimpleStringProperty( );
-    private final StringProperty _projectName = new SimpleStringProperty( );
     private final StringProperty _name = new SimpleStringProperty( );
     private final StringProperty _aliasName = new SimpleStringProperty( );
     private final IntegerProperty _position = new SimpleIntegerProperty( );
     private final BooleanProperty _selected = new SimpleBooleanProperty( );
 
     interface Factory {
-        BuildTypeViewModel fromBuildTypeData( final BuildTypeData data );
+        ProjectViewModel fromProjectData( final ProjectData data );
     }
 
     @Inject
-    BuildTypeViewModel( final IBuildManager buildManager, final EventBus eventBus, @Assisted final BuildTypeData data ) {
+    ProjectViewModel( final IProjectManager projectManager, final EventBus eventBus, @Assisted final ProjectData data ) {
         _id.setValue( data.getId( ) );
-        _projectName.setValue( data.getProjectName( ) );
         _name.setValue( data.getName( ) );
 
         _aliasName.setValue( data.getAliasName( ) );
         _aliasName.addListener( ( o, oldValue, newValue ) -> data.setAliasName( newValue ) );
 
-        _selected.setValue( buildManager.getMonitoredBuildTypes( ).contains( data ) );
+        _selected.setValue( projectManager.getMonitoredProjects( ).contains( data ) );
         _selected.addListener( ( o, oldValue, newValue ) -> {
             if ( newValue )
-                buildManager.activateMonitoring( data );
+                projectManager.activateMonitoring( data );
             else
-                buildManager.unactivateMonitoring( data );
-            eventBus.post( buildManager );
+                projectManager.unactivateMonitoring( data );
+            eventBus.post( projectManager );
         } );
 
-        _position.setValue( buildManager.getPosition( data ) );
+        _position.setValue( projectManager.getPosition( data ) );
         _position.addListener( ( o, oldValue, newValue ) -> {
             final int position = (int) newValue;
             if ( position > 0 ) {
-                buildManager.requestPosition( data, position );
+                projectManager.requestPosition( data, position );
             }
-            eventBus.post( buildManager );
+            eventBus.post( projectManager );
         } );
     }
 
@@ -60,14 +58,6 @@ final class BuildTypeViewModel implements IPositionable {
 
     StringProperty idProperty( ) {
         return _id;
-    }
-
-    String getProjectName( ) {
-        return _projectName.get( );
-    }
-
-    StringProperty projectNameProperty( ) {
-        return _projectName;
     }
 
     String getName( ) {
@@ -115,4 +105,5 @@ final class BuildTypeViewModel implements IPositionable {
     public void setPosition( final int position ) {
         _position.set( position );
     }
+
 }

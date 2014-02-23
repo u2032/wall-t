@@ -3,7 +3,7 @@ package utils.teamcity.model.build;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import utils.teamcity.model.configuration.Configuration;
-import utils.teamcity.model.configuration.SavedBuildData;
+import utils.teamcity.model.configuration.SavedBuildTypeData;
 
 import javax.inject.Inject;
 import java.util.List;
@@ -25,7 +25,7 @@ final class BuildDataManager implements IBuildManager {
 
     @Inject
     BuildDataManager( final Configuration configuration ) {
-        for ( final SavedBuildData savedData : configuration.getSavedBuilds( ) ) {
+        for ( final SavedBuildTypeData savedData : configuration.getSavedBuilds( ) ) {
             final BuildTypeData data = new BuildTypeData( savedData.getId( ), savedData.getName( ), savedData.getProjectName( ) );
             data.setAliasName( savedData.getAliasName( ) );
             _buildTypes.add( data );
