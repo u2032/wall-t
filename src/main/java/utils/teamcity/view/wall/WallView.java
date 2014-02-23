@@ -65,14 +65,16 @@ final class WallView extends StackPane {
     private void displayNextScreen( ) {
         if ( getChildren( ).isEmpty( ) )
             return;
+
         final Node previousScreen = _currentDisplayedScreen;
 
         final int index = previousScreen == null ? -1 : getChildren( ).indexOf( previousScreen );
         final int nextIndex = ( index == -1 ? 0 : index + 1 ) % getChildren( ).size( );
+
         final Node nextScreen = getChildren( ).get( nextIndex );
 
         nextScreen.setVisible( true );
-        if ( previousScreen != null )
+        if ( previousScreen != null && previousScreen != nextScreen)
             previousScreen.setVisible( false );
 
         _currentDisplayedScreen = nextScreen;
@@ -93,12 +95,8 @@ final class WallView extends StackPane {
 
         final Iterable<List<TileViewModel>> screenPartition = Iterables.partition( builds, byScreen );
 
-        final int currentMaxByScreen = ImmutableList.copyOf( screenPartition ).stream( )
-                .mapToInt( list -> list.size( ) )
-                .max( ).orElse( 1 );
-
-        final int nbColums = max( 1, currentMaxByScreen / maxTilesByColumn + ( ( currentMaxByScreen % maxTilesByColumn > 0 ? 1 : 0 ) ) );
-        final int byColums = max( 1, currentMaxByScreen / nbColums + ( ( currentMaxByScreen % nbColums > 0 ? 1 : 0 ) ) );
+        final int nbColums = max( 1, byScreen / maxTilesByColumn + ( ( byScreen % maxTilesByColumn > 0 ? 1 : 0 ) ) );
+        final int byColums = max( 1, byScreen / nbColums + ( ( byScreen % nbColums > 0 ? 1 : 0 ) ) );
 
         for ( final List<TileViewModel> buildsInScreen : screenPartition ) {
             final GridPane screenPane = buildScreenPane( buildsInScreen, nbColums, byColums );
