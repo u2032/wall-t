@@ -47,7 +47,8 @@ final class ConfigurationViewModel {
     private final StringProperty _serverUrl = new SimpleStringProperty( );
     private final StringProperty _credentialsUser = new SimpleStringProperty( );
     private final StringProperty _credentialsPassword = new SimpleStringProperty( );
-    private final IntegerProperty _maxRowByColumn = new SimpleIntegerProperty( );
+    private final IntegerProperty _maxTilesByColumn = new SimpleIntegerProperty( );
+    private final IntegerProperty _maxTilesByRow = new SimpleIntegerProperty( );
     private final BooleanProperty _lightMode = new SimpleBooleanProperty( );
 
     private final BooleanProperty _loading = new SimpleBooleanProperty( );
@@ -94,8 +95,11 @@ final class ConfigurationViewModel {
         _credentialsPassword.setValue( configuration.getCredentialsPassword( ) );
         _credentialsPassword.addListener( ( object, oldValue, newValue ) -> configuration.setCredentialsPassword( newValue ) );
 
-        _maxRowByColumn.setValue( configuration.getMaxRowsByColumn( ) );
-        _maxRowByColumn.addListener( ( object, oldValue, newValue ) -> configuration.setMaxRowsByColumn( newValue.intValue( ) ) );
+        _maxTilesByColumn.setValue( configuration.getMaxTilesByColumn( ) );
+        _maxTilesByColumn.addListener( ( object, oldValue, newValue ) -> configuration.setMaxTilesByColumn( newValue.intValue( ) ) );
+
+        _maxTilesByRow.setValue( configuration.getMaxTilesByRow( ) );
+        _maxTilesByRow.addListener( ( object, oldValue, newValue ) -> configuration.setMaxTilesByRow( newValue.intValue( ) ) );
 
         _lightMode.setValue( configuration.isLightMode( ) );
         _lightMode.addListener( ( object, oldValue, newValue ) -> configuration.setLightMode( newValue ) );
@@ -151,8 +155,12 @@ final class ConfigurationViewModel {
         return _loadingFailure;
     }
 
-    IntegerProperty maxRowByColumnProperty( ) {
-        return _maxRowByColumn;
+    IntegerProperty maxTilesByColumnProperty( ) {
+        return _maxTilesByColumn;
+    }
+
+    IntegerProperty maxTilesByRowProperty( ) {
+        return _maxTilesByRow;
     }
 
     BooleanProperty lightModeProperty( ) {
@@ -213,6 +221,7 @@ final class ConfigurationViewModel {
 
     public void requestSwithToWallScene( ) {
         _configurationController.saveConfiguration( );
+        _eventBus.post( _configuration );
         _eventBus.post( new SceneEvent( WallScene.class ) );
     }
 

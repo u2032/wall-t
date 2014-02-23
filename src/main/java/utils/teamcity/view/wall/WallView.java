@@ -1,10 +1,12 @@
 package utils.teamcity.view.wall;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Maps;
 import javafx.animation.FadeTransition;
 import javafx.animation.RotateTransition;
 import javafx.animation.Timeline;
+import javafx.application.Platform;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
@@ -20,9 +22,7 @@ import utils.teamcity.view.UIUtils;
 import javax.inject.Inject;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static java.lang.Math.abs;
 import static java.lang.Math.max;
@@ -33,52 +33,104 @@ import static javafx.beans.binding.Bindings.createStringBinding;
  *
  * @author Cedric Longo
  */
-final class WallView extends GridPane {
+final class WallView extends StackPane {
 
     public static final int GAP_SPACE = 10;
 
     private final WallViewModel _model;
     private final Map<Node, FadeTransition> _registeredTransition = Maps.newHashMap( );
 
+    private Node _currentDisplayedScreen;
+
     @Inject
     WallView( final WallViewModel model ) {
         _model = model;
-
-        setHgap( GAP_SPACE );
-        setVgap( GAP_SPACE );
-        setPadding( new Insets( GAP_SPACE ) );
-
         setStyle( "-fx-background-color:black;" );
 
-        setAlignment( Pos.CENTER );
+        final ObservableList<TileViewModel> builds = _model.getDisplayedBuilds( );
+        builds.addListener( (ListChangeListener<TileViewModel>) c -> updateLayout( ) );
 
-        final ObservableList<TileViewModel> builds = _model.getBuilds( );
-        builds.addListener( (ListChangeListener<TileViewModel>) c -> {
-            updateLayout( (Collection<TileViewModel>) c.getList( ) );
-        } );
+        _model.getMaxTilesByColumnProperty( ).addListener( ( o, oldValue, newalue ) -> updateLayout( ) );
+        _model.getMaxTilesByRowProperty( ).addListener( ( o, oldValue, newalue ) -> updateLayout( ) );
+
+        final Timer screenAnimationTimer = new Timer( "WallView Screen switcher", true );
+        screenAnimationTimer.scheduleAtFixedRate( new TimerTask( ) {
+            @Override
+            public void run( ) {
+                Platform.runLater( ( ) -> displayNextScreen( ) );
+            }
+        }, 10000, 10000 );
     }
 
-    private void updateLayout( final Collection<TileViewModel> builds ) {
+    private void displayNextScreen( ) {
+        if ( getChildren( ).isEmpty( ) )
+            return;
+        final Node previousScreen = _currentDisplayedScreen;
+
+        final int index = previousScreen == null ? -1 : getChildren( ).indexOf( previousScreen );
+        final int nextIndex = ( index == -1 ? 0 : index + 1 ) % getChildren( ).size( );
+        final Node nextScreen = getChildren( ).get( nextIndex );
+
+        nextScreen.setVisible( true );
+        if ( previousScreen != null )
+            previousScreen.setVisible( false );
+
+        _currentDisplayedScreen = nextScreen;
+    }
+
+    private void updateLayout( ) {
         getChildren( ).clear( );
 
-        final int maxRowsByColumn = _model.getMaxRowsByColumn( );
-        final int nbColums = max( 1, builds.size( ) / maxRowsByColumn + ( ( builds.size( ) % maxRowsByColumn > 0 ? 1 : 0 ) ) );
-        final int byColums = max( 1, builds.size( ) / nbColums + ( ( builds.size( ) % nbColums > 0 ? 1 : 0 ) ) );
+        final Collection<TileViewModel> builds = _model.getDisplayedBuilds( );
 
-        final Iterable<List<TileViewModel>> partition = Iterables.partition( builds, byColums );
+        final int maxTilesByColumn = _model.getMaxTilesByColumnProperty( ).get( );
+        final int maxTilesByRow = _model.getMaxTilesByRowProperty( ).get( );
+
+        final int maxByScreens = max( 1, maxTilesByColumn * maxTilesByRow );
+
+        final int nbScreen = max( 1, builds.size( ) / maxByScreens + ( ( builds.size( ) % maxByScreens > 0 ? 1 : 0 ) ) );
+        final int byScreen = max( 1, builds.size( ) / nbScreen + ( ( builds.size( ) % nbScreen > 0 ? 1 : 0 ) ) );
+
+        final Iterable<List<TileViewModel>> screenPartition = Iterables.partition( builds, byScreen );
+
+        final int currentMaxByScreen = ImmutableList.copyOf( screenPartition ).stream( )
+                .mapToInt( list -> list.size( ) )
+                .max( ).orElse( 1 );
+
+        final int nbColums = max( 1, currentMaxByScreen / maxTilesByColumn + ( ( currentMaxByScreen % maxTilesByColumn > 0 ? 1 : 0 ) ) );
+        final int byColums = max( 1, currentMaxByScreen / nbColums + ( ( currentMaxByScreen % nbColums > 0 ? 1 : 0 ) ) );
+
+        for ( final List<TileViewModel> buildsInScreen : screenPartition ) {
+            final GridPane screenPane = buildScreenPane( buildsInScreen, nbColums, byColums );
+            screenPane.setVisible( false );
+            getChildren( ).add( screenPane );
+        }
+        displayNextScreen( );
+    }
+
+    private GridPane buildScreenPane( final Iterable<TileViewModel> buildsInScreen, final int nbColums, final int byColums ) {
+        final GridPane screenPane = new GridPane( );
+        screenPane.setHgap( GAP_SPACE );
+        screenPane.setVgap( GAP_SPACE );
+        screenPane.setPadding( new Insets( GAP_SPACE ) );
+        screenPane.setStyle( "-fx-background-color:black;" );
+        screenPane.setAlignment( Pos.CENTER );
+
+        final Iterable<List<TileViewModel>> partition = Iterables.partition( buildsInScreen, byColums );
         int x = 0;
         int y = 0;
         for ( final List<TileViewModel> buildList : partition ) {
             for ( final TileViewModel build : buildList ) {
-                createTileForBuildType( build, x, y, nbColums, byColums );
+                createTileForBuildType( screenPane, build, x, y, nbColums, byColums );
                 y++;
             }
             y = 0;
             x++;
         }
+        return screenPane;
     }
 
-    private void createTileForBuildType( final TileViewModel build, final int x, final int y, final int nbColumns, final int nbRows ) {
+    private void createTileForBuildType( final GridPane screenPane, final TileViewModel build, final int x, final int y, final int nbColumns, final int nbRows ) {
         final StackPane tile = new StackPane( );
         tile.setAlignment( Pos.CENTER_LEFT );
         tile.setStyle( "-fx-border-color:white; -fx-border-radius:5;" );
@@ -119,7 +171,7 @@ final class WallView extends GridPane {
         }
 
         tile.getChildren( ).addAll( progressPane, tileContent );
-        add( tile, x, y );
+        screenPane.add( tile, x, y );
     }
 
     private VBox createContextPart( final TileViewModel build ) {

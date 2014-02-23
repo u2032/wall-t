@@ -301,6 +301,7 @@ final class ConfigurationView extends BorderPane {
 
         lightModeCheckBox( grid );
         nbTilesByColumnComboBox( grid );
+        nbTilesByRowComboBox( grid );
 
         final ColumnConstraints noConstraint = new ColumnConstraints( );
         final ColumnConstraints rightAlignementConstraint = new ColumnConstraints( );
@@ -329,12 +330,24 @@ final class ConfigurationView extends BorderPane {
         final Label lineLabel = new Label( "Max tiles by column:" );
         parent.add( lineLabel, 0, 1 );
 
-        final ComboBox<Integer> apiVersionBox = new ComboBox<>( FXCollections.observableArrayList( 2, 3, 4, 5, 6, 7, 8 ) );
-        apiVersionBox.getSelectionModel( ).select( (Integer) _model.maxRowByColumnProperty( ).get( ) );
-        apiVersionBox.getSelectionModel( ).selectedItemProperty( ).addListener( ( o, oldValue, newValue ) -> _model.maxRowByColumnProperty( ).setValue( newValue ) );
-        lineLabel.setLabelFor( apiVersionBox );
-        parent.add( apiVersionBox, 1, 1 );
+        final ComboBox<Integer> comboBox = new ComboBox<>( FXCollections.observableArrayList( 2, 3, 4, 5, 6, 7, 8 ) );
+        comboBox.getSelectionModel( ).select( (Integer) _model.maxTilesByColumnProperty( ).get( ) );
+        comboBox.getSelectionModel( ).selectedItemProperty( ).addListener( ( o, oldValue, newValue ) -> _model.maxTilesByColumnProperty( ).setValue( newValue ) );
+        lineLabel.setLabelFor( comboBox );
+        parent.add( comboBox, 1, 1 );
     }
+
+    private void nbTilesByRowComboBox( final GridPane parent ) {
+        final Label lineLabel = new Label( "Max tiles by row:" );
+        parent.add( lineLabel, 2, 1 );
+
+        final ComboBox<Integer> comboBox = new ComboBox<>( FXCollections.observableArrayList( 2, 3, 4, 5, 6, 7, 8 ) );
+        comboBox.getSelectionModel( ).select( (Integer) _model.maxTilesByRowProperty( ).get( ) );
+        comboBox.getSelectionModel( ).selectedItemProperty( ).addListener( ( o, oldValue, newValue ) -> _model.maxTilesByRowProperty( ).setValue( newValue ) );
+        lineLabel.setLabelFor( comboBox );
+        parent.add( comboBox, 3, 1 );
+    }
+
 
 
     private TableView<BuildTypeViewModel> buildTableView( ) {

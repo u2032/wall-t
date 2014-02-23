@@ -28,23 +28,23 @@ public final class Configuration {
     @SerializedName( "proxy.credentials.password" )
     private String _proxyCredentialsPassword;
 
-    @SerializedName("server.url")
+    @SerializedName( "server.url" )
     private String _serverUrl;
 
-    @SerializedName("server.credentials.user")
+    @SerializedName( "server.credentials.user" )
     private String _credentialsUser = "guest";
 
-    @SerializedName("server.credentials.password")
+    @SerializedName( "server.credentials.password" )
     private String _credentialsPassword;
 
     @SerializedName("api.version")
     private ApiVersion _apiVersion = ApiVersion.API_8_0;
 
     @SerializedName("pref.max.tiles.by.column")
-    private int _maxRowsByColumn = 4;
+    private int _maxTilesByColumn = 4;
 
-    @SerializedName("pref.max.tiles.by.screen")
-    private int _maxTilesByScreen = 16;
+    @SerializedName( "pref.max.tiles.by.row" )
+    private int _maxTilesByRow = 4;
 
     @SerializedName("pref.light.mode")
     private boolean _lightMode;
@@ -88,24 +88,24 @@ public final class Configuration {
         return _apiVersion;
     }
 
-    public int getMaxRowsByColumn( ) {
-        return _maxRowsByColumn;
+    public int getMaxTilesByColumn( ) {
+        return _maxTilesByColumn;
     }
 
-    public void setMaxRowsByColumn( final int maxRowsByColumn ) {
-        _maxRowsByColumn = maxRowsByColumn;
+    public void setMaxTilesByColumn( final int maxTilesByColumn ) {
+        _maxTilesByColumn = maxTilesByColumn;
     }
 
     public void setApiVersion( final ApiVersion apiVersion ) {
         _apiVersion = apiVersion;
     }
 
-    public int getMaxTilesByScreen( ) {
-        return _maxTilesByScreen;
+    public int getMaxTilesByRow( ) {
+        return _maxTilesByRow;
     }
 
-    public void setMaxTilesByScreen( final int maxTilesByScreen ) {
-        _maxTilesByScreen = maxTilesByScreen;
+    public void setMaxTilesByRow( final int maxTilesByRow ) {
+        _maxTilesByRow = maxTilesByRow;
     }
 
     public boolean isLightMode( ) {
