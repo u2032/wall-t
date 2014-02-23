@@ -1,5 +1,6 @@
 package utils.teamcity.view.configuration;
 
+import com.google.common.collect.Ordering;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.google.common.util.concurrent.FutureCallback;
@@ -25,6 +26,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.google.common.util.concurrent.Futures.addCallback;
+import static java.util.Comparator.comparing;
+import static java.util.Comparator.comparingInt;
 
 /**
  * Date: 15/02/14
@@ -162,6 +165,7 @@ final class ConfigurationViewModel {
 
     void requestLoadingBuilds( ) {
         _loading.setValue( true );
+        _loadingFailure.setValue( true );
         _loadingInformation.setValue( "Trying to connect..." );
 
         final ListenableFuture<Void> future = _apiController.get( ).loadBuildList( );
@@ -194,10 +198,16 @@ final class ConfigurationViewModel {
     @Subscribe
     public void updateBuildTypeList( final IBuildManager buildManager ) {
         Platform.runLater( ( ) -> {
-            _buildTypes.setAll(
-                    (List<BuildTypeViewModel>) buildManager.getBuildTypes( ).stream( )
-                            .map( _buildTypeViewModelFactory::fromBuildTypeData )
-                            .collect( Collectors.toList( ) ) );
+            final List<BuildTypeViewModel> viewModels = buildManager.getBuildTypes( ).stream( )
+                    .map( _buildTypeViewModelFactory::fromBuildTypeData )
+                    .collect( Collectors.toList( ) );
+
+            final Ordering<BuildTypeViewModel> ordering =
+                    Ordering.from( comparingInt( ( BuildTypeViewModel value ) -> value.getPosition( ) ) )
+                            .compound( comparing( ( BuildTypeViewModel value ) -> value.getProjectName( ) ) )
+                            .compound( comparing( ( BuildTypeViewModel value ) -> value.getName( ) ) );
+
+            _buildTypes.setAll( ordering.sortedCopy( viewModels ) );
         } );
     }
 

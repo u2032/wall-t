@@ -1,6 +1,7 @@
 package utils.teamcity.view.configuration;
 
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
@@ -9,12 +10,14 @@ import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.TextFieldTableCell;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Paint;
 import javafx.scene.text.Font;
 import javafx.scene.text.TextAlignment;
 import javafx.util.StringConverter;
 import utils.teamcity.controller.api.json.ApiVersion;
+import utils.teamcity.view.UIUtils;
 
 import javax.inject.Inject;
 
@@ -341,22 +344,34 @@ final class ConfigurationView extends BorderPane {
         tableview.setColumnResizePolicy( TableView.CONSTRAINED_RESIZE_POLICY );
 
         final TableColumn<BuildTypeViewModel, Boolean> selectedColumn = new TableColumn<>( "" );
+        selectedColumn.setSortable( false );
         selectedColumn.setEditable( true );
         selectedColumn.setMinWidth( 40 );
-        selectedColumn.setMaxWidth( 50 );
+        selectedColumn.setMaxWidth( 40 );
         selectedColumn.setCellValueFactory( param -> param.getValue( ).selectedProperty( ) );
         selectedColumn.setCellFactory( CheckBoxTableCell.forTableColumn( selectedColumn ) );
 
+        final TableColumn<BuildTypeViewModel, BuildTypeViewModel> moveColumn = new TableColumn<>( "" );
+        moveColumn.setSortable( false );
+        moveColumn.setMinWidth( 50 );
+        moveColumn.setMaxWidth( 50 );
+        moveColumn.setCellValueFactory( param -> new SimpleObjectProperty<>( param.getValue( ) ) );
+        moveColumn.setCellFactory( param -> positionMoveButtonsTableCell( ) );
+
         final TableColumn<BuildTypeViewModel, String> idColumn = new TableColumn<>( "id" );
+        idColumn.setSortable( false );
         idColumn.setCellValueFactory( param -> param.getValue( ).idProperty( ) );
 
         final TableColumn<BuildTypeViewModel, String> projectColumn = new TableColumn<>( "Project" );
+        projectColumn.setSortable( false );
         projectColumn.setCellValueFactory( param -> param.getValue( ).projectNameProperty( ) );
 
         final TableColumn<BuildTypeViewModel, String> nameColumn = new TableColumn<>( "Name" );
+        nameColumn.setSortable( false );
         nameColumn.setCellValueFactory( param -> param.getValue( ).nameProperty( ) );
 
         final TableColumn<BuildTypeViewModel, String> aliasColumns = new TableColumn<>( "Alias" );
+        aliasColumns.setSortable( false );
         aliasColumns.setEditable( true );
         aliasColumns.setCellValueFactory( param -> param.getValue( ).aliasNameProperty( ) );
         aliasColumns.setCellFactory( TextFieldTableCell.forTableColumn( ) );
@@ -367,8 +382,39 @@ final class ConfigurationView extends BorderPane {
                 }
         );
 
-        tableview.getColumns( ).addAll( selectedColumn, idColumn, projectColumn, nameColumn, aliasColumns );
+        tableview.getColumns( ).addAll( selectedColumn, moveColumn, idColumn, projectColumn, nameColumn, aliasColumns );
         return tableview;
+    }
+
+    private TableCell<BuildTypeViewModel, BuildTypeViewModel> positionMoveButtonsTableCell( ) {
+        return new TableCell<BuildTypeViewModel, BuildTypeViewModel>( ) {
+            @Override
+            protected void updateItem( final BuildTypeViewModel item, final boolean empty ) {
+                super.updateItem( item, empty );
+                setContentDisplay( ContentDisplay.GRAPHIC_ONLY );
+                if ( empty || item.getPosition( ) == Integer.MAX_VALUE ) {
+                    setGraphic( null );
+                    return;
+                }
+                final Button upButton = new Button( );
+                upButton.setPadding( new Insets( 1 ) );
+                upButton.setGraphic( new ImageView( UIUtils.createImage( "up.png" ) ) );
+                upButton.setOnAction( event -> {
+                    item.setPosition( item.getPosition( ) - 1 );
+                } );
+
+                final Button downButton = new Button( );
+                downButton.setPadding( new Insets( 1 ) );
+                downButton.setGraphic( new ImageView( UIUtils.createImage( "down.png" ) ) );
+                downButton.setOnAction( event -> {
+                    item.setPosition( item.getPosition( ) + 1 );
+                } );
+
+                final HBox hbox = new HBox( 2, upButton, downButton );
+                hbox.setAlignment( Pos.CENTER );
+                setGraphic( hbox );
+            }
+        };
     }
 
 }

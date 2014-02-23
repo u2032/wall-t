@@ -2,10 +2,7 @@ package utils.teamcity.view.configuration;
 
 import com.google.common.eventbus.EventBus;
 import com.google.inject.assistedinject.Assisted;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
+import javafx.beans.property.*;
 import utils.teamcity.model.build.BuildTypeData;
 import utils.teamcity.model.build.IBuildManager;
 
@@ -24,6 +21,7 @@ final class BuildTypeViewModel {
     private final StringProperty _projectName = new SimpleStringProperty( );
     private final StringProperty _name = new SimpleStringProperty( );
     private final StringProperty _aliasName = new SimpleStringProperty( );
+    private final IntegerProperty _position = new SimpleIntegerProperty( );
     private final BooleanProperty _selected = new SimpleBooleanProperty( );
 
     interface Factory {
@@ -47,6 +45,15 @@ final class BuildTypeViewModel {
                 _buildManager.activateMonitoring( data );
             else
                 _buildManager.unactivateMonitoring( data );
+            eventBus.post( _buildManager );
+        } );
+
+        _position.setValue( _buildManager.getPosition( data ) );
+        _position.addListener( ( o, oldValue, newValue ) -> {
+            final int position = (int) newValue;
+            if ( position > 0 ) {
+                _buildManager.requestPosition( data, position );
+            }
             eventBus.post( _buildManager );
         } );
     }
@@ -97,5 +104,17 @@ final class BuildTypeViewModel {
 
     void setSelected( final boolean selected ) {
         _selected.set( selected );
+    }
+
+    int getPosition( ) {
+        return _position.get( );
+    }
+
+    IntegerProperty positionProperty( ) {
+        return _position;
+    }
+
+    void setPosition( final int position ) {
+        _position.set( position );
     }
 }

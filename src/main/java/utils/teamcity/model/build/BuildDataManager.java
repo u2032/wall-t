@@ -2,7 +2,6 @@ package utils.teamcity.model.build;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 import utils.teamcity.model.configuration.Configuration;
 import utils.teamcity.model.configuration.SavedBuildData;
 
@@ -12,6 +11,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static java.lang.Math.min;
+
 /**
  * Date: 16/02/14
  *
@@ -20,7 +21,7 @@ import java.util.stream.Collectors;
 final class BuildDataManager implements IBuildManager {
 
     private final List<BuildTypeData> _buildTypes = Lists.newArrayList( );
-    private final Set<BuildTypeData> _monitoredBuildTypes = Sets.newHashSet( );
+    private final List<BuildTypeData> _monitoredBuildTypes = Lists.newArrayList( );
 
     @Inject
     BuildDataManager( final Configuration configuration ) {
@@ -78,6 +79,20 @@ final class BuildDataManager implements IBuildManager {
     @Override
     public synchronized void unactivateMonitoring( final BuildTypeData buildTypeData ) {
         _monitoredBuildTypes.remove( buildTypeData );
+    }
+
+    @Override
+    public int getPosition( final BuildTypeData data ) {
+        final int index = getMonitoredBuildTypes( ).indexOf( data );
+        return index < 0 ? Integer.MAX_VALUE : index + 1;
+    }
+
+    @Override
+    public synchronized void requestPosition( final BuildTypeData data, final int position ) {
+        final int index = _monitoredBuildTypes.indexOf( data );
+        if ( index != -1 )
+            _monitoredBuildTypes.remove( index );
+        _monitoredBuildTypes.add( min( position - 1, _monitoredBuildTypes.size( ) ), data );
     }
 
     @Override

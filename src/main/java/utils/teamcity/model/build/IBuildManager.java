@@ -25,4 +25,8 @@ public interface IBuildManager {
     void unactivateMonitoring( BuildTypeData buildTypeData );
 
     List<BuildTypeData> registerBuildTypesInQueue( Set<String> buildTypesInQueue );
+
+    int getPosition( BuildTypeData data );
+
+    void requestPosition( BuildTypeData data, int newValue );
 }

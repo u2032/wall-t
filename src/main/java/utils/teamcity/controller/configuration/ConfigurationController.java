@@ -1,5 +1,6 @@
 package utils.teamcity.controller.configuration;
 
+import com.google.common.collect.Ordering;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.slf4j.Logger;
@@ -16,6 +17,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -63,9 +65,14 @@ public final class ConfigurationController implements IConfigurationController {
     }
 
     private void updateSavedBuild( ) {
-        final List<SavedBuildData> buildToSaved = _buildManager.getMonitoredBuildTypes( ).stream( )
+        final List<BuildTypeData> monitoredBuildTypes = _buildManager.getMonitoredBuildTypes( );
+
+        final Ordering<BuildTypeData> ordering = Ordering.from( Comparator.comparingInt( ( BuildTypeData data ) -> _buildManager.getPosition( data ) ) );
+
+        final List<SavedBuildData> buildToSaved = ordering.sortedCopy( monitoredBuildTypes ).stream( )
                 .map( data -> new SavedBuildData( data.getId( ), data.getName( ), data.getProjectName( ), data.getAliasName( ) ) )
                 .collect( Collectors.toList( ) );
+
         _configuration.setSavedBuilds( buildToSaved );
     }
 }
