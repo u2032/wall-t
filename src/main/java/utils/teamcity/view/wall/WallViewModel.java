@@ -3,9 +3,7 @@ package utils.teamcity.view.wall;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import javafx.application.Platform;
-import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -27,7 +25,6 @@ final class WallViewModel {
     private final TileViewModel.Factory _tileViewModeFactory;
 
     private final ObservableList<TileViewModel> _displayedBuilds = FXCollections.observableArrayList( );
-    private final BooleanProperty _lightMode = new SimpleBooleanProperty( );
 
     private final IntegerProperty _maxTilesByColumn = new SimpleIntegerProperty( );
     private final IntegerProperty _maxTilesByRow = new SimpleIntegerProperty( );
@@ -56,16 +53,11 @@ final class WallViewModel {
         Platform.runLater( ( ) -> {
             _maxTilesByColumn.setValue( configuration.getMaxTilesByColumn( ) );
             _maxTilesByRow.setValue( configuration.getMaxTilesByRow( ) );
-            _lightMode.setValue( configuration.isLightMode( ) );
         } );
     }
 
     public ObservableList<TileViewModel> getDisplayedBuilds( ) {
         return _displayedBuilds;
-    }
-
-    public BooleanProperty lightModeProperty( ) {
-        return _lightMode;
     }
 
     public IntegerProperty getMaxTilesByColumnProperty( ) {

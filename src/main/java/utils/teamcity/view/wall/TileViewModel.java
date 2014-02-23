@@ -10,6 +10,7 @@ import javafx.scene.layout.Background;
 import utils.teamcity.model.build.BuildData;
 import utils.teamcity.model.build.BuildState;
 import utils.teamcity.model.build.BuildTypeData;
+import utils.teamcity.model.configuration.Configuration;
 
 import javax.inject.Inject;
 import java.time.Duration;
@@ -34,19 +35,22 @@ final class TileViewModel {
     private final BooleanProperty _running = new SimpleBooleanProperty( );
     private final BooleanProperty _queued = new SimpleBooleanProperty( );
     private final ObjectProperty<LocalDateTime> _lastFinishedDate = new SimpleObjectProperty<>( );
-    private final ObjectProperty<Duration> _timeLeft = new SimpleObjectProperty<>(  Duration.ZERO );
+    private final ObjectProperty<Duration> _timeLeft = new SimpleObjectProperty<>( Duration.ZERO );
     private final StringProperty _displayedName = new SimpleStringProperty( );
     private final ObjectProperty<Image> _image = new SimpleObjectProperty<>( );
     private final ObjectProperty<Background> _background = new SimpleObjectProperty<>( );
     private final ObjectProperty<Background> _runningBackground = new SimpleObjectProperty<>( );
+
+    private final BooleanProperty _lightMode = new SimpleBooleanProperty( );
 
     interface Factory {
         TileViewModel forBuildTypeData( final BuildTypeData buildTypeData );
     }
 
     @Inject
-    TileViewModel( @Assisted final BuildTypeData buildTypeData ) {
+    TileViewModel( final Configuration configuration, @Assisted final BuildTypeData buildTypeData ) {
         _buildTypeData = buildTypeData;
+        updateConfiguration( configuration );
         updateTileViewModel( buildTypeData );
     }
 
@@ -65,6 +69,13 @@ final class TileViewModel {
             updatePercentageComplete( );
             updateBackground( );
             updateIcon( );
+        } );
+    }
+
+    @Subscribe
+    public void updateConfiguration( final Configuration configuration ) {
+        Platform.runLater( ( ) -> {
+            _lightMode.setValue( configuration.isLightMode( ) );
         } );
     }
 
@@ -227,4 +238,9 @@ final class TileViewModel {
     ObjectProperty<Background> runningBackgroundProperty( ) {
         return _runningBackground;
     }
+
+    BooleanProperty lightModeProperty( ) {
+        return _lightMode;
+    }
+
 }
