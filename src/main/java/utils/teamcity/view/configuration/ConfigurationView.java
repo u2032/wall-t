@@ -1,5 +1,6 @@
 package utils.teamcity.view.configuration;
 
+import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
@@ -9,12 +10,15 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.layout.*;
+import javafx.scene.paint.Paint;
 import javafx.scene.text.Font;
+import javafx.scene.text.TextAlignment;
 import javafx.util.StringConverter;
 import utils.teamcity.controller.api.json.ApiVersion;
 
 import javax.inject.Inject;
 
+import static javafx.beans.binding.Bindings.createIntegerBinding;
 import static javafx.beans.binding.Bindings.createStringBinding;
 
 /**
@@ -54,32 +58,40 @@ final class ConfigurationView extends BorderPane {
         content.setSpacing( 20 );
 
         final GridPane serverConfigurationPane = serverConfigurationPane( );
-        content.widthProperty( ).addListener( ( o, oldValue, newValue ) -> serverConfigurationPane.setMaxWidth( newValue.doubleValue( ) * 0.8 ) );
+        content.widthProperty( ).addListener( ( o, oldValue, newValue ) -> serverConfigurationPane.setMaxWidth( newValue.doubleValue( ) * 0.9 ) );
         content.getChildren( ).add( serverConfigurationPane );
+
+        final GridPane preferenceConfigurationPane = preferenceConfigurationPane( );
+        content.widthProperty( ).addListener( ( o, oldValue, newValue ) -> preferenceConfigurationPane.setMaxWidth( newValue.doubleValue( ) * 0.9 ) );
+        content.getChildren( ).add( preferenceConfigurationPane );
 
         final Button loadBuildsButton = new Button( );
         loadBuildsButton.setOnAction( ( event ) -> _model.requestLoadingBuilds( ) );
-        loadBuildsButton.textProperty( ).bind( createStringBinding( ( ) -> _model.loadingBuildProperty( ).get( ) ? "Loading ..." : "Load Builds", _model.loadingBuildProperty( ) ) );
-        loadBuildsButton.disableProperty( ).bind( _model.loadingBuildProperty( ) );
+        loadBuildsButton.textProperty( ).bind( createStringBinding( ( ) -> _model.loadingProperty( ).get( ) ? "Loading ..." : "Connect to server", _model.loadingProperty( ) ) );
+        loadBuildsButton.disableProperty( ).bind( _model.loadingProperty( ) );
         content.getChildren( ).add( loadBuildsButton );
 
+        final HBox connectionInformation = connexionStatusInformation( );
+        content.getChildren( ).add( connectionInformation );
+
         final TableView<BuildTypeViewModel> buildList = buildTableView( );
-        content.widthProperty( ).addListener( ( o, oldValue, newValue ) -> buildList.setMaxWidth( newValue.doubleValue( ) * 0.8 ) );
-        buildList.disableProperty( ).bind( _model.loadingBuildProperty( ) );
+        content.widthProperty( ).addListener( ( o, oldValue, newValue ) -> buildList.setMaxWidth( newValue.doubleValue( ) * 0.9 ) );
+        buildList.disableProperty( ).bind( _model.loadingProperty( ) );
         VBox.setVgrow( buildList, Priority.SOMETIMES );
         content.getChildren( ).add( buildList );
-
-        final GridPane preferenceConfigurationPane = preferenceConfigurationPane( );
-        content.widthProperty( ).addListener( ( o, oldValue, newValue ) -> preferenceConfigurationPane.setMaxWidth( newValue.doubleValue( ) * 0.8 ) );
-        content.getChildren( ).add( preferenceConfigurationPane );
 
         final Button swithToWallButton = new Button( "Switch to wall" );
         swithToWallButton.setOnAction( ( event ) -> _model.requestSwithToWallScene( ) );
         content.getChildren( ).add( swithToWallButton );
 
+        buildList.disableProperty( ).bind( _model.loadingFailureProperty( ) );
+        swithToWallButton.disableProperty( ).bind( _model.loadingFailureProperty( ) );
+
         final ScrollPane scrollPane = new ScrollPane( content );
         scrollPane.setFitToWidth( true );
         scrollPane.setFitToHeight( true );
+        scrollPane.setHbarPolicy( ScrollPane.ScrollBarPolicy.NEVER );
+        scrollPane.setVbarPolicy( ScrollPane.ScrollBarPolicy.AS_NEEDED );
         return scrollPane;
     }
 
@@ -157,6 +169,39 @@ final class ConfigurationView extends BorderPane {
         parent.add( apiVersionBox, 1, 2 );
     }
 
+    private HBox connexionStatusInformation( ) {
+        final HBox container = new HBox( );
+        container.setAlignment( Pos.CENTER );
+        container.setSpacing( 10 );
+
+        final ProgressIndicator indicator = new ProgressIndicator( );
+        indicator.setPrefSize( 20, 20 );
+        indicator.visibleProperty( ).bind( _model.loadingProperty( ) );
+
+        final Label connectionInformation = new Label( );
+        connectionInformation.setTextAlignment( TextAlignment.CENTER );
+        connectionInformation.setWrapText( true );
+        connectionInformation.textProperty( ).bind( _model.loadingInformationProperty( ) );
+        connectionInformation.visibleProperty( ).bind( _model.loadingInformationProperty( ).isEmpty( ).not( ) );
+        connectionInformation.textFillProperty( ).bind( Bindings.<Paint>createObjectBinding( ( ) -> {
+            if ( _model.loadingProperty( ).get( ) )
+                return Paint.valueOf( "black" );
+            return _model.isLoadingFailure( ) ? Paint.valueOf( "red" ) : Paint.valueOf( "green" );
+        }, _model.loadingFailureProperty( ), _model.loadingProperty( ) ) );
+
+        connectionInformation.minHeightProperty( ).bind( createIntegerBinding( ( ) -> {
+            if ( _model.loadingInformationProperty( ).isEmpty( ).get( ) ) {
+                return 0;
+            } else {
+                return 50;
+            }
+        }, _model.loadingInformationProperty( ) ) );
+        connectionInformation.maxHeightProperty( ).bind( connectionInformation.minHeightProperty( ) );
+
+        container.getChildren( ).addAll( indicator, connectionInformation );
+        return container;
+    }
+
 
     private GridPane preferenceConfigurationPane( ) {
         final GridPane grid = new GridPane( );
@@ -205,6 +250,7 @@ final class ConfigurationView extends BorderPane {
 
     private TableView<BuildTypeViewModel> buildTableView( ) {
         final TableView<BuildTypeViewModel> tableview = new TableView<>( _model.getBuildTypes( ) );
+        tableview.setMinHeight( 500 );
         tableview.setEditable( true );
         tableview.setColumnResizePolicy( TableView.CONSTRAINED_RESIZE_POLICY );
 

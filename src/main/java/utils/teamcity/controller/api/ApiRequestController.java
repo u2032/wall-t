@@ -17,7 +17,6 @@ import utils.teamcity.model.configuration.Configuration;
 import utils.teamcity.model.logger.Loggers;
 
 import javax.inject.Inject;
-import java.io.IOException;
 
 /**
  * Date: 17/02/14
@@ -38,50 +37,49 @@ final class ApiRequestController implements IApiRequestController {
 
     @Override
     public <T extends ApiResponse> ListenableFuture<T> sendRequest( final ApiVersion version, final String path, final Class<T> expectedType ) {
-        final ApiRequest request = ApiRequestBuilder.newRequest( )
-                .to( _configuration.getServerUrl( ) )
-                .forUser( _configuration.getCredentialsUser( ) )
-                .withPassword( _configuration.getCredentialsPassword( ) )
-                .request( path )
-                .apiVersion( version )
-                .build( );
-
-        LOGGER.info( "Requesting: {}", request );
-
-        final AsyncHttpClient.BoundRequestBuilder httpRequest = _httpClient
-                .prepareGet( request.getURI( ) )
-                .addHeader( HttpHeaders.ACCEPT, "application/json" );
-
-        if ( !request.isGuestMode( ) ) {
-            final Realm realm = new Realm.RealmBuilder( )
-                    .setPrincipal( request.getUsername( ) )
-                    .setPassword( request.getPassword( ) )
-                    .setUsePreemptiveAuth( true )
-                    .setScheme( Realm.AuthScheme.BASIC )
+        final SettableFuture<T> apiResponseFuture = SettableFuture.create( );
+        try {
+            final ApiRequest request = ApiRequestBuilder.newRequest( )
+                    .to( _configuration.getServerUrl( ) )
+                    .forUser( _configuration.getCredentialsUser( ) )
+                    .withPassword( _configuration.getCredentialsPassword( ) )
+                    .request( path )
+                    .apiVersion( version )
                     .build( );
-            httpRequest.setRealm( realm );
-        }
+
+            LOGGER.info( "Requesting: {}", request );
+
+            final AsyncHttpClient.BoundRequestBuilder httpRequest = _httpClient
+                    .prepareGet( request.getURI( ) )
+                    .addHeader( HttpHeaders.ACCEPT, "application/json" );
+
+            if ( !request.isGuestMode( ) ) {
+                final Realm realm = new Realm.RealmBuilder( )
+                        .setPrincipal( request.getUsername( ) )
+                        .setPassword( request.getPassword( ) )
+                        .setUsePreemptiveAuth( true )
+                        .setScheme( Realm.AuthScheme.BASIC )
+                        .build( );
+                httpRequest.setRealm( realm );
+            }
 
 //        if (useProxy) {
 //            final ProxyServer ps = new ProxyServer(ProxyServer.Protocol.HTTPS, "127.0.0.1", 8080, "admin", "password");
 //            httpRequest.setProxyServer(  );
 //        }
 
-        final SettableFuture<T> apiResponseFuture = SettableFuture.create( );
-
-        try {
             httpRequest.execute( new AsyncCompletionHandler<Void>( ) {
                 @Override
                 public void onThrowable( final Throwable t ) {
                     super.onThrowable( t );
-                    apiResponseFuture.setException( new RuntimeException( "Error during " + request, t ) );
+                    apiResponseFuture.setException( t );
                 }
 
                 @Override
                 public Void onCompleted( final Response response ) throws Exception {
 
                     if ( response.getStatusCode( ) != 200 ) {
-                        apiResponseFuture.setException( new ApiException( "Http Status response is " + response.getStatusCode( ) + " when requesting uri: " + response.getUri( ) ) );
+                        apiResponseFuture.setException( new ApiException( "Http status code is " + response.getStatusCode( ) + " when requesting uri: " + response.getUri( ) ) );
                         return null;
                     }
 
@@ -92,7 +90,7 @@ final class ApiRequestController implements IApiRequestController {
                     return null;
                 }
             } );
-        } catch ( IOException e ) {
+        } catch ( Exception e ) {
             apiResponseFuture.setException( e );
         }
 

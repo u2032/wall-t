@@ -8,6 +8,7 @@ import javafx.application.Platform;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.scene.paint.Paint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import utils.teamcity.controller.api.IApiController;
@@ -33,12 +34,16 @@ import static com.google.common.util.concurrent.Futures.addCallback;
 final class ConfigurationViewModel {
 
     public static final Logger LOGGER = LoggerFactory.getLogger( Loggers.MAIN );
+
     private final StringProperty _serverUrl = new SimpleStringProperty( );
     private final StringProperty _credentialsUser = new SimpleStringProperty( );
     private final StringProperty _credentialsPassword = new SimpleStringProperty( );
-    private final BooleanProperty _loadingBuild = new SimpleBooleanProperty( );
     private final IntegerProperty _maxRowByColumn = new SimpleIntegerProperty( );
     private final BooleanProperty _lightMode = new SimpleBooleanProperty( );
+
+    private final BooleanProperty _loading = new SimpleBooleanProperty( );
+    private final BooleanProperty _loadingFailure = new SimpleBooleanProperty( true );
+    private final StringProperty _loadingInformation = new SimpleStringProperty( );
 
     private final ObservableList<BuildTypeViewModel> _buildTypes = FXCollections.observableArrayList( );
 
@@ -84,8 +89,20 @@ final class ConfigurationViewModel {
         return _credentialsUser;
     }
 
-    BooleanProperty loadingBuildProperty( ) {
-        return _loadingBuild;
+    BooleanProperty loadingProperty( ) {
+        return _loading;
+    }
+
+    StringProperty loadingInformationProperty( ) {
+        return _loadingInformation;
+    }
+
+    boolean isLoadingFailure( ) {
+        return _loadingFailure.get( );
+    }
+
+    BooleanProperty loadingFailureProperty( ) {
+        return _loadingFailure;
     }
 
     IntegerProperty maxRowByColumnProperty( ) {
@@ -101,7 +118,8 @@ final class ConfigurationViewModel {
     }
 
     public void requestLoadingBuilds( ) {
-        _loadingBuild.setValue( true );
+        _loading.setValue( true );
+        _loadingInformation.setValue( "Trying to connect..." );
 
         final ListenableFuture<Void> future = _apiController.get( ).loadBuildList( );
         addCallback( future, buildListLoadedCallback( ) );
@@ -112,14 +130,18 @@ final class ConfigurationViewModel {
             @Override
             public void onSuccess( final Void result ) {
                 Platform.runLater( ( ) -> {
-                    _loadingBuild.setValue( false );
+                    _loadingFailure.setValue( false );
+                    _loadingInformation.setValue( null );
+                    _loading.setValue( false );
                 } );
             }
 
             @Override
-            public void onFailure( final Throwable t ) {
+            public void onFailure( final Throwable cause ) {
                 Platform.runLater( ( ) -> {
-                    _loadingBuild.setValue( false );
+                    _loadingFailure.setValue( true );
+                    _loadingInformation.setValue( "Connection failure\n(" + cause.getClass( ).getSimpleName( ) + ": " + cause.getMessage( ) + ")" );
+                    _loading.setValue( false );
                 } );
             }
         };
