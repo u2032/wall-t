@@ -18,7 +18,6 @@ import org.slf4j.LoggerFactory;
 import utils.teamcity.controller.api.ApiModule;
 import utils.teamcity.controller.api.IApiMonitoringService;
 import utils.teamcity.controller.configuration.ConfigurationModule;
-import utils.teamcity.controller.configuration.IConfigurationController;
 import utils.teamcity.model.build.BuildDataModule;
 import utils.teamcity.model.event.SceneEvent;
 import utils.teamcity.model.logger.Loggers;
@@ -98,7 +97,6 @@ public final class WallApplication extends Application {
     @Override
     public void stop( ) throws Exception {
         LOGGER.info( "Stopping ..." );
-        _injector.getInstance( IConfigurationController.class ).saveConfiguration( );
         _injector.getInstance( AsyncHttpClientConfig.class ).executorService( ).shutdownNow( );
         _injector.getInstance( AsyncHttpClient.class ).close( );
 

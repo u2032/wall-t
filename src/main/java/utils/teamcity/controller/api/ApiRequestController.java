@@ -6,10 +6,7 @@ import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.SettableFuture;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.ning.http.client.AsyncCompletionHandler;
-import com.ning.http.client.AsyncHttpClient;
-import com.ning.http.client.Realm;
-import com.ning.http.client.Response;
+import com.ning.http.client.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import utils.teamcity.controller.api.json.ApiVersion;
@@ -63,10 +60,11 @@ final class ApiRequestController implements IApiRequestController {
                 httpRequest.setRealm( realm );
             }
 
-//        if (useProxy) {
-//            final ProxyServer ps = new ProxyServer(ProxyServer.Protocol.HTTPS, "127.0.0.1", 8080, "admin", "password");
-//            httpRequest.setProxyServer(  );
-//        }
+            if ( _configuration.isUseProxy( ) ) {
+                // CODEREVIEW Let the user choose the protocol ?
+                final ProxyServer proxyServer = new ProxyServer( ProxyServer.Protocol.HTTP, _configuration.getProxyHost( ), _configuration.getProxyPort( ), _configuration.getProxyCredentialsUser( ), _configuration.getProxyCredentialsPassword( ) );
+                httpRequest.setProxyServer( proxyServer );
+            }
 
             httpRequest.execute( new AsyncCompletionHandler<Void>( ) {
                 @Override

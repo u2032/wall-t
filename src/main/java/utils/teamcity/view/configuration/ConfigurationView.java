@@ -18,8 +18,7 @@ import utils.teamcity.controller.api.json.ApiVersion;
 
 import javax.inject.Inject;
 
-import static javafx.beans.binding.Bindings.createIntegerBinding;
-import static javafx.beans.binding.Bindings.createStringBinding;
+import static javafx.beans.binding.Bindings.*;
 
 /**
  * Date: 15/02/14
@@ -60,6 +59,10 @@ final class ConfigurationView extends BorderPane {
         final GridPane serverConfigurationPane = serverConfigurationPane( );
         content.widthProperty( ).addListener( ( o, oldValue, newValue ) -> serverConfigurationPane.setMaxWidth( newValue.doubleValue( ) * 0.9 ) );
         content.getChildren( ).add( serverConfigurationPane );
+
+        final GridPane proxyConfigurationPane = proxyConfigurationPane( );
+        content.widthProperty( ).addListener( ( o, oldValue, newValue ) -> proxyConfigurationPane.setMaxWidth( newValue.doubleValue( ) * 0.9 ) );
+        content.getChildren( ).add( proxyConfigurationPane );
 
         final GridPane preferenceConfigurationPane = preferenceConfigurationPane( );
         content.widthProperty( ).addListener( ( o, oldValue, newValue ) -> preferenceConfigurationPane.setMaxWidth( newValue.doubleValue( ) * 0.9 ) );
@@ -105,6 +108,7 @@ final class ConfigurationView extends BorderPane {
         serverUrlLine( grid );
         credentialsLine( grid );
         apiVersionLine( grid );
+        proxyConfigurationLine( grid );
 
         final ColumnConstraints noConstraint = new ColumnConstraints( );
         final ColumnConstraints rightAlignementConstraint = new ColumnConstraints( );
@@ -118,6 +122,7 @@ final class ConfigurationView extends BorderPane {
 
         return grid;
     }
+
 
     private void serverUrlLine( final GridPane parent ) {
         final Label lineLabel = new Label( "Server URL:" );
@@ -168,6 +173,87 @@ final class ConfigurationView extends BorderPane {
         lineLabel.setLabelFor( apiVersionBox );
         parent.add( apiVersionBox, 1, 2 );
     }
+
+
+    private void proxyConfigurationLine( final GridPane grid ) {
+        final CheckBox useProxyCheckbox = new CheckBox( "Use HTTP Proxy" );
+        useProxyCheckbox.selectedProperty( ).bindBidirectional( _model.proxyUseProperty( ) );
+
+        grid.add( useProxyCheckbox, 2, 2 );
+    }
+
+    private GridPane proxyConfigurationPane( ) {
+        final GridPane grid = new GridPane( );
+        grid.setAlignment( Pos.CENTER );
+        grid.setPadding( new Insets( 10 ) );
+        grid.setHgap( 10 );
+        grid.setVgap( 20 );
+        grid.visibleProperty( ).bind( _model.proxyUseProperty( ) );
+        grid.maxHeightProperty( ).bind( grid.minHeightProperty( ) );
+        grid.minHeightProperty( ).bind( createDoubleBinding( ( ) -> {
+            if ( _model.proxyUseProperty( ).get( ) )
+                return USE_COMPUTED_SIZE;
+            return 0d;
+        }, _model.proxyUseProperty( ) ) );
+
+
+        proxyServerUrlLine( grid );
+        proxyCredentialsLine( grid );
+
+
+        final ColumnConstraints noConstraint = new ColumnConstraints( );
+        final ColumnConstraints rightAlignementConstraint = new ColumnConstraints( );
+        rightAlignementConstraint.setHalignment( HPos.RIGHT );
+        grid.getColumnConstraints( ).add( rightAlignementConstraint );
+        grid.getColumnConstraints( ).add( noConstraint );
+        grid.getColumnConstraints( ).add( rightAlignementConstraint );
+        grid.getColumnConstraints( ).add( noConstraint );
+
+        grid.setStyle( "-fx-border-color:white; -fx-border-radius:5;" );
+
+        return grid;
+    }
+
+    private void proxyServerUrlLine( final GridPane parent ) {
+        final Label lineLabel = new Label( "Proxy Host:" );
+        parent.add( lineLabel, 0, 0 );
+
+        final TextField lineField = new TextField( );
+        lineField.textProperty( ).bindBidirectional( _model.proxyServerUrlProperty( ) );
+        lineLabel.setLabelFor( lineField );
+        parent.add( lineField, 1, 0 );
+
+        final Label portLabel = new Label( "Proxy port:" );
+        parent.add( portLabel, 2, 0 );
+
+        final TextField portField = new TextField( );
+        portField.textProperty( ).addListener( ( o, oldValue, newValue ) -> {
+            if ( !oldValue.equals( newValue ) )
+                portField.textProperty( ).setValue( newValue.replaceAll( "[^0-9]", "" ) );
+        } );
+        portField.textProperty( ).bindBidirectional( _model.proxyServerPortProperty( ) );
+        portLabel.setLabelFor( portField );
+        parent.add( portField, 3, 0 );
+    }
+
+    private void proxyCredentialsLine( final GridPane parent ) {
+        final Label lineLabel = new Label( "Proxy User:" );
+        parent.add( lineLabel, 0, 1 );
+
+        final TextField lineField = new TextField( );
+        lineField.textProperty( ).bindBidirectional( _model.credentialsUserProperty( ) );
+        lineLabel.setLabelFor( lineField );
+        parent.add( lineField, 1, 1 );
+
+        final Label passwordLabel = new Label( "Proxy Password:" );
+        parent.add( passwordLabel, 2, 1 );
+
+        final TextField passwordField = new PasswordField( );
+        passwordField.textProperty( ).bindBidirectional( _model.credentialsUserProperty( ) );
+        passwordLabel.setLabelFor( passwordField );
+        parent.add( passwordField, 3, 1 );
+    }
+
 
     private HBox connexionStatusInformation( ) {
         final HBox container = new HBox( );

@@ -13,13 +13,28 @@ import java.util.List;
  */
 public final class Configuration {
 
+    @SerializedName( "proxy.use" )
+    private boolean _useProxy;
+
+    @SerializedName( "proxy.host" )
+    private String _proxyHost;
+
+    @SerializedName( "proxy.port" )
+    private int _proxyPort = 80;
+
+    @SerializedName( "proxy.credentials.user" )
+    private String _proxyCredentialsUser;
+
+    @SerializedName( "proxy.credentials.password" )
+    private String _proxyCredentialsPassword;
+
     @SerializedName("server.url")
     private String _serverUrl;
 
-    @SerializedName("credentials.user")
+    @SerializedName("server.credentials.user")
     private String _credentialsUser = "guest";
 
-    @SerializedName("credentials.password")
+    @SerializedName("server.credentials.password")
     private String _credentialsPassword;
 
     @SerializedName("api.version")
@@ -28,10 +43,10 @@ public final class Configuration {
     @SerializedName("pref.max.tiles.by.column")
     private int _maxRowsByColumn = 4;
 
-    @SerializedName( "pref.max.tiles.by.screen" )
+    @SerializedName("pref.max.tiles.by.screen")
     private int _maxTilesByScreen = 16;
 
-    @SerializedName( "pref.light.mode" )
+    @SerializedName("pref.light.mode")
     private boolean _lightMode;
 
     @SerializedName("monitored_builds")
@@ -99,5 +114,45 @@ public final class Configuration {
 
     public void setLightMode( final boolean lightMode ) {
         _lightMode = lightMode;
+    }
+
+    public boolean isUseProxy( ) {
+        return _useProxy;
+    }
+
+    public void setUseProxy( final boolean useProxy ) {
+        _useProxy = useProxy;
+    }
+
+    public String getProxyHost( ) {
+        return _proxyHost;
+    }
+
+    public void setProxyHost( final String proxyHost ) {
+        _proxyHost = proxyHost;
+    }
+
+    public int getProxyPort( ) {
+        return _proxyPort;
+    }
+
+    public void setProxyPort( final int proxyPort ) {
+        _proxyPort = proxyPort;
+    }
+
+    public String getProxyCredentialsUser( ) {
+        return _proxyCredentialsUser;
+    }
+
+    public void setProxyCredentialsUser( final String proxyCredentialsUser ) {
+        _proxyCredentialsUser = proxyCredentialsUser;
+    }
+
+    public String getProxyCredentialsPassword( ) {
+        return _proxyCredentialsPassword;
+    }
+
+    public void setProxyCredentialsPassword( final String proxyCredentialsPassword ) {
+        _proxyCredentialsPassword = proxyCredentialsPassword;
     }
 }

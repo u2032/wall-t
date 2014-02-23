@@ -8,11 +8,11 @@ import javafx.application.Platform;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.scene.paint.Paint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import utils.teamcity.controller.api.IApiController;
 import utils.teamcity.controller.api.json.ApiVersion;
+import utils.teamcity.controller.configuration.IConfigurationController;
 import utils.teamcity.model.build.IBuildManager;
 import utils.teamcity.model.configuration.Configuration;
 import utils.teamcity.model.event.SceneEvent;
@@ -35,6 +35,12 @@ final class ConfigurationViewModel {
 
     public static final Logger LOGGER = LoggerFactory.getLogger( Loggers.MAIN );
 
+    private final BooleanProperty _proxyUse = new SimpleBooleanProperty( );
+    private final StringProperty _proxyServerUrl = new SimpleStringProperty( );
+    private final StringProperty _proxyServerPort = new SimpleStringProperty( );
+    private final StringProperty _proxyCredentialsUser = new SimpleStringProperty( );
+    private final StringProperty _proxyCredentialsPassword = new SimpleStringProperty( );
+
     private final StringProperty _serverUrl = new SimpleStringProperty( );
     private final StringProperty _credentialsUser = new SimpleStringProperty( );
     private final StringProperty _credentialsPassword = new SimpleStringProperty( );
@@ -50,14 +56,31 @@ final class ConfigurationViewModel {
     private final Configuration _configuration;
     private final Provider<IApiController> _apiController;
     private final BuildTypeViewModel.Factory _buildTypeViewModelFactory;
+    private final IConfigurationController _configurationController;
     private final EventBus _eventBus;
 
     @Inject
-    ConfigurationViewModel( final Configuration configuration, final Provider<IApiController> apiController, final EventBus eventBus, final IBuildManager buildManager, final BuildTypeViewModel.Factory buildTypeViewModelFactory ) {
+    ConfigurationViewModel( final Configuration configuration, final Provider<IApiController> apiController, final EventBus eventBus, final IBuildManager buildManager, final BuildTypeViewModel.Factory buildTypeViewModelFactory, final IConfigurationController configurationController ) {
         _configuration = configuration;
         _eventBus = eventBus;
         _apiController = apiController;
         _buildTypeViewModelFactory = buildTypeViewModelFactory;
+        _configurationController = configurationController;
+
+        _proxyUse.setValue( _configuration.isUseProxy( ) );
+        _proxyUse.addListener( ( o, oldValue, newValue ) -> configuration.setUseProxy( newValue ) );
+
+        _proxyServerUrl.setValue( _configuration.getProxyHost( ) );
+        _proxyServerUrl.addListener( ( o, oldValue, newValue ) -> configuration.setProxyHost( newValue ) );
+
+        _proxyServerPort.setValue( String.valueOf( _configuration.getProxyPort( ) ) );
+        _proxyServerPort.addListener( ( o, oldValue, newValue ) -> configuration.setProxyPort( Integer.valueOf( newValue ) ) );
+
+        _proxyCredentialsUser.setValue( _configuration.getProxyCredentialsUser( ) );
+        _proxyCredentialsUser.addListener( ( o, oldValue, newValue ) -> configuration.setProxyCredentialsUser( newValue ) );
+
+        _proxyCredentialsPassword.setValue( _configuration.getProxyCredentialsPassword( ) );
+        _proxyCredentialsPassword.addListener( ( o, oldValue, newValue ) -> configuration.setProxyCredentialsPassword( newValue ) );
 
         _serverUrl.setValue( configuration.getServerUrl( ) );
         _serverUrl.addListener( ( object, oldValue, newValue ) -> configuration.setServerUrl( newValue ) );
@@ -77,7 +100,27 @@ final class ConfigurationViewModel {
         updateBuildTypeList( buildManager );
     }
 
-    public StringProperty serverUrlProperty( ) {
+    BooleanProperty proxyUseProperty( ) {
+        return _proxyUse;
+    }
+
+    StringProperty proxyServerUrlProperty( ) {
+        return _proxyServerUrl;
+    }
+
+    StringProperty proxyServerPortProperty( ) {
+        return _proxyServerPort;
+    }
+
+    StringProperty proxyCredentialsUserProperty( ) {
+        return _proxyCredentialsUser;
+    }
+
+    StringProperty proxyCredentialsPasswordProperty( ) {
+        return _proxyCredentialsPassword;
+    }
+
+    StringProperty serverUrlProperty( ) {
         return _serverUrl;
     }
 
@@ -117,7 +160,7 @@ final class ConfigurationViewModel {
         return _buildTypes;
     }
 
-    public void requestLoadingBuilds( ) {
+    void requestLoadingBuilds( ) {
         _loading.setValue( true );
         _loadingInformation.setValue( "Trying to connect..." );
 
@@ -129,6 +172,7 @@ final class ConfigurationViewModel {
         return new FutureCallback<Void>( ) {
             @Override
             public void onSuccess( final Void result ) {
+                _configurationController.saveConfiguration( );
                 Platform.runLater( ( ) -> {
                     _loadingFailure.setValue( false );
                     _loadingInformation.setValue( null );
@@ -158,6 +202,7 @@ final class ConfigurationViewModel {
     }
 
     public void requestSwithToWallScene( ) {
+        _configurationController.saveConfiguration( );
         _eventBus.post( new SceneEvent( WallScene.class ) );
     }
 
