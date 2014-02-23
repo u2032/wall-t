@@ -1,6 +1,7 @@
 package utils.teamcity.model.build;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Date: 23/02/14
@@ -23,4 +24,5 @@ public interface IProjectManager {
 
     void requestPosition( ProjectData data, int newValue );
 
+    Optional<ProjectData> getProject( String id );
 }

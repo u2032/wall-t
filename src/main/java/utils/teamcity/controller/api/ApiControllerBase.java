@@ -3,6 +3,7 @@ package utils.teamcity.controller.api;
 import com.google.common.eventbus.EventBus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import utils.teamcity.controller.api.json.ApiVersion;
 import utils.teamcity.model.build.IBuildManager;
 import utils.teamcity.model.build.IProjectManager;
 import utils.teamcity.model.logger.Loggers;
@@ -22,11 +23,13 @@ public abstract class ApiControllerBase implements IApiController {
     private final IBuildManager _buildManager;
     private final EventBus _eventBus;
     private final ExecutorService _executorService;
+    private final ApiVersion _apiVersion;
     private final IProjectManager _projectManager;
     private final IApiRequestController _apiRequestController;
 
 
-    protected ApiControllerBase( final IProjectManager projectManager, final IBuildManager buildManager, final IApiRequestController apiRequestController, final EventBus eventBus, final ExecutorService executorService ) {
+    protected ApiControllerBase( final ApiVersion apiVersion, final IProjectManager projectManager, final IBuildManager buildManager, final IApiRequestController apiRequestController, final EventBus eventBus, final ExecutorService executorService ) {
+        _apiVersion = apiVersion;
         _projectManager = projectManager;
         _apiRequestController = apiRequestController;
         _buildManager = buildManager;
@@ -52,6 +55,10 @@ public abstract class ApiControllerBase implements IApiController {
 
     protected Logger getLogger( ) {
         return LOGGER;
+    }
+
+    public ApiVersion getApiVersion( ) {
+        return _apiVersion;
     }
 
     protected void runInWorkerThread( final Runnable callable ) {

@@ -9,21 +9,25 @@ import com.google.gson.annotations.SerializedName;
  */
 public final class SavedBuildTypeData {
 
-    @SerializedName("id")
+    @SerializedName( "id" )
     private String _id;
 
-    @SerializedName("name")
+    @SerializedName( "name" )
     private String _name;
 
-    @SerializedName("projectName")
+    @SerializedName( "projectName" )
     private String _projectName;
 
-    @SerializedName("alias_name")
+    @SerializedName( "projectId" )
+    private String _projectId;
+
+    @SerializedName( "alias_name" )
     private String _aliasName;
 
-    public SavedBuildTypeData( final String id, final String name, final String projectName, final String aliasName ) {
+    public SavedBuildTypeData( final String id, final String name, final String projectId, final String projectName, final String aliasName ) {
         _id = id;
         _name = name;
+        _projectId = projectId;
         _projectName = projectName;
         _aliasName = aliasName;
     }
@@ -34,6 +38,10 @@ public final class SavedBuildTypeData {
 
     public String getName( ) {
         return _name;
+    }
+
+    public String getProjectId( ) {
+        return _projectId;
     }
 
     public String getProjectName( ) {

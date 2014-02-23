@@ -3,8 +3,8 @@ package utils.teamcity.view.configuration;
 import com.google.common.collect.Ordering;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
+import com.google.common.util.concurrent.AsyncFunction;
 import com.google.common.util.concurrent.FutureCallback;
-import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import javafx.application.Platform;
 import javafx.beans.property.*;
@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.google.common.util.concurrent.Futures.addCallback;
+import static com.google.common.util.concurrent.Futures.transform;
 import static java.util.Comparator.comparing;
 import static java.util.Comparator.comparingInt;
 
@@ -186,17 +187,16 @@ final class ConfigurationViewModel {
         _loadingFailure.setValue( true );
         _loadingInformation.setValue( "Trying to connect..." );
 
-        final ListenableFuture<Void> loadBuildTypesfuture = _apiController.get( ).loadBuildTypeList( );
         final ListenableFuture<Void> loadProjectsFuture = _apiController.get( ).loadProjectList( );
+        final ListenableFuture<Void> loadBuildTypesfuture = transform( loadProjectsFuture, (AsyncFunction<Void, Void>) input -> _apiController.get( ).loadBuildTypeList( ) );
 
-        //noinspection unchecked
-        addCallback( Futures.<Void>allAsList( loadBuildTypesfuture, loadProjectsFuture ), buildListLoadedCallback( ) );
+        addCallback( loadBuildTypesfuture, loadingSuccessfulCallback( ) );
     }
 
-    private FutureCallback<List<Void>> buildListLoadedCallback( ) {
-        return new FutureCallback<List<Void>>( ) {
+    private FutureCallback<Void> loadingSuccessfulCallback( ) {
+        return new FutureCallback<Void>( ) {
             @Override
-            public void onSuccess( final List<Void> result ) {
+            public void onSuccess( final Void result ) {
                 _configurationController.saveConfiguration( );
                 Platform.runLater( ( ) -> {
                     _loadingFailure.setValue( false );

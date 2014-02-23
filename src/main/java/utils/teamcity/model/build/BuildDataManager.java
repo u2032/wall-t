@@ -26,7 +26,7 @@ final class BuildDataManager implements IBuildManager {
     @Inject
     BuildDataManager( final Configuration configuration ) {
         for ( final SavedBuildTypeData savedData : configuration.getSavedBuilds( ) ) {
-            final BuildTypeData data = new BuildTypeData( savedData.getId( ), savedData.getName( ), savedData.getProjectName( ) );
+            final BuildTypeData data = new BuildTypeData( savedData.getId( ), savedData.getName( ), savedData.getProjectId( ), savedData.getProjectName( ) );
             data.setAliasName( savedData.getAliasName( ) );
             _buildTypes.add( data );
             activateMonitoring( data );
@@ -51,7 +51,7 @@ final class BuildDataManager implements IBuildManager {
             final Optional<BuildTypeData> previousData = getBuild( btype.getId( ) );
             if ( !previousData.isPresent( ) ) {
                 // Adding new build
-                _buildTypes.add( new BuildTypeData( btype.getId( ), btype.getName( ), btype.getProjectName( ) ) );
+                _buildTypes.add( btype );
             }
         }
     }

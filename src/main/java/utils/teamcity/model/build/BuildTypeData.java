@@ -23,6 +23,7 @@ public final class BuildTypeData {
 
     private final String _id;
     private final String _name;
+    private final String _projectId;
     private final String _projectName;
 
     private String _aliasName;
@@ -31,9 +32,10 @@ public final class BuildTypeData {
     private Instant _lastDataReceived = Instant.now( );
 
 
-    public BuildTypeData( final String id, final String name, final String projectName ) {
+    public BuildTypeData( final String id, final String name, final String projectId, final String projectName ) {
         _id = id;
         _name = name;
+        _projectId = projectId;
         _projectName = projectName;
     }
 
@@ -47,6 +49,10 @@ public final class BuildTypeData {
 
     public String getProjectName( ) {
         return _projectName;
+    }
+
+    public String getProjectId( ) {
+        return _projectId;
     }
 
     public String getAliasName( ) {
@@ -63,20 +69,20 @@ public final class BuildTypeData {
     }
 
     public Optional<BuildData> getLastBuild( final BuildState state ) {
-        return getBuilds().stream( )
+        return getBuilds( ).stream( )
                 .filter( build -> build.getState( ) == state )
                 .findFirst( );
     }
 
     public Optional<BuildData> getOldestBuild( final BuildState state ) {
-        return reverse( getBuilds() ).stream( )
+        return reverse( getBuilds( ) ).stream( )
                 .filter( build -> build.getState( ) == state )
                 .findFirst( );
     }
 
 
     public final Optional<BuildData> getBuildById( final int id ) {
-        return getBuilds().stream( ).filter( b -> b.getId( ) == id ).findFirst( );
+        return getBuilds( ).stream( ).filter( b -> b.getId( ) == id ).findFirst( );
     }
 
     public synchronized boolean isQueued( ) {

@@ -9,14 +9,17 @@ import com.google.gson.annotations.SerializedName;
  */
 final class BuildType {
 
-    @SerializedName( "id" )
+    @SerializedName("id")
     private String _id;
 
-    @SerializedName( "name" )
+    @SerializedName("name")
     private String _name;
 
-    @SerializedName( "projectName" )
+    @SerializedName("projectName")
     private String _projectName;
+
+    @SerializedName( "projectId" )
+    private String _projectId;
 
 
     public String getId( ) {
@@ -29,5 +32,9 @@ final class BuildType {
 
     public String getProjectName( ) {
         return _projectName;
+    }
+
+    String getProjectId( ) {
+        return _projectId;
     }
 }

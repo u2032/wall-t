@@ -18,6 +18,9 @@ final class BuildType {
     @SerializedName( "projectName" )
     private String _projectName;
 
+    @SerializedName( "projectId" )
+    private String _projectId;
+
 
     public String getId( ) {
         return _id;
@@ -29,5 +32,9 @@ final class BuildType {
 
     public String getProjectName( ) {
         return _projectName;
+    }
+
+    String getProjectId( ) {
+        return _projectId;
     }
 }

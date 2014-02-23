@@ -29,7 +29,7 @@ public final class ApiController extends ApiControllerBase {
 
     @Inject
     public ApiController( final IProjectManager projectManager, final IBuildManager buildManager, final IApiRequestController apiRequestController, final EventBus eventBus, final ExecutorService executorService ) {
-        super( projectManager, buildManager, apiRequestController, eventBus, executorService );
+        super( API_8_0, projectManager, buildManager, apiRequestController, eventBus, executorService );
     }
 
     @Override
@@ -37,16 +37,23 @@ public final class ApiController extends ApiControllerBase {
         final SettableFuture<Void> ackFuture = SettableFuture.create( );
 
         runInWorkerThread( ( ) -> {
-            final ListenableFuture<BuildTypeList> buildListFuture = getApiRequestController( ).sendRequest( API_8_0, "buildTypes", BuildTypeList.class );
+            final ListenableFuture<BuildTypeList> buildListFuture = getApiRequestController( ).sendRequest( getApiVersion( ), "buildTypes", BuildTypeList.class );
             addCallback( buildListFuture, new FutureCallback<BuildTypeList>( ) {
                 @Override
                 public void onSuccess( final BuildTypeList result ) {
                     final List<BuildTypeData> buildTypes = result.getBuildTypes( ).stream( )
-                            .map( ( btype ) -> new BuildTypeData( btype.getId( ), btype.getName( ), btype.getProjectName( ) ) )
+                            .map( ( btype ) -> new BuildTypeData( btype.getId( ), btype.getName( ), btype.getProjectId( ), btype.getProjectName( ) ) )
                             .collect( Collectors.toList( ) );
                     getBuildManager( ).registerBuildTypes( buildTypes );
                     getEventBus( ).post( getBuildManager( ) );
                     ackFuture.set( null );
+
+                    for ( final BuildTypeData buildType : getBuildManager( ).getBuildTypes( ) ) {
+                        final Optional<ProjectData> project = getProjectManager( ).getProject( buildType.getProjectId( ) );
+                        if ( project.isPresent( ) )
+                            project.get( ).registerBuildType( buildType );
+                        getLogger( ).info( "Discovering build type " + buildType.getId( ) + " (" + buildType.getName( ) + ") on project " + buildType.getProjectId( ) + " (" + buildType.getProjectName( ) + ")" );
+                    }
                 }
 
                 @Override
@@ -65,8 +72,8 @@ public final class ApiController extends ApiControllerBase {
         final SettableFuture<Void> ackFuture = SettableFuture.create( );
 
         runInWorkerThread( ( ) -> {
-            final ListenableFuture<ProjectList> buildListFuture = getApiRequestController( ).sendRequest( API_8_0, "projects", ProjectList.class );
-            addCallback( buildListFuture, new FutureCallback<ProjectList>( ) {
+            final ListenableFuture<ProjectList> projectListFuture = getApiRequestController( ).sendRequest( getApiVersion( ), "projects", ProjectList.class );
+            addCallback( projectListFuture, new FutureCallback<ProjectList>( ) {
                 @Override
                 public void onSuccess( final ProjectList result ) {
                     final List<ProjectData> projects = result.getProjects( ).stream( )
@@ -75,6 +82,10 @@ public final class ApiController extends ApiControllerBase {
                     getProjectManager( ).registerProjects( projects );
                     getEventBus( ).post( getProjectManager( ) );
                     ackFuture.set( null );
+
+                    for ( final ProjectData project : getProjectManager( ).getProjects( ) ) {
+                        getLogger( ).info( "Discovering project " + project.getId( ) + " (" + project.getName( ) + ")" );
+                    }
                 }
 
                 @Override
@@ -96,7 +107,7 @@ public final class ApiController extends ApiControllerBase {
     @Override
     public void requestLastBuildStatus( final BuildTypeData buildType ) {
         runInWorkerThread( ( ) -> {
-            final ListenableFuture<BuildList> buildListFuture = getApiRequestController( ).sendRequest( API_8_0, "builds/?locator=buildType:" + buildType.getId( ) + ",running:any,count:" + MAX_BUILDS_TO_CONSIDER, BuildList.class );
+            final ListenableFuture<BuildList> buildListFuture = getApiRequestController( ).sendRequest( getApiVersion( ), "builds/?locator=buildType:" + buildType.getId( ) + ",running:any,count:" + MAX_BUILDS_TO_CONSIDER, BuildList.class );
             addCallback( buildListFuture, new FutureCallback<BuildList>( ) {
                 @Override
                 public void onSuccess( final BuildList result ) {
@@ -112,7 +123,7 @@ public final class ApiController extends ApiControllerBase {
                     } );
 
                     for ( final Build build : buildToRequest ) {
-                        final ListenableFuture<Build> buildStatusFuture = getApiRequestController( ).sendRequest( API_8_0, "builds/id:" + build.getId( ), Build.class );
+                        final ListenableFuture<Build> buildStatusFuture = getApiRequestController( ).sendRequest( getApiVersion( ), "builds/id:" + build.getId( ), Build.class );
                         addCallback( buildStatusFuture, registerBuildStatus( buildType, build ) );
                     }
                     buildType.touch( );

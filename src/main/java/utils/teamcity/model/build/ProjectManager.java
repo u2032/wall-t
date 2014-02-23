@@ -3,7 +3,6 @@ package utils.teamcity.model.build;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import utils.teamcity.model.configuration.Configuration;
-import utils.teamcity.model.configuration.SavedBuildTypeData;
 import utils.teamcity.model.configuration.SavedProjectData;
 
 import javax.inject.Inject;
@@ -28,7 +27,7 @@ public final class ProjectManager implements IProjectManager {
     @Inject
     public ProjectManager( final Configuration configuration ) {
         for ( final SavedProjectData savedData : configuration.getSavedProjects( ) ) {
-            final ProjectData data = new ProjectData( savedData.getId( ), savedData.getName( ));
+            final ProjectData data = new ProjectData( savedData.getId( ), savedData.getName( ) );
             data.setAliasName( savedData.getAliasName( ) );
             _projects.add( data );
             activateMonitoring( data );
@@ -42,11 +41,11 @@ public final class ProjectManager implements IProjectManager {
         // Deleting all builds which no more exist
         _projects.removeIf( ( btdata ) -> !typeIds.contains( btdata.getId( ) ) );
 
-        for ( final ProjectData btype : projects ) {
-            final Optional<ProjectData> previousData = getProject( btype.getId( ) );
+        for ( final ProjectData project : projects ) {
+            final Optional<ProjectData> previousData = getProject( project.getId( ) );
             if ( !previousData.isPresent( ) ) {
                 // Adding new build
-                _projects.add( new ProjectData( btype.getId( ), btype.getName( ) ) );
+                _projects.add( project );
             }
         }
     }
@@ -61,6 +60,7 @@ public final class ProjectManager implements IProjectManager {
         return ImmutableList.copyOf( _monitoredProjects );
     }
 
+    @Override
     public Optional<ProjectData> getProject( final String id ) {
         return getProjects( ).stream( )
                 .filter( input -> input.getId( ).equals( id ) )

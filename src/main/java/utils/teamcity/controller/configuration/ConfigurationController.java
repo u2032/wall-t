@@ -76,7 +76,7 @@ public final class ConfigurationController implements IConfigurationController {
         final Ordering<BuildTypeData> ordering = Ordering.from( Comparator.comparingInt( _buildManager::getPosition ) );
 
         final List<SavedBuildTypeData> buildToSaved = ordering.sortedCopy( monitoredBuildTypes ).stream( )
-                .map( data -> new SavedBuildTypeData( data.getId( ), data.getName( ), data.getProjectName( ), data.getAliasName( ) ) )
+                .map( data -> new SavedBuildTypeData( data.getId( ), data.getName( ), data.getProjectId( ), data.getProjectName( ), data.getAliasName( ) ) )
                 .collect( Collectors.toList( ) );
 
         _configuration.setSavedBuilds( buildToSaved );
