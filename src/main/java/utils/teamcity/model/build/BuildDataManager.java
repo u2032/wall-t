@@ -34,13 +34,13 @@ final class BuildDataManager implements IBuildManager {
 
     @Override
     public Optional<BuildTypeData> getBuild( final String id ) {
-        return _buildTypes.stream( )
+        return getBuildTypes( ).stream( )
                 .filter( input -> input.getId( ).equals( id ) )
                 .findFirst( );
     }
 
     @Override
-    public void registerBuildTypes( final List<BuildTypeData> typeList ) {
+    public synchronized void registerBuildTypes( final List<BuildTypeData> typeList ) {
         final Set<String> typeIds = typeList.stream( ).map( BuildTypeData::getId ).collect( Collectors.toSet( ) );
 
         // Deleting all builds which no more exist
@@ -59,7 +59,7 @@ final class BuildDataManager implements IBuildManager {
     public List<BuildTypeData> registerBuildTypesInQueue( final Set<String> buildTypesIdInQueue ) {
         final List<BuildTypeData> modifiedQueuedStatusBuilds = Lists.newLinkedList( );
 
-        for ( final BuildTypeData build : _monitoredBuildTypes ) {
+        for ( final BuildTypeData build : getMonitoredBuildTypes( ) ) {
             final boolean isNowInQueue = buildTypesIdInQueue.contains( build.getId( ) );
             if ( build.isQueued( ) != isNowInQueue ) {
                 build.setQueued( isNowInQueue );
@@ -71,22 +71,22 @@ final class BuildDataManager implements IBuildManager {
     }
 
     @Override
-    public void activateMonitoring( final BuildTypeData buildTypeData ) {
+    public synchronized void activateMonitoring( final BuildTypeData buildTypeData ) {
         _monitoredBuildTypes.add( buildTypeData );
     }
 
     @Override
-    public void unactivateMonitoring( final BuildTypeData buildTypeData ) {
+    public synchronized void unactivateMonitoring( final BuildTypeData buildTypeData ) {
         _monitoredBuildTypes.remove( buildTypeData );
     }
 
     @Override
-    public List<BuildTypeData> getBuildTypes( ) {
+    public synchronized List<BuildTypeData> getBuildTypes( ) {
         return ImmutableList.copyOf( _buildTypes );
     }
 
     @Override
-    public List<BuildTypeData> getMonitoredBuildTypes( ) {
+    public synchronized List<BuildTypeData> getMonitoredBuildTypes( ) {
         return ImmutableList.copyOf( _monitoredBuildTypes );
     }
 }

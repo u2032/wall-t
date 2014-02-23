@@ -3,6 +3,7 @@ package utils.teamcity.model.build;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 
+import java.time.Instant;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -27,6 +28,7 @@ public final class BuildTypeData {
     private String _aliasName;
 
     private boolean _queued;
+    private Instant _lastDataReceived = Instant.now( );
 
 
     public BuildTypeData( final String id, final String name, final String projectName ) {
@@ -55,6 +57,49 @@ public final class BuildTypeData {
         _aliasName = aliasName;
     }
 
+
+    public boolean hasRunningBuild( ) {
+        return getLastBuild( BuildState.running ).isPresent( );
+    }
+
+    public Optional<BuildData> getLastBuild( final BuildState state ) {
+        return getBuilds().stream( )
+                .filter( build -> build.getState( ) == state )
+                .findFirst( );
+    }
+
+    public Optional<BuildData> getOldestBuild( final BuildState state ) {
+        return reverse( getBuilds() ).stream( )
+                .filter( build -> build.getState( ) == state )
+                .findFirst( );
+    }
+
+
+    public final Optional<BuildData> getBuildById( final int id ) {
+        return getBuilds().stream( ).filter( b -> b.getId( ) == id ).findFirst( );
+    }
+
+    public synchronized boolean isQueued( ) {
+        return _queued;
+    }
+
+    public synchronized void setQueued( final boolean queued ) {
+        _queued = queued;
+    }
+
+    public synchronized void touch( ) {
+        _lastDataReceived = Instant.now( );
+    }
+
+    public synchronized boolean clearIfOutdated( final Instant cut ) {
+        if ( _lastDataReceived.isBefore( cut ) ) {
+            _queued = false;
+            _lastBuilds.clear( );
+            return true;
+        }
+        return false;
+    }
+
     public synchronized void registerBuild( final BuildData build ) {
         _lastBuilds.removeIf( ( b -> b.getId( ) == build.getId( ) ) );
 
@@ -64,35 +109,10 @@ public final class BuildTypeData {
             _lastBuilds.removeLast( );
     }
 
-    public synchronized boolean hasRunningBuild( ) {
-        return getLastBuild( BuildState.running ).isPresent( );
-    }
 
-    public Optional<BuildData> getLastBuild( final BuildState state ) {
-        return _lastBuilds.stream( )
-                .filter( build -> build.getState( ) == state )
-                .findFirst( );
-    }
-
-    public List<BuildData> getBuilds( ) {
+    public synchronized List<BuildData> getBuilds( ) {
         return ImmutableList.copyOf( _lastBuilds );
     }
 
-    public Optional<BuildData> getOldestBuild( final BuildState state ) {
-        return reverse( _lastBuilds ).stream( )
-                .filter( build -> build.getState( ) == state )
-                .findFirst( );
-    }
 
-    public boolean isQueued( ) {
-        return _queued;
-    }
-
-    public void setQueued( final boolean queued ) {
-        _queued = queued;
-    }
-
-    public final synchronized Optional<BuildData> getBuildById( final int id ) {
-        return _lastBuilds.stream( ).filter( b -> b.getId( ) == id ).findFirst( );
-    }
 }

@@ -6,7 +6,7 @@ import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.SettableFuture;
 import utils.teamcity.controller.api.IApiRequestController;
-import utils.teamcity.controller.api.json.ApiControllerBase;
+import utils.teamcity.controller.api.ApiControllerBase;
 import utils.teamcity.model.build.BuildData;
 import utils.teamcity.model.build.BuildState;
 import utils.teamcity.model.build.BuildTypeData;
@@ -75,9 +75,6 @@ public final class ApiController extends ApiControllerBase {
             addCallback( buildListFuture, new FutureCallback<BuildList>( ) {
                 @Override
                 public void onSuccess( final BuildList result ) {
-                    if ( result.getBuilds( ) == null )
-                        return;
-
                     // We consider only 5 last builds
                     final List<Build> buildToRequest = result.getBuilds( ).stream( )
                             .limit( MAX_BUILDS_TO_CONSIDER )
@@ -93,6 +90,7 @@ public final class ApiController extends ApiControllerBase {
                         final ListenableFuture<Build> buildStatusFuture = getApiRequestController( ).sendRequest( API_8_0, "builds/id:" + build.getId( ), Build.class );
                         addCallback( buildStatusFuture, registerBuildStatus( buildType, build ) );
                     }
+                    buildType.touch( );
                 }
 
                 @Override
