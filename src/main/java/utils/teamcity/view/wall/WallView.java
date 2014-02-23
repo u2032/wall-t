@@ -1,6 +1,5 @@
 package utils.teamcity.view.wall;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Maps;
 import javafx.animation.FadeTransition;
@@ -26,6 +25,7 @@ import java.util.*;
 
 import static java.lang.Math.abs;
 import static java.lang.Math.max;
+import static javafx.beans.binding.Bindings.createIntegerBinding;
 import static javafx.beans.binding.Bindings.createStringBinding;
 
 /**
@@ -74,7 +74,7 @@ final class WallView extends StackPane {
         final Node nextScreen = getChildren( ).get( nextIndex );
 
         nextScreen.setVisible( true );
-        if ( previousScreen != null && previousScreen != nextScreen)
+        if ( previousScreen != null && previousScreen != nextScreen )
             previousScreen.setVisible( false );
 
         _currentDisplayedScreen = nextScreen;
@@ -163,10 +163,11 @@ final class WallView extends StackPane {
         HBox.setHgrow( tileTitle, Priority.SOMETIMES );
         tileContent.getChildren( ).add( tileTitle );
 
-        if ( !_model.lightModeProperty( ).get( ) ) {
-            final VBox contextPart = createContextPart( build );
-            tileContent.getChildren( ).add( contextPart );
-        }
+        final VBox contextPart = createContextPart( build );
+        contextPart.visibleProperty( ).bind( _model.lightModeProperty( ).not( ) );
+        contextPart.minWidthProperty( ).bind( createIntegerBinding( ( ) -> contextPart.isVisible( ) ? 150 : 0, contextPart.visibleProperty( ) ) );
+        contextPart.maxWidthProperty( ).bind( contextPart.minWidthProperty( ) );
+        tileContent.getChildren( ).add( contextPart );
 
         tile.getChildren( ).addAll( progressPane, tileContent );
         screenPane.add( tile, x, y );
@@ -174,8 +175,6 @@ final class WallView extends StackPane {
 
     private VBox createContextPart( final TileViewModel build ) {
         final VBox contextPart = new VBox( );
-        contextPart.setMinWidth( 150 );
-        contextPart.setMaxWidth( 150 );
         contextPart.setAlignment( Pos.CENTER );
 
         final HBox statusBox = new HBox( );
