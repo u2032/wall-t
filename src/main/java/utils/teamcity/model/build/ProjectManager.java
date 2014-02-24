@@ -39,7 +39,8 @@ public final class ProjectManager implements IProjectManager {
         final Set<String> typeIds = projects.stream( ).map( ProjectData::getId ).collect( Collectors.toSet( ) );
 
         // Deleting all builds which no more exist
-        _projects.removeIf( ( btdata ) -> !typeIds.contains( btdata.getId( ) ) );
+        _projects.removeIf( ( project ) -> !typeIds.contains( project.getId( ) ) );
+        _monitoredProjects.removeIf( ( project ) -> !typeIds.contains( project.getId( ) ) );
 
         for ( final ProjectData project : projects ) {
             final Optional<ProjectData> previousData = getProject( project.getId( ) );

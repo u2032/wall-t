@@ -46,6 +46,7 @@ final class BuildDataManager implements IBuildManager {
 
         // Deleting all builds which no more exist
         _buildTypes.removeIf( ( btdata ) -> !typeIds.contains( btdata.getId( ) ) );
+        _monitoredBuildTypes.removeIf( ( btdata ) -> !typeIds.contains( btdata.getId( ) ) );
 
         for ( final BuildTypeData btype : typeList ) {
             final Optional<BuildTypeData> previousData = getBuild( btype.getId( ) );
