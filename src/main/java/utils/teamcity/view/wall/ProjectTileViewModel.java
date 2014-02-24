@@ -90,4 +90,8 @@ final class ProjectTileViewModel {
         return _lightMode;
     }
 
+    public boolean isLightMode( ) {
+        return _lightMode.get( );
+    }
+
 }

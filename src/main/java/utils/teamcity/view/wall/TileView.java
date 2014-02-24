@@ -8,7 +8,6 @@ import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
-import javafx.scene.text.TextAlignment;
 import javafx.util.Duration;
 import utils.teamcity.view.UIUtils;
 
@@ -16,8 +15,10 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 import static java.lang.Math.abs;
-import static javafx.beans.binding.Bindings.createIntegerBinding;
-import static javafx.beans.binding.Bindings.createStringBinding;
+import static javafx.beans.binding.Bindings.*;
+import static javafx.geometry.Pos.CENTER_LEFT;
+import static javafx.scene.text.TextAlignment.CENTER;
+import static javafx.scene.text.TextAlignment.LEFT;
 
 /**
  * Date: 23/02/14
@@ -33,7 +34,7 @@ final class TileView extends StackPane {
     TileView( final TileViewModel build ) {
         _model = build;
 
-        setAlignment( Pos.CENTER_LEFT );
+        setAlignment( CENTER_LEFT );
         setStyle( "-fx-border-color:white; -fx-border-radius:5;" );
         backgroundProperty( ).bind( build.backgroundProperty( ) );
 
@@ -61,7 +62,7 @@ final class TileView extends StackPane {
 
     private HBox createBuildInformation( ) {
         final HBox tileContent = new HBox( );
-        tileContent.setAlignment( Pos.CENTER_LEFT );
+        tileContent.setAlignment( CENTER_LEFT );
         tileContent.setSpacing( 10 );
 
         final Label tileTitle = new Label( );
@@ -71,6 +72,8 @@ final class TileView extends StackPane {
         tileTitle.textProperty( ).bind( _model.displayedNameProperty( ) );
         tileTitle.prefWidthProperty( ).bind( widthProperty( ) );
         tileTitle.prefHeightProperty( ).bind( heightProperty( ) );
+        tileTitle.alignmentProperty( ).bind( createObjectBinding( ( ) -> _model.isLightMode( ) ? Pos.CENTER : CENTER_LEFT, _model.lightModeProperty( ) ) );
+        tileTitle.textAlignmentProperty( ).bind( createObjectBinding( ( ) -> _model.isLightMode( ) ? CENTER : LEFT, _model.lightModeProperty( ) ) );
         HBox.setHgrow( tileTitle, Priority.SOMETIMES );
         tileContent.getChildren( ).add( tileTitle );
 
@@ -139,7 +142,7 @@ final class TileView extends StackPane {
 
         final Label lastBuildDate = new Label( );
         lastBuildDate.setMinWidth( 110 );
-        lastBuildDate.setTextAlignment( TextAlignment.CENTER );
+        lastBuildDate.setTextAlignment( CENTER );
         lastBuildDate.setAlignment( Pos.CENTER );
         lastBuildDate.setStyle( "-fx-font-weight:bold; -fx-text-fill:white; -fx-font-size:32px;" );
         lastBuildDate.setWrapText( true );
@@ -164,7 +167,7 @@ final class TileView extends StackPane {
 
         final Label timeLeftLabel = new Label( );
         timeLeftLabel.setMinWidth( 110 );
-        timeLeftLabel.setTextAlignment( TextAlignment.CENTER );
+        timeLeftLabel.setTextAlignment( CENTER );
         timeLeftLabel.setAlignment( Pos.CENTER );
         timeLeftLabel.setStyle( "-fx-font-weight:bold; -fx-text-fill:white; -fx-font-size:32px;" );
         timeLeftLabel.setWrapText( true );

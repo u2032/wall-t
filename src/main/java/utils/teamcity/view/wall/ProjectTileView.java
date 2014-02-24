@@ -8,6 +8,10 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 
 import static javafx.beans.binding.Bindings.createIntegerBinding;
+import static javafx.beans.binding.Bindings.createObjectBinding;
+import static javafx.geometry.Pos.CENTER_LEFT;
+import static javafx.scene.text.TextAlignment.CENTER;
+import static javafx.scene.text.TextAlignment.LEFT;
 
 /**
  * Date: 23/02/14
@@ -37,6 +41,8 @@ final class ProjectTileView extends HBox {
         tileTitle.textProperty( ).bind( _model.displayedNameProperty( ) );
         tileTitle.prefWidthProperty( ).bind( widthProperty( ) );
         tileTitle.prefHeightProperty( ).bind( heightProperty( ) );
+        tileTitle.alignmentProperty( ).bind( createObjectBinding( ( ) -> _model.isLightMode( ) ? Pos.CENTER : CENTER_LEFT, _model.lightModeProperty( ) ) );
+        tileTitle.textAlignmentProperty( ).bind( createObjectBinding( ( ) -> _model.isLightMode( ) ? CENTER : LEFT, _model.lightModeProperty( ) ) );
         HBox.setHgrow( tileTitle, Priority.SOMETIMES );
         getChildren( ).add( tileTitle );
 

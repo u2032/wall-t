@@ -239,6 +239,10 @@ final class TileViewModel {
         return _runningBackground;
     }
 
+    boolean isLightMode( ) {
+        return _lightMode.get( );
+    }
+
     BooleanProperty lightModeProperty( ) {
         return _lightMode;
     }
