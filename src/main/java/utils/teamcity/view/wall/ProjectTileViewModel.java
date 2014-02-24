@@ -1,6 +1,7 @@
 package utils.teamcity.view.wall;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.eventbus.Subscribe;
 import com.google.inject.assistedinject.Assisted;
 import javafx.application.Platform;
@@ -8,9 +9,11 @@ import javafx.beans.property.*;
 import javafx.scene.layout.Background;
 import utils.teamcity.model.build.BuildStatus;
 import utils.teamcity.model.build.ProjectData;
+import utils.teamcity.model.build.ProjectManager;
 import utils.teamcity.model.configuration.Configuration;
 
 import javax.inject.Inject;
+import java.util.Set;
 
 /**
  * Date: 22/02/14
@@ -19,6 +22,7 @@ import javax.inject.Inject;
  */
 final class ProjectTileViewModel {
 
+    private final ProjectManager _projectManager;
     private final ProjectData _projectData;
 
     private final StringProperty _displayedName = new SimpleStringProperty( );
@@ -31,7 +35,8 @@ final class ProjectTileViewModel {
     }
 
     @Inject
-    ProjectTileViewModel( final Configuration configuration, @Assisted final ProjectData projectData ) {
+    ProjectTileViewModel( final Configuration configuration, final ProjectManager projectManager, @Assisted final ProjectData projectData ) {
+        _projectManager = projectManager;
         _projectData = projectData;
         updateConfiguration( configuration );
         updateProjectViewModel( projectData );
@@ -39,7 +44,9 @@ final class ProjectTileViewModel {
 
     @Subscribe
     public final void updateProjectViewModel( final ProjectData data ) {
-        if ( data != _projectData )
+        final Set<ProjectData> allProjects = getAllInterestingProjects( );
+
+        if ( !allProjects.contains( data ) )
             return;
 
         Platform.runLater( ( ) -> {
@@ -55,11 +62,12 @@ final class ProjectTileViewModel {
         } );
     }
 
-
     private void updateBackground( ) {
-        final int failureCount = _projectData.getBuildTypeCount( BuildStatus.FAILURE, BuildStatus.ERROR );
-        final int successCount = _projectData.getBuildTypeCount( BuildStatus.SUCCESS );
-        final int unknownCount = _projectData.getBuildTypeCount( BuildStatus.UNKNOWN );
+        final Set<ProjectData> allProjects = getAllInterestingProjects( );
+
+        final int failureCount = allProjects.stream( ).map( p -> _projectData.getBuildTypeCount( BuildStatus.FAILURE, BuildStatus.ERROR ) ).reduce( 0, Integer::sum );
+        final int successCount = allProjects.stream( ).map( p -> _projectData.getBuildTypeCount( BuildStatus.SUCCESS ) ).reduce( 0, Integer::sum );
+        final int unknownCount = allProjects.stream( ).map( p -> _projectData.getBuildTypeCount( BuildStatus.UNKNOWN ) ).reduce( 0, Integer::sum );
 
         if ( unknownCount > 0 || failureCount + successCount == 0 ) {
             _background.setValue( BuildBackground.UNKNOWN.getMain( ) );
@@ -68,6 +76,14 @@ final class ProjectTileViewModel {
 
         // Setting main background according to failure count
         _background.setValue( failureCount == 0 ? BuildBackground.SUCCESS.getMain( ) : BuildBackground.FAILURE.getMain( ) );
+    }
+
+
+    private Set<ProjectData> getAllInterestingProjects( ) {
+        return ImmutableSet.<ProjectData>builder( )
+                .add( _projectData )
+                .addAll( _projectManager.getAllChildrenOf( _projectData ) )
+                .build( );
     }
 
     String getDisplayedName( ) {

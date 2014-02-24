@@ -59,6 +59,9 @@ public final class ApiMonitoringService implements IApiMonitoringService {
 
         for ( final ProjectData projectData : _projectManager.getMonitoredProjects( ) ) {
             allMonitoredBuildTypes.addAll( projectData.getBuildTypes( ) );
+            for ( final ProjectData child : _projectManager.getAllChildrenOf( projectData ) ) {
+                allMonitoredBuildTypes.addAll( child.getBuildTypes( ) );
+            }
         }
 
         return allMonitoredBuildTypes;

@@ -41,7 +41,7 @@ public final class ApiModule extends AbstractModule {
                 .setAllowSslConnectionPool( true )
                 .setMaxConnectionLifeTimeInMs( 60000 )
                 .setMaximumNumberOfRedirects( 5 )
-                .setRequestTimeoutInMs( 20000 )
+                .setRequestTimeoutInMs( 30000 )
                 .setMaximumConnectionsPerHost( 5 )
                 .build( );
     }

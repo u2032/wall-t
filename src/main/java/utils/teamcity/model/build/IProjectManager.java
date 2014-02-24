@@ -25,4 +25,6 @@ public interface IProjectManager {
     void requestPosition( ProjectData data, int newValue );
 
     Optional<ProjectData> getProject( String id );
+
+    List<ProjectData> getAllChildrenOf( ProjectData data );
 }

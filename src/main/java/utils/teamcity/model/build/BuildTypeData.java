@@ -31,7 +31,6 @@ public final class BuildTypeData {
     private boolean _queued;
     private Instant _lastDataReceived = Instant.now( );
 
-
     public BuildTypeData( final String id, final String name, final String projectId, final String projectName ) {
         _id = id;
         _name = name;

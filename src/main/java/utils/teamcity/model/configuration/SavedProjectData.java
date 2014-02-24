@@ -15,12 +15,16 @@ public final class SavedProjectData {
     @SerializedName("name")
     private String _name;
 
+    @SerializedName( "parentProjectId" )
+    private String _parentId;
+
     @SerializedName("alias_name")
     private String _aliasName;
 
-    public SavedProjectData( final String id, final String name, final String aliasName ) {
+    public SavedProjectData( final String id, final String name, final String parentId, final String aliasName ) {
         _id = id;
         _name = name;
+        _parentId = parentId;
         _aliasName = aliasName;
     }
 
@@ -30,6 +34,10 @@ public final class SavedProjectData {
 
     public String getName( ) {
         return _name;
+    }
+
+    public String getParentId( ) {
+        return _parentId;
     }
 
     public String getAliasName( ) {
