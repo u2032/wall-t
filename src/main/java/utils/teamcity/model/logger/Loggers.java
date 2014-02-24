@@ -8,6 +8,7 @@ package utils.teamcity.model.logger;
 public final class Loggers {
 
     public static final String MAIN = "TCWall.Main";
+    public static final String NETWORK = "TCWall.Network";
 
     private Loggers( ) {
         throw new UnsupportedOperationException( );

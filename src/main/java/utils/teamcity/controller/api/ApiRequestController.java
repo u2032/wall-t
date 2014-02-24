@@ -22,7 +22,7 @@ import javax.inject.Inject;
  */
 final class ApiRequestController implements IApiRequestController {
 
-    public static final Logger LOGGER = LoggerFactory.getLogger( Loggers.MAIN );
+    public static final Logger LOGGER = LoggerFactory.getLogger( Loggers.NETWORK );
     private final Configuration _configuration;
     private final AsyncHttpClient _httpClient;
 
@@ -44,7 +44,7 @@ final class ApiRequestController implements IApiRequestController {
                     .apiVersion( version )
                     .build( );
 
-            LOGGER.info( "Requesting: {}", request );
+            LOGGER.info( "<< REQUEST: to {}", request );
 
             final AsyncHttpClient.BoundRequestBuilder httpRequest = _httpClient
                     .prepareGet( request.getURI( ) )
@@ -77,12 +77,16 @@ final class ApiRequestController implements IApiRequestController {
                 public Void onCompleted( final Response response ) throws Exception {
 
                     if ( response.getStatusCode( ) != 200 ) {
+                        LOGGER.error( ">> RESPONSE: for {} has status code {}", request, response.getStatusCode( ) );
                         apiResponseFuture.setException( new ApiException( "Http status code is " + response.getStatusCode( ) + " when requesting uri: " + response.getUri( ) ) );
                         return null;
                     }
 
+                    final String content = response.getResponseBody( Charsets.UTF_8.name( ) );
+                    LOGGER.debug( ">> RESPONSE: for {} has content: {}", request, content );
+
                     final Gson gson = new GsonBuilder( ).create( );
-                    final T jsonResponse = gson.fromJson( response.getResponseBody( Charsets.UTF_8.name( ) ), expectedType );
+                    final T jsonResponse = gson.fromJson( content, expectedType );
                     apiResponseFuture.set( jsonResponse );
 
                     return null;
