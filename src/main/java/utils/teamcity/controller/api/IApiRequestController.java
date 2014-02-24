@@ -1,7 +1,6 @@
 package utils.teamcity.controller.api;
 
 import com.google.common.util.concurrent.ListenableFuture;
-import utils.teamcity.controller.api.json.ApiVersion;
 
 /**
  * Date: 17/02/14

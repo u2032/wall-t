@@ -1,4 +1,4 @@
-package utils.teamcity.controller.api.json.v0801;
+package utils.teamcity.controller.api.json;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -7,7 +7,7 @@ import com.google.gson.annotations.SerializedName;
  *
  * @author Cedric Longo
  */
-final class Project {
+public final class Project {
 
     @SerializedName("id")
     private String _id;

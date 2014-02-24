@@ -1,8 +1,8 @@
-package utils.teamcity.controller.api.json.v0801;
+package utils.teamcity.controller.api.json;
 
 import com.google.gson.annotations.SerializedName;
 import utils.teamcity.controller.api.ApiResponse;
-import utils.teamcity.controller.api.json.ApiUtils;
+import utils.teamcity.controller.api.ApiUtils;
 import utils.teamcity.model.build.BuildState;
 import utils.teamcity.model.build.BuildStatus;
 
@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
  *
  * @author Cedric Longo
  */
-final class Build implements ApiResponse {
+public final class Build implements ApiResponse {
 
     @SerializedName("id")
     private int _id;
@@ -27,35 +27,41 @@ final class Build implements ApiResponse {
     @SerializedName("state")
     private BuildState _state;
 
+    @SerializedName( "running" )
+    private boolean _running;
+
     @SerializedName("finishDate")
     private String _finishedDate;
 
     @SerializedName("running-info")
     private BuildRunningInfo _runningInformation;
 
-    int getId( ) {
+    public int getId( ) {
         return _id;
     }
 
-    String getBuildType( ) {
+    public String getBuildType( ) {
         return _buildType;
     }
 
-    BuildStatus getStatus( ) {
+    public BuildStatus getStatus( ) {
         return _status;
     }
 
-    BuildState getState( ) {
+    public BuildState getState( ) {
         return _state;
     }
 
-    BuildRunningInfo getRunningInformation( ) {
+    public BuildRunningInfo getRunningInformation( ) {
         return _runningInformation;
     }
 
-    LocalDateTime getFinishedDate( ) {
+    public LocalDateTime getFinishedDate( ) {
         return _finishedDate == null ? null : LocalDateTime.parse( _finishedDate, ApiUtils.DATE_TIME_FORMATTER );
     }
 
 
+    public boolean isRunning( ) {
+        return _running;
+    }
 }

@@ -1,4 +1,4 @@
-package utils.teamcity.controller.api.json.v0801;
+package utils.teamcity.controller.api.json;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -7,12 +7,12 @@ import com.google.gson.annotations.SerializedName;
  *
  * @author Cedric Longo
  */
-final class QueueBuild {
+public final class QueueBuild {
 
     @SerializedName("buildTypeId")
     private String _buildTypeId;
 
-    String getBuildTypeId( ) {
+    public String getBuildTypeId( ) {
         return _buildTypeId;
     }
 }

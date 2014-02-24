@@ -1,7 +1,6 @@
 package utils.teamcity.controller.api;
 
 import com.google.common.base.Strings;
-import utils.teamcity.controller.api.json.ApiVersion;
 
 import java.net.URI;
 import java.net.URISyntaxException;

@@ -1,4 +1,4 @@
-package utils.teamcity.controller.api.json.v0801;
+package utils.teamcity.controller.api.json;
 
 import com.google.gson.annotations.SerializedName;
 import utils.teamcity.controller.api.ApiResponse;
@@ -11,12 +11,12 @@ import java.util.List;
  *
  * @author Cedric Longo
  */
-final class QueuedBuildList implements ApiResponse {
+public final class QueuedBuildList implements ApiResponse {
 
     @SerializedName("build")
     private List<QueueBuild> _builds = Collections.emptyList( );
 
-    List<QueueBuild> getQueueBuild( ) {
+    public List<QueueBuild> getQueueBuild( ) {
         return _builds;
     }
 

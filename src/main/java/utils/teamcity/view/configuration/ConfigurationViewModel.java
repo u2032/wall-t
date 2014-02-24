@@ -12,8 +12,8 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import utils.teamcity.controller.api.ApiVersion;
 import utils.teamcity.controller.api.IApiController;
-import utils.teamcity.controller.api.json.ApiVersion;
 import utils.teamcity.controller.configuration.IConfigurationController;
 import utils.teamcity.model.build.IBuildManager;
 import utils.teamcity.model.build.IProjectManager;
@@ -23,7 +23,6 @@ import utils.teamcity.model.logger.Loggers;
 import utils.teamcity.view.wall.WallScene;
 
 import javax.inject.Inject;
-import javax.inject.Provider;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -62,14 +61,14 @@ final class ConfigurationViewModel {
     private final ObservableList<ProjectViewModel> _project = FXCollections.observableArrayList( );
 
     private final Configuration _configuration;
-    private final Provider<IApiController> _apiController;
+    private final IApiController _apiController;
     private final BuildTypeViewModel.Factory _buildTypeViewModelFactory;
     private final ProjectViewModel.Factory _projectViewModelFactory;
     private final IConfigurationController _configurationController;
     private final EventBus _eventBus;
 
     @Inject
-    ConfigurationViewModel( IProjectManager projectManager, final Configuration configuration, final Provider<IApiController> apiController, final EventBus eventBus, final IBuildManager buildManager, final BuildTypeViewModel.Factory buildTypeViewModelFactory, final ProjectViewModel.Factory projectViewModelFactory, final IConfigurationController configurationController ) {
+    ConfigurationViewModel( final IProjectManager projectManager, final Configuration configuration, final IApiController apiController, final EventBus eventBus, final IBuildManager buildManager, final BuildTypeViewModel.Factory buildTypeViewModelFactory, final ProjectViewModel.Factory projectViewModelFactory, final IConfigurationController configurationController ) {
         _configuration = configuration;
         _eventBus = eventBus;
         _apiController = apiController;
@@ -187,8 +186,8 @@ final class ConfigurationViewModel {
         _loadingFailure.setValue( true );
         _loadingInformation.setValue( "Trying to connect..." );
 
-        final ListenableFuture<Void> loadProjectsFuture = _apiController.get( ).loadProjectList( );
-        final ListenableFuture<Void> loadBuildTypesfuture = transform( loadProjectsFuture, (AsyncFunction<Void, Void>) input -> _apiController.get( ).loadBuildTypeList( ) );
+        final ListenableFuture<Void> loadProjectsFuture = _apiController.loadProjectList( );
+        final ListenableFuture<Void> loadBuildTypesfuture = transform( loadProjectsFuture, (AsyncFunction<Void, Void>) input -> _apiController.loadBuildTypeList( ) );
 
         addCallback( loadBuildTypesfuture, loadingSuccessfulCallback( ) );
     }
@@ -259,7 +258,7 @@ final class ConfigurationViewModel {
     }
 
     public void requestNewApiVersion( final ApiVersion newValue ) {
-        LOGGER.info( "Switching to api version: " + newValue.getIdentifier( ) );
+        LOGGER.info( "Switching to api version: " + newValue );
         _configuration.setApiVersion( newValue );
     }
 

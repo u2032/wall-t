@@ -2,7 +2,7 @@ package utils.teamcity.model.configuration;
 
 import com.google.common.collect.Lists;
 import com.google.gson.annotations.SerializedName;
-import utils.teamcity.controller.api.json.ApiVersion;
+import utils.teamcity.controller.api.ApiVersion;
 
 import java.util.List;
 

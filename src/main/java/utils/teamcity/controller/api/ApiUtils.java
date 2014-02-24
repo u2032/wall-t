@@ -1,4 +1,4 @@
-package utils.teamcity.controller.api.json;
+package utils.teamcity.controller.api;
 
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;

@@ -1,4 +1,4 @@
-package utils.teamcity.controller.api.json.v0801;
+package utils.teamcity.controller.api.json;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -7,7 +7,7 @@ import com.google.gson.annotations.SerializedName;
  *
  * @author Cedric Longo
  */
-final class BuildRunningInfo {
+public final class BuildRunningInfo {
 
     @SerializedName("percentageComplete")
     private int _percentageComplete;
@@ -18,15 +18,15 @@ final class BuildRunningInfo {
     @SerializedName("elapsedSeconds")
     private int _elapsedTime;
 
-    int getPercentageComplete( ) {
+    public int getPercentageComplete( ) {
         return _percentageComplete;
     }
 
-    int getEstimatedTotalTime( ) {
+    public int getEstimatedTotalTime( ) {
         return _estimatedTotalTime;
     }
 
-    int getElapsedTime( ) {
+    public int getElapsedTime( ) {
         return _elapsedTime;
     }
 }

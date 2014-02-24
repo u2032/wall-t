@@ -9,7 +9,6 @@ import com.google.gson.GsonBuilder;
 import com.ning.http.client.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import utils.teamcity.controller.api.json.ApiVersion;
 import utils.teamcity.model.configuration.Configuration;
 import utils.teamcity.model.logger.Loggers;
 

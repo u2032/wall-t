@@ -1,4 +1,4 @@
-package utils.teamcity.controller.api.json.v0801;
+package utils.teamcity.controller.api.json;
 
 import com.google.gson.annotations.SerializedName;
 import utils.teamcity.controller.api.ApiResponse;
@@ -11,7 +11,7 @@ import java.util.List;
  *
  * @author Cedric Longo
  */
-final class ProjectList implements ApiResponse {
+public final class ProjectList implements ApiResponse {
 
     @SerializedName("project")
     private List<Project> _projects = Collections.emptyList( );

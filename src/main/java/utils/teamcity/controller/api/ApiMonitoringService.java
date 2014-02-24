@@ -11,7 +11,6 @@ import utils.teamcity.model.build.ProjectData;
 import utils.teamcity.model.logger.Loggers;
 
 import javax.inject.Inject;
-import javax.inject.Provider;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Collection;
@@ -31,13 +30,13 @@ public final class ApiMonitoringService implements IApiMonitoringService {
 
     public static final Logger LOGGER = LoggerFactory.getLogger( Loggers.MAIN );
     private final ScheduledExecutorService _executorService;
-    private final Provider<IApiController> _apiController;
+    private final IApiController _apiController;
     private final IProjectManager _projectManager;
     private final IBuildManager _buildManager;
     private final EventBus _eventBus;
 
     @Inject
-    public ApiMonitoringService( final ScheduledExecutorService executorService, final Provider<IApiController> apiController, final IProjectManager projectManager, final IBuildManager buildManager, final EventBus eventBus ) {
+    public ApiMonitoringService( final ScheduledExecutorService executorService, final IApiController apiController, final IProjectManager projectManager, final IBuildManager buildManager, final EventBus eventBus ) {
         _executorService = executorService;
         _apiController = apiController;
         _projectManager = projectManager;
@@ -73,7 +72,7 @@ public final class ApiMonitoringService implements IApiMonitoringService {
                     .collect( Collectors.toList( ) );
 
             for ( final BuildTypeData buildType : monitoredBuilds )
-                _apiController.get( ).requestLastBuildStatus( buildType );
+                _apiController.requestLastBuildStatus( buildType );
         };
     }
 
@@ -84,14 +83,12 @@ public final class ApiMonitoringService implements IApiMonitoringService {
                     .collect( Collectors.toList( ) );
 
             for ( final BuildTypeData buildType : monitoredBuilds )
-                _apiController.get( ).requestLastBuildStatus( buildType );
+                _apiController.requestLastBuildStatus( buildType );
         };
     }
 
     private Runnable checkQueuedBuildStatus( ) {
-        return ( ) -> {
-            _apiController.get( ).requestQueuedBuilds( );
-        };
+        return _apiController::requestQueuedBuilds;
     }
 
     private Runnable checkDataAreAlwaysSync( ) {

@@ -16,7 +16,7 @@ import javafx.scene.paint.Paint;
 import javafx.scene.text.Font;
 import javafx.scene.text.TextAlignment;
 import javafx.util.StringConverter;
-import utils.teamcity.controller.api.json.ApiVersion;
+import utils.teamcity.controller.api.ApiVersion;
 import utils.teamcity.view.UIUtils;
 
 import javax.inject.Inject;
@@ -175,12 +175,12 @@ final class ConfigurationView extends BorderPane {
         apiVersionBox.converterProperty( ).setValue( new StringConverter<ApiVersion>( ) {
             @Override
             public String toString( final ApiVersion object ) {
-                return object.getIdentifier( );
+                return object.getName( );
             }
 
             @Override
             public ApiVersion fromString( final String string ) {
-                return ApiVersion.valueFrom( string );
+                return ApiVersion.fromName( string );
             }
         } );
         apiVersionBox.getSelectionModel( ).select( _model.getApiVersion( ) );
