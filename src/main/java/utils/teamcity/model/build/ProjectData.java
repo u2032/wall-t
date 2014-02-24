@@ -42,6 +42,7 @@ public final class ProjectData {
     }
 
     public synchronized void registerBuildType( final BuildTypeData buildTypeData ) {
+        _buildTypes.removeIf( bt -> bt.getId( ).equals( buildTypeData.getId( ) ) );
         _buildTypes.add( buildTypeData );
     }
 
