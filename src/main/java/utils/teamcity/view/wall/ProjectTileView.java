@@ -15,7 +15,8 @@ import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 import utils.teamcity.view.UIUtils;
 
-import static javafx.beans.binding.Bindings.*;
+import static javafx.beans.binding.Bindings.createIntegerBinding;
+import static javafx.beans.binding.Bindings.createObjectBinding;
 import static javafx.geometry.Pos.CENTER_LEFT;
 import static javafx.scene.text.TextAlignment.CENTER;
 import static javafx.scene.text.TextAlignment.LEFT;
@@ -83,15 +84,13 @@ final class ProjectTileView extends HBox {
         contextPart.setAlignment( Pos.CENTER );
 
         final StackPane successBox = createSuccessBox( );
-        successBox.opacityProperty( ).bind( createDoubleBinding( this::getSuccessOpacity, _model.failureCountProperty( ) ) );
         _successRunningAnimation.setNode( successBox );
 
         final StackPane failureBox = createFailureBox( );
-        failureBox.opacityProperty( ).bind( createDoubleBinding( this::getFailureOpacity, _model.failureCountProperty( ) ) );
         _failureRunningAnimation.setNode( failureBox );
 
         _model.hasSuccessRunningProperty( ).addListener( ( o, oldVallue, newValue ) -> {
-            if ( !newValue ) {
+            if ( newValue ) {
                 _successRunningAnimation.play( );
             } else {
                 _successRunningAnimation.stop( );
@@ -99,7 +98,7 @@ final class ProjectTileView extends HBox {
         } );
 
         _model.hasFailureRunningProperty( ).addListener( ( o, oldVallue, newValue ) -> {
-            if ( !newValue ) {
+            if ( newValue ) {
                 _failureRunningAnimation.play( );
             } else {
                 _failureRunningAnimation.stop( );
