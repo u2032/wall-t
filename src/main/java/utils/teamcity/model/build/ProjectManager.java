@@ -8,7 +8,6 @@ import utils.teamcity.model.configuration.SavedProjectData;
 import javax.inject.Inject;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import static java.lang.Math.min;
@@ -23,7 +22,6 @@ public final class ProjectManager implements IProjectManager {
     private final List<ProjectData> _projects = Lists.newArrayList( );
     private final List<ProjectData> _monitoredProjects = Lists.newArrayList( );
 
-
     @Inject
     public ProjectManager( final Configuration configuration ) {
         for ( final SavedProjectData savedData : configuration.getSavedProjects( ) ) {
@@ -36,20 +34,21 @@ public final class ProjectManager implements IProjectManager {
 
     @Override
     public synchronized void registerProjects( final List<ProjectData> projects ) {
-        final Set<String> typeIds = projects.stream( ).map( ProjectData::getId ).collect( Collectors.toSet( ) );
+        final List<String> previousMonitored = _monitoredProjects.stream( ).map( ProjectData::getId ).collect( Collectors.toList( ) );
 
-        // Deleting all builds which no more exist
-        _projects.removeIf( ( project ) -> !typeIds.contains( project.getId( ) ) );
-        _monitoredProjects.removeIf( ( project ) -> !typeIds.contains( project.getId( ) ) );
+        _projects.clear( );
+        _monitoredProjects.clear( );
 
-        for ( final ProjectData project : projects ) {
-            final Optional<ProjectData> previousData = getProject( project.getId( ) );
-            if ( !previousData.isPresent( ) ) {
-                // Adding new build
-                _projects.add( project );
-            }
-        }
+        _projects.addAll( projects );
+
+        final List<ProjectData> monitoredBuildTypes = _projects.stream( )
+                .filter( ( t ) -> previousMonitored.contains( t.getId( ) ) )
+                .sorted( ( o1, o2 ) -> Integer.compare( previousMonitored.indexOf( o1.getId( ) ), previousMonitored.indexOf( o2.getId( ) ) ) )
+                .collect( Collectors.toList( ) );
+
+        _monitoredProjects.addAll( monitoredBuildTypes );
     }
+
 
     @Override
     public synchronized List<ProjectData> getProjects( ) {

@@ -42,19 +42,19 @@ final class BuildDataManager implements IBuildManager {
 
     @Override
     public synchronized void registerBuildTypes( final List<BuildTypeData> typeList ) {
-        final Set<String> typeIds = typeList.stream( ).map( BuildTypeData::getId ).collect( Collectors.toSet( ) );
+        final List<String> previousMonitored = _monitoredBuildTypes.stream( ).map( BuildTypeData::getId ).collect( Collectors.toList( ) );
 
-        // Deleting all builds which no more exist
-        _buildTypes.removeIf( ( btdata ) -> !typeIds.contains( btdata.getId( ) ) );
-        _monitoredBuildTypes.removeIf( ( btdata ) -> !typeIds.contains( btdata.getId( ) ) );
+        _buildTypes.clear( );
+        _monitoredBuildTypes.clear( );
 
-        for ( final BuildTypeData btype : typeList ) {
-            final Optional<BuildTypeData> previousData = getBuild( btype.getId( ) );
-            if ( !previousData.isPresent( ) ) {
-                // Adding new build
-                _buildTypes.add( btype );
-            }
-        }
+        _buildTypes.addAll( typeList );
+
+        final List<BuildTypeData> monitoredBuildTypes = _buildTypes.stream( )
+                .filter( ( t ) -> previousMonitored.contains( t.getId( ) ) )
+                .sorted( ( o1, o2 ) -> Integer.compare( previousMonitored.indexOf( o1.getId( ) ), previousMonitored.indexOf( o2.getId( ) ) ) )
+                .collect( Collectors.toList( ) );
+
+        _monitoredBuildTypes.addAll( monitoredBuildTypes );
     }
 
     @Override
