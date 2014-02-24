@@ -13,7 +13,7 @@ import java.util.List;
  */
 final class QueuedBuildList implements ApiResponse {
 
-    @SerializedName( "build" )
+    @SerializedName("build")
     private List<QueueBuild> _builds = Collections.emptyList( );
 
     List<QueueBuild> getQueueBuild( ) {

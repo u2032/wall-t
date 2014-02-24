@@ -9,7 +9,7 @@ import com.google.gson.annotations.SerializedName;
  */
 final class QueueBuild {
 
-    @SerializedName( "buildTypeId" )
+    @SerializedName("buildTypeId")
     private String _buildTypeId;
 
     String getBuildTypeId( ) {

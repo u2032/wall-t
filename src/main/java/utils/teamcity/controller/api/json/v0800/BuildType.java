@@ -18,7 +18,7 @@ final class BuildType {
     @SerializedName("projectName")
     private String _projectName;
 
-    @SerializedName( "projectId" )
+    @SerializedName("projectId")
     private String _projectId;
 
 

@@ -35,31 +35,31 @@ final class WallView extends StackPane {
         _model = model;
         setStyle( "-fx-background-color:black;" );
 
-        _model.getDisplayedBuilds().addListener( (ListChangeListener<TileViewModel>) c -> updateLayout() );
-        _model.getDisplayedProjects().addListener( (ListChangeListener<ProjectTileViewModel>) c -> updateLayout() );
+        _model.getDisplayedBuilds( ).addListener( (ListChangeListener<TileViewModel>) c -> updateLayout( ) );
+        _model.getDisplayedProjects( ).addListener( (ListChangeListener<ProjectTileViewModel>) c -> updateLayout( ) );
 
-        _model.getMaxTilesByColumnProperty().addListener( ( o, oldValue, newalue ) -> updateLayout() );
-        _model.getMaxTilesByRowProperty().addListener( ( o, oldValue, newalue ) -> updateLayout() );
+        _model.getMaxTilesByColumnProperty( ).addListener( ( o, oldValue, newalue ) -> updateLayout( ) );
+        _model.getMaxTilesByRowProperty( ).addListener( ( o, oldValue, newalue ) -> updateLayout( ) );
 
         final Timer screenAnimationTimer = new Timer( "WallView Screen switcher", true );
-        screenAnimationTimer.scheduleAtFixedRate( new TimerTask() {
+        screenAnimationTimer.scheduleAtFixedRate( new TimerTask( ) {
             @Override
-            public void run() {
-                Platform.runLater( () -> displayNextScreen() );
+            public void run( ) {
+                Platform.runLater( ( ) -> displayNextScreen( ) );
             }
         }, 10000, 10000 );
     }
 
-    private void displayNextScreen() {
-        if ( getChildren().isEmpty() )
+    private void displayNextScreen( ) {
+        if ( getChildren( ).isEmpty( ) )
             return;
 
         final Node previousScreen = _currentDisplayedScreen;
 
-        final int index = previousScreen == null ? -1 : getChildren().indexOf( previousScreen );
-        final int nextIndex = ( index == -1 ? 0 : index + 1 ) % getChildren().size();
+        final int index = previousScreen == null ? -1 : getChildren( ).indexOf( previousScreen );
+        final int nextIndex = ( index == -1 ? 0 : index + 1 ) % getChildren( ).size( );
 
-        final Node nextScreen = getChildren().get( nextIndex );
+        final Node nextScreen = getChildren( ).get( nextIndex );
 
         nextScreen.setVisible( true );
         if ( previousScreen != null && previousScreen != nextScreen )
@@ -68,16 +68,16 @@ final class WallView extends StackPane {
         _currentDisplayedScreen = nextScreen;
     }
 
-    private void updateLayout() {
-        getChildren().clear();
+    private void updateLayout( ) {
+        getChildren( ).clear( );
 
-        final Collection<TileViewModel> builds = _model.getDisplayedBuilds();
-        final Collection<ProjectTileViewModel> projects = _model.getDisplayedProjects();
+        final Collection<TileViewModel> builds = _model.getDisplayedBuilds( );
+        final Collection<ProjectTileViewModel> projects = _model.getDisplayedProjects( );
 
-        final int totalTilesCount = builds.size() + projects.size();
+        final int totalTilesCount = builds.size( ) + projects.size( );
 
-        final int maxTilesByColumn = _model.getMaxTilesByColumnProperty().get();
-        final int maxTilesByRow = _model.getMaxTilesByRowProperty().get();
+        final int maxTilesByColumn = _model.getMaxTilesByColumnProperty( ).get( );
+        final int maxTilesByRow = _model.getMaxTilesByRowProperty( ).get( );
 
         final int maxByScreens = max( 1, maxTilesByColumn * maxTilesByRow );
 
@@ -91,14 +91,14 @@ final class WallView extends StackPane {
         for ( final List<Object> buildsInScreen : screenPartition ) {
             final GridPane screenPane = buildScreenPane( buildsInScreen, nbColums, byColums );
             screenPane.setVisible( false );
-            getChildren().add( screenPane );
+            getChildren( ).add( screenPane );
         }
 
-        displayNextScreen();
+        displayNextScreen( );
     }
 
     private GridPane buildScreenPane( final Iterable<Object> buildsInScreen, final int nbColums, final int byColums ) {
-        final GridPane screenPane = new GridPane();
+        final GridPane screenPane = new GridPane( );
         screenPane.setHgap( GAP_SPACE );
         screenPane.setVgap( GAP_SPACE );
         screenPane.setPadding( new Insets( GAP_SPACE ) );
@@ -124,15 +124,15 @@ final class WallView extends StackPane {
 
     private void createTileForBuildType( final GridPane screenPane, final TileViewModel build, final int x, final int y, final int nbColumns, final int nbRows ) {
         final StackPane tile = new TileView( build );
-        tile.prefWidthProperty().bind( widthProperty().add( -( nbColumns + 1 ) * GAP_SPACE ).divide( nbColumns ) );
-        tile.prefHeightProperty().bind( heightProperty().add( -( nbRows + 1 ) * GAP_SPACE ).divide( nbRows ) );
+        tile.prefWidthProperty( ).bind( widthProperty( ).add( -( nbColumns + 1 ) * GAP_SPACE ).divide( nbColumns ) );
+        tile.prefHeightProperty( ).bind( heightProperty( ).add( -( nbRows + 1 ) * GAP_SPACE ).divide( nbRows ) );
         screenPane.add( tile, x, y );
     }
 
     private void createTileForProject( final GridPane screenPane, final ProjectTileViewModel build, final int x, final int y, final int nbColumns, final int nbRows ) {
         final ProjectTileView tile = new ProjectTileView( build );
-        tile.prefWidthProperty().bind( widthProperty().add( -( nbColumns + 1 ) * GAP_SPACE ).divide( nbColumns ) );
-        tile.prefHeightProperty().bind( heightProperty().add( -( nbRows + 1 ) * GAP_SPACE ).divide( nbRows ) );
+        tile.prefWidthProperty( ).bind( widthProperty( ).add( -( nbColumns + 1 ) * GAP_SPACE ).divide( nbColumns ) );
+        tile.prefHeightProperty( ).bind( heightProperty( ).add( -( nbRows + 1 ) * GAP_SPACE ).divide( nbRows ) );
         screenPane.add( tile, x, y );
     }
 

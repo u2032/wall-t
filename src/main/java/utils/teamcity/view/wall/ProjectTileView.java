@@ -24,35 +24,35 @@ final class ProjectTileView extends HBox {
         setAlignment( Pos.CENTER_LEFT );
         setSpacing( 10 );
         setStyle( "-fx-border-color:white; -fx-border-radius:5;" );
-        backgroundProperty().bind( project.backgroundProperty() );
+        backgroundProperty( ).bind( project.backgroundProperty( ) );
 
-        createBuildInformation();
+        createBuildInformation( );
     }
 
-    private void createBuildInformation() {
-        final Label tileTitle = new Label();
+    private void createBuildInformation( ) {
+        final Label tileTitle = new Label( );
         tileTitle.setStyle( "-fx-font-weight:bold; -fx-text-fill:white; -fx-font-size:50px;" );
         tileTitle.setPadding( new Insets( 5 ) );
         tileTitle.setWrapText( true );
-        tileTitle.textProperty().bind( _model.displayedNameProperty() );
-        tileTitle.prefWidthProperty().bind( widthProperty() );
-        tileTitle.prefHeightProperty().bind( heightProperty() );
+        tileTitle.textProperty( ).bind( _model.displayedNameProperty( ) );
+        tileTitle.prefWidthProperty( ).bind( widthProperty( ) );
+        tileTitle.prefHeightProperty( ).bind( heightProperty( ) );
         HBox.setHgrow( tileTitle, Priority.SOMETIMES );
-        getChildren().add( tileTitle );
+        getChildren( ).add( tileTitle );
 
-        final VBox contextPart = createContextPart();
-        contextPart.visibleProperty().bind( _model.lightModeProperty().not() );
-        contextPart.minWidthProperty().bind( createIntegerBinding( () -> contextPart.isVisible() ? 150 : 0, contextPart.visibleProperty() ) );
-        contextPart.maxWidthProperty().bind( contextPart.minWidthProperty() );
-        getChildren().add( contextPart );
+        final VBox contextPart = createContextPart( );
+        contextPart.visibleProperty( ).bind( _model.lightModeProperty( ).not( ) );
+        contextPart.minWidthProperty( ).bind( createIntegerBinding( ( ) -> contextPart.isVisible( ) ? 150 : 0, contextPart.visibleProperty( ) ) );
+        contextPart.maxWidthProperty( ).bind( contextPart.minWidthProperty( ) );
+        getChildren( ).add( contextPart );
     }
 
 
-    private VBox createContextPart() {
-        final VBox contextPart = new VBox();
+    private VBox createContextPart( ) {
+        final VBox contextPart = new VBox( );
         contextPart.setAlignment( Pos.CENTER );
 
-        contextPart.getChildren().addAll();
+        contextPart.getChildren( ).addAll( );
         return contextPart;
     }
 

@@ -13,7 +13,7 @@ import java.util.List;
  */
 final class ProjectList implements ApiResponse {
 
-    @SerializedName( "project" )
+    @SerializedName("project")
     private List<Project> _projects = Collections.emptyList( );
 
     public List<Project> getProjects( ) {

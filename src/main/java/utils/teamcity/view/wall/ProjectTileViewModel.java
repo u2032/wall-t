@@ -21,10 +21,10 @@ final class ProjectTileViewModel {
 
     private final ProjectData _projectData;
 
-    private final StringProperty _displayedName = new SimpleStringProperty();
-    private final ObjectProperty<Background> _background = new SimpleObjectProperty<>();
+    private final StringProperty _displayedName = new SimpleStringProperty( );
+    private final ObjectProperty<Background> _background = new SimpleObjectProperty<>( );
 
-    private final BooleanProperty _lightMode = new SimpleBooleanProperty();
+    private final BooleanProperty _lightMode = new SimpleBooleanProperty( );
 
     interface Factory {
         ProjectTileViewModel forProjectData( final ProjectData projectData );
@@ -42,51 +42,51 @@ final class ProjectTileViewModel {
         if ( data != _projectData )
             return;
 
-        Platform.runLater( () -> {
-            _displayedName.set( Strings.isNullOrEmpty( data.getAliasName() ) ? data.getName() : data.getAliasName() );
-            updateBackground();
+        Platform.runLater( ( ) -> {
+            _displayedName.set( Strings.isNullOrEmpty( data.getAliasName( ) ) ? data.getName( ) : data.getAliasName( ) );
+            updateBackground( );
         } );
     }
 
     @Subscribe
     public void updateConfiguration( final Configuration configuration ) {
-        Platform.runLater( () -> {
-            _lightMode.setValue( configuration.isLightMode() );
+        Platform.runLater( ( ) -> {
+            _lightMode.setValue( configuration.isLightMode( ) );
         } );
     }
 
 
-    private void updateBackground() {
+    private void updateBackground( ) {
         final int failureCount = _projectData.getBuildTypeCount( BuildStatus.FAILURE, BuildStatus.ERROR );
         final int successCount = _projectData.getBuildTypeCount( BuildStatus.SUCCESS );
         final int unknownCount = _projectData.getBuildTypeCount( BuildStatus.UNKNOWN );
 
         if ( unknownCount > 0 || failureCount + successCount == 0 ) {
-            _background.setValue( BuildBackground.UNKNOWN.getMain() );
+            _background.setValue( BuildBackground.UNKNOWN.getMain( ) );
             return;
         }
 
         // Setting main background according to failure count
-        _background.setValue( failureCount == 0 ? BuildBackground.SUCCESS.getMain() : BuildBackground.FAILURE.getMain() );
+        _background.setValue( failureCount == 0 ? BuildBackground.SUCCESS.getMain( ) : BuildBackground.FAILURE.getMain( ) );
     }
 
-    String getDisplayedName() {
-        return _displayedName.get();
+    String getDisplayedName( ) {
+        return _displayedName.get( );
     }
 
-    StringProperty displayedNameProperty() {
+    StringProperty displayedNameProperty( ) {
         return _displayedName;
     }
 
-    Background getBackground() {
-        return _background.get();
+    Background getBackground( ) {
+        return _background.get( );
     }
 
-    ObjectProperty<Background> backgroundProperty() {
+    ObjectProperty<Background> backgroundProperty( ) {
         return _background;
     }
 
-    BooleanProperty lightModeProperty() {
+    BooleanProperty lightModeProperty( ) {
         return _lightMode;
     }
 

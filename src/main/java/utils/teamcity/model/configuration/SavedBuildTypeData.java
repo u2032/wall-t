@@ -9,19 +9,19 @@ import com.google.gson.annotations.SerializedName;
  */
 public final class SavedBuildTypeData {
 
-    @SerializedName( "id" )
+    @SerializedName("id")
     private String _id;
 
-    @SerializedName( "name" )
+    @SerializedName("name")
     private String _name;
 
-    @SerializedName( "projectName" )
+    @SerializedName("projectName")
     private String _projectName;
 
-    @SerializedName( "projectId" )
+    @SerializedName("projectId")
     private String _projectId;
 
-    @SerializedName( "alias_name" )
+    @SerializedName("alias_name")
     private String _aliasName;
 
     public SavedBuildTypeData( final String id, final String name, final String projectId, final String projectName, final String aliasName ) {

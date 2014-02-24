@@ -9,13 +9,13 @@ import com.google.gson.annotations.SerializedName;
  */
 public final class SavedProjectData {
 
-    @SerializedName( "id" )
+    @SerializedName("id")
     private String _id;
 
-    @SerializedName( "name" )
+    @SerializedName("name")
     private String _name;
 
-    @SerializedName( "alias_name" )
+    @SerializedName("alias_name")
     private String _aliasName;
 
     public SavedProjectData( final String id, final String name, final String aliasName ) {

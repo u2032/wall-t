@@ -13,7 +13,7 @@ import java.util.List;
  */
 final class ProjectBuildTypeList implements ApiResponse {
 
-    @SerializedName( "buildTypes" )
+    @SerializedName("buildTypes")
     private BuildTypeList _buildTypes;
 
     public List<BuildType> getBuildTypes( ) {

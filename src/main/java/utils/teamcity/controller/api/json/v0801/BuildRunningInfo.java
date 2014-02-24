@@ -9,13 +9,13 @@ import com.google.gson.annotations.SerializedName;
  */
 final class BuildRunningInfo {
 
-    @SerializedName( "percentageComplete" )
+    @SerializedName("percentageComplete")
     private int _percentageComplete;
 
-    @SerializedName( "estimatedTotalSeconds" )
+    @SerializedName("estimatedTotalSeconds")
     private int _estimatedTotalTime;
 
-    @SerializedName( "elapsedSeconds" )
+    @SerializedName("elapsedSeconds")
     private int _elapsedTime;
 
     int getPercentageComplete( ) {

@@ -15,22 +15,22 @@ import java.time.LocalDateTime;
  */
 final class Build implements ApiResponse {
 
-    @SerializedName( "id" )
+    @SerializedName("id")
     private int _id;
 
-    @SerializedName( "buildTypeId" )
+    @SerializedName("buildTypeId")
     private String _buildType;
 
-    @SerializedName( "status" )
+    @SerializedName("status")
     private BuildStatus _status = BuildStatus.UNKNOWN;
 
-    @SerializedName( "state" )
+    @SerializedName("state")
     private BuildState _state;
 
-    @SerializedName( "finishDate" )
+    @SerializedName("finishDate")
     private String _finishedDate;
 
-    @SerializedName( "running-info" )
+    @SerializedName("running-info")
     private BuildRunningInfo _runningInformation;
 
     int getId( ) {

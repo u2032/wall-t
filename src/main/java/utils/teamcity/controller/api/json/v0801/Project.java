@@ -9,10 +9,10 @@ import com.google.gson.annotations.SerializedName;
  */
 final class Project {
 
-    @SerializedName( "id" )
+    @SerializedName("id")
     private String _id;
 
-    @SerializedName( "name" )
+    @SerializedName("name")
     private String _name;
 
     public String getId( ) {

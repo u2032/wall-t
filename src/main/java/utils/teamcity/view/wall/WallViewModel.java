@@ -26,11 +26,11 @@ final class WallViewModel {
     private final TileViewModel.Factory _tileViewModeFactory;
     private final ProjectTileViewModel.Factory _projectTileViewModeFactory;
 
-    private final ObservableList<TileViewModel> _displayedBuilds = FXCollections.observableArrayList();
-    private final ObservableList<ProjectTileViewModel> _displayedProjects = FXCollections.observableArrayList();
+    private final ObservableList<TileViewModel> _displayedBuilds = FXCollections.observableArrayList( );
+    private final ObservableList<ProjectTileViewModel> _displayedProjects = FXCollections.observableArrayList( );
 
-    private final IntegerProperty _maxTilesByColumn = new SimpleIntegerProperty();
-    private final IntegerProperty _maxTilesByRow = new SimpleIntegerProperty();
+    private final IntegerProperty _maxTilesByColumn = new SimpleIntegerProperty( );
+    private final IntegerProperty _maxTilesByRow = new SimpleIntegerProperty( );
 
     @Inject
     WallViewModel( final EventBus eventBus, final Configuration configuration, final IBuildManager buildManager, final IProjectManager projectManager, final TileViewModel.Factory tileViewModeFactory, final ProjectTileViewModel.Factory projectTileViewModeFactory ) {
@@ -44,47 +44,47 @@ final class WallViewModel {
 
     @Subscribe
     public void updateBuildList( final IBuildManager buildManager ) {
-        Platform.runLater( () -> {
+        Platform.runLater( ( ) -> {
             _displayedBuilds.forEach( _eventBus::unregister );
-            _displayedBuilds.setAll( (List<TileViewModel>) buildManager.getMonitoredBuildTypes().stream()
+            _displayedBuilds.setAll( (List<TileViewModel>) buildManager.getMonitoredBuildTypes( ).stream( )
                     .map( _tileViewModeFactory::forBuildTypeData )
-                    .collect( Collectors.toList() ) );
+                    .collect( Collectors.toList( ) ) );
             _displayedBuilds.forEach( _eventBus::register );
         } );
     }
 
     @Subscribe
     public void updateProjectList( final IProjectManager projectManager ) {
-        Platform.runLater( () -> {
+        Platform.runLater( ( ) -> {
             _displayedProjects.forEach( _eventBus::unregister );
-            _displayedProjects.setAll( (List<ProjectTileViewModel>) projectManager.getMonitoredProjects().stream()
+            _displayedProjects.setAll( (List<ProjectTileViewModel>) projectManager.getMonitoredProjects( ).stream( )
                     .map( _projectTileViewModeFactory::forProjectData )
-                    .collect( Collectors.toList() ) );
+                    .collect( Collectors.toList( ) ) );
             _displayedProjects.forEach( _eventBus::register );
         } );
     }
 
     @Subscribe
     public void updateConfiguration( final Configuration configuration ) {
-        Platform.runLater( () -> {
-            _maxTilesByColumn.setValue( configuration.getMaxTilesByColumn() );
-            _maxTilesByRow.setValue( configuration.getMaxTilesByRow() );
+        Platform.runLater( ( ) -> {
+            _maxTilesByColumn.setValue( configuration.getMaxTilesByColumn( ) );
+            _maxTilesByRow.setValue( configuration.getMaxTilesByRow( ) );
         } );
     }
 
-    public ObservableList<TileViewModel> getDisplayedBuilds() {
+    public ObservableList<TileViewModel> getDisplayedBuilds( ) {
         return _displayedBuilds;
     }
 
-    ObservableList<ProjectTileViewModel> getDisplayedProjects() {
+    ObservableList<ProjectTileViewModel> getDisplayedProjects( ) {
         return _displayedProjects;
     }
 
-    public IntegerProperty getMaxTilesByColumnProperty() {
+    public IntegerProperty getMaxTilesByColumnProperty( ) {
         return _maxTilesByColumn;
     }
 
-    public IntegerProperty getMaxTilesByRowProperty() {
+    public IntegerProperty getMaxTilesByRowProperty( ) {
         return _maxTilesByRow;
     }
 

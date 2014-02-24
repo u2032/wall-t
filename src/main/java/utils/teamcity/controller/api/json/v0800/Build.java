@@ -26,10 +26,10 @@ final class Build implements ApiResponse {
     @SerializedName("finishDate")
     private String _finishedDate;
 
-    @SerializedName( "running" )
+    @SerializedName("running")
     private boolean _running;
 
-    @SerializedName( "running-info" )
+    @SerializedName("running-info")
     private BuildRunningInfo _runningInformation;
 
     int getId( ) {
