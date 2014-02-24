@@ -3,9 +3,12 @@ package utils.teamcity.model.build;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+
+import static com.google.common.collect.Sets.newEnumSet;
+import static java.util.Arrays.asList;
 
 /**
  * Date: 23/02/14
@@ -57,12 +60,23 @@ public final class ProjectData {
     }
 
     public int getBuildTypeCount( final BuildStatus... status ) {
-        final List<BuildStatus> keptStatus = Arrays.asList( status );
+        final List<BuildStatus> keptStatus = asList( status );
         return (int) getBuildTypes( ).stream( )
                 .filter( bt -> {
                     final Optional<BuildData> lastBuild = bt.getLastBuild( BuildState.finished );
                     return lastBuild.isPresent( ) && keptStatus.contains( lastBuild.get( ).getStatus( ) );
                 } )
                 .count( );
+    }
+
+    public boolean hasBuildTypeRunning( final BuildStatus... status ) {
+        final Set<BuildStatus> keptStatus = newEnumSet( asList( status ), BuildStatus.class );
+        return getBuildTypes( ).stream( )
+                .anyMatch( bt -> {
+                    if ( !bt.hasRunningBuild( ) )
+                        return false;
+                    final Optional<BuildData> lastBuild = bt.getLastBuild( BuildState.finished );
+                    return lastBuild.isPresent( ) && keptStatus.contains( lastBuild.get( ).getStatus( ) );
+                } );
     }
 }

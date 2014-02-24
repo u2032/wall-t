@@ -29,7 +29,7 @@ final class TileView extends StackPane {
 
 
     private final TileViewModel _model;
-    private FadeTransition _runningAnimation;
+    private final FadeTransition _runningAnimation;
 
     TileView( final TileViewModel build ) {
         _model = build;
@@ -38,17 +38,28 @@ final class TileView extends StackPane {
         setStyle( "-fx-border-color:white; -fx-border-radius:5;" );
         backgroundProperty( ).bind( build.backgroundProperty( ) );
 
+        _runningAnimation = prepareRunningAnimation( );
+
         final Pane progressPane = createProgressBackground( );
         final HBox tileContent = createBuildInformation( );
-
         getChildren( ).addAll( progressPane, tileContent );
 
         _model.runningProperty( ).addListener( ( o, oldVallue, newValue ) -> {
             if ( newValue )
-                startRuningAnimation( );
+                startRunningAnimation( );
             else
                 stopRunningAnimation( );
         } );
+    }
+
+    private FadeTransition prepareRunningAnimation( ) {
+        final FadeTransition transition = new FadeTransition( Duration.millis( 1500 ), this );
+        transition.setFromValue( 1.0 );
+        transition.setToValue( 0.5 );
+        transition.setCycleCount( Timeline.INDEFINITE );
+        transition.setAutoReverse( true );
+        transition.setOnFinished( ( ae ) -> setOpacity( 1 ) );
+        return transition;
     }
 
     private Pane createProgressBackground( ) {
@@ -181,23 +192,11 @@ final class TileView extends StackPane {
     }
 
 
-    public void startRuningAnimation( ) {
-        if ( _runningAnimation != null )
-            stopRunningAnimation( );
-
-        final FadeTransition transition = new FadeTransition( Duration.millis( 1500 ), this );
-        transition.setFromValue( 1.0 );
-        transition.setToValue( 0.5 );
-        transition.setCycleCount( Timeline.INDEFINITE );
-        transition.setAutoReverse( true );
-        transition.setOnFinished( ( ae ) -> setOpacity( 1 ) );
-        transition.play( );
-        _runningAnimation = transition;
+    public void startRunningAnimation( ) {
+        _runningAnimation.play( );
     }
 
     public void stopRunningAnimation( ) {
-        if ( _runningAnimation != null )
-            _runningAnimation.stop( );
-        _runningAnimation = null;
+        _runningAnimation.stop( );
     }
 }

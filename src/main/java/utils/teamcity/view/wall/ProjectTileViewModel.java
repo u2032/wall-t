@@ -31,7 +31,11 @@ final class ProjectTileViewModel {
     private final IntegerProperty _successCount = new SimpleIntegerProperty( );
     private final IntegerProperty _failureCount = new SimpleIntegerProperty( );
 
+    private final BooleanProperty _hasSuccessRunning = new SimpleBooleanProperty( );
+    private final BooleanProperty _hasFailureRunning = new SimpleBooleanProperty( );
+
     private final BooleanProperty _lightMode = new SimpleBooleanProperty( );
+
 
     interface Factory {
         ProjectTileViewModel forProjectData( final ProjectData projectData );
@@ -61,8 +65,11 @@ final class ProjectTileViewModel {
 
     private void updateSuccessFailureCount( ) {
         final Set<ProjectData> allProjects = getAllInterestingProjects( );
-        _failureCount.setValue( allProjects.stream( ).map( p -> _projectData.getBuildTypeCount( BuildStatus.FAILURE, BuildStatus.ERROR ) ).reduce( 0, Integer::sum ) );
-        _successCount.setValue( allProjects.stream( ).map( p -> _projectData.getBuildTypeCount( BuildStatus.SUCCESS ) ).reduce( 0, Integer::sum ) );
+        _failureCount.setValue( allProjects.stream( ).map( p -> p.getBuildTypeCount( BuildStatus.FAILURE, BuildStatus.ERROR ) ).reduce( 0, Integer::sum ) );
+        _successCount.setValue( allProjects.stream( ).map( p -> p.getBuildTypeCount( BuildStatus.SUCCESS ) ).reduce( 0, Integer::sum ) );
+
+        _hasFailureRunning.set( allProjects.stream( ).anyMatch( p -> p.hasBuildTypeRunning( BuildStatus.FAILURE, BuildStatus.FAILURE ) ) );
+        _hasSuccessRunning.set( allProjects.stream( ).anyMatch( p -> p.hasBuildTypeRunning( BuildStatus.SUCCESS ) ) );
     }
 
     @Subscribe
@@ -128,4 +135,22 @@ final class ProjectTileViewModel {
     IntegerProperty failureCountProperty( ) {
         return _failureCount;
     }
+
+    boolean hasSuccessRunning( ) {
+        return _hasSuccessRunning.get( );
+    }
+
+    BooleanProperty hasSuccessRunningProperty( ) {
+        return _hasSuccessRunning;
+    }
+
+    boolean hasFailureRunning( ) {
+        return _hasFailureRunning.get( );
+    }
+
+    BooleanProperty hasFailureRunningProperty( ) {
+        return _hasFailureRunning;
+    }
+
+
 }
