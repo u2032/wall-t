@@ -7,7 +7,6 @@ package utils.teamcity.model.build;
  */
 public enum BuildStatus {
 
-    UNKNOWN,
     SUCCESS,
     FAILURE,
     ERROR

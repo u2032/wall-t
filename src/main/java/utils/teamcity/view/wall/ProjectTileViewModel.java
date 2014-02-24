@@ -28,6 +28,9 @@ final class ProjectTileViewModel {
     private final StringProperty _displayedName = new SimpleStringProperty( );
     private final ObjectProperty<Background> _background = new SimpleObjectProperty<>( );
 
+    private final IntegerProperty _successCount = new SimpleIntegerProperty( );
+    private final IntegerProperty _failureCount = new SimpleIntegerProperty( );
+
     private final BooleanProperty _lightMode = new SimpleBooleanProperty( );
 
     interface Factory {
@@ -51,8 +54,15 @@ final class ProjectTileViewModel {
 
         Platform.runLater( ( ) -> {
             _displayedName.set( Strings.isNullOrEmpty( data.getAliasName( ) ) ? data.getName( ) : data.getAliasName( ) );
+            updateSuccessFailureCount( );
             updateBackground( );
         } );
+    }
+
+    private void updateSuccessFailureCount( ) {
+        final Set<ProjectData> allProjects = getAllInterestingProjects( );
+        _failureCount.setValue( allProjects.stream( ).map( p -> _projectData.getBuildTypeCount( BuildStatus.FAILURE, BuildStatus.ERROR ) ).reduce( 0, Integer::sum ) );
+        _successCount.setValue( allProjects.stream( ).map( p -> _projectData.getBuildTypeCount( BuildStatus.SUCCESS ) ).reduce( 0, Integer::sum ) );
     }
 
     @Subscribe
@@ -63,19 +73,12 @@ final class ProjectTileViewModel {
     }
 
     private void updateBackground( ) {
-        final Set<ProjectData> allProjects = getAllInterestingProjects( );
-
-        final int failureCount = allProjects.stream( ).map( p -> _projectData.getBuildTypeCount( BuildStatus.FAILURE, BuildStatus.ERROR ) ).reduce( 0, Integer::sum );
-        final int successCount = allProjects.stream( ).map( p -> _projectData.getBuildTypeCount( BuildStatus.SUCCESS ) ).reduce( 0, Integer::sum );
-        final int unknownCount = allProjects.stream( ).map( p -> _projectData.getBuildTypeCount( BuildStatus.UNKNOWN ) ).reduce( 0, Integer::sum );
-
-        if ( unknownCount > 0 || failureCount + successCount == 0 ) {
+        if ( getFailureCount( ) + getSuccessCount( ) == 0 ) {
             _background.setValue( BuildBackground.UNKNOWN.getMain( ) );
             return;
         }
-
         // Setting main background according to failure count
-        _background.setValue( failureCount == 0 ? BuildBackground.SUCCESS.getMain( ) : BuildBackground.FAILURE.getMain( ) );
+        _background.setValue( getFailureCount( ) == 0 ? BuildBackground.SUCCESS.getMain( ) : BuildBackground.FAILURE.getMain( ) );
     }
 
 
@@ -110,4 +113,19 @@ final class ProjectTileViewModel {
         return _lightMode.get( );
     }
 
+    int getSuccessCount( ) {
+        return _successCount.get( );
+    }
+
+    IntegerProperty successCountProperty( ) {
+        return _successCount;
+    }
+
+    int getFailureCount( ) {
+        return _failureCount.get( );
+    }
+
+    IntegerProperty failureCountProperty( ) {
+        return _failureCount;
+    }
 }

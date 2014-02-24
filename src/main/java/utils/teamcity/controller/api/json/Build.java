@@ -22,12 +22,12 @@ public final class Build implements ApiResponse {
     private String _buildType;
 
     @SerializedName("status")
-    private BuildStatus _status = BuildStatus.UNKNOWN;
+    private BuildStatus _status;
 
     @SerializedName("state")
     private BuildState _state;
 
-    @SerializedName( "running" )
+    @SerializedName("running")
     private boolean _running;
 
     @SerializedName("finishDate")
