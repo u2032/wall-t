@@ -35,16 +35,17 @@ public final class ApiModule extends AbstractModule {
     @Singleton
     public AsyncHttpClientConfig httpClientConfig( ) {
         return new AsyncHttpClientConfig.Builder( )
-                .setFollowRedirects( true )
                 .setUserAgent( "TeamCity Wall Client" )
+                .setFollowRedirects( true )
+                .setRemoveQueryParamsOnRedirect( false )
                 .setAllowPoolingConnection( true )
                 .setAllowSslConnectionPool( true )
-                .setMaxConnectionLifeTimeInMs( 60000 )
                 .setMaximumNumberOfRedirects( 5 )
+                .setMaximumConnectionsPerHost( 5 )
                 .setConnectionTimeoutInMs( 30000 )
                 .setRequestTimeoutInMs( 30000 )
-//                .setIdleConnectionInPoolTimeoutInMs(  )
-                .setMaximumConnectionsPerHost( 5 )
+                .setMaxConnectionLifeTimeInMs( 120000 )
+                .setIdleConnectionInPoolTimeoutInMs( 60000 )
                 .build( );
     }
 
