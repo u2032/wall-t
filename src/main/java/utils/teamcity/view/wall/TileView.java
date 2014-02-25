@@ -8,6 +8,8 @@ import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
+import javafx.scene.text.FontWeight;
 import javafx.util.Duration;
 import utils.teamcity.view.UIUtils;
 
@@ -78,9 +80,11 @@ final class TileView extends StackPane {
         tileContent.setSpacing( 10 );
 
         final Label tileTitle = new Label( );
-        tileTitle.setStyle( "-fx-font-weight:bold; -fx-text-fill:white; -fx-font-size:50px;" );
+        tileTitle.setFont( UIUtils.font( 50, FontWeight.BOLD ) );
+        tileTitle.setTextFill( Color.WHITE );
         tileTitle.setPadding( new Insets( 5 ) );
         tileTitle.setWrapText( true );
+        tileTitle.setEffect( UIUtils.shadowEffect( ) );
         tileTitle.textProperty( ).bind( _model.displayedNameProperty( ) );
         tileTitle.prefWidthProperty( ).bind( widthProperty( ) );
         tileTitle.prefHeightProperty( ).bind( heightProperty( ) );
@@ -156,8 +160,10 @@ final class TileView extends StackPane {
         lastBuildDate.setMinWidth( 110 );
         lastBuildDate.setTextAlignment( CENTER );
         lastBuildDate.setAlignment( Pos.CENTER );
-        lastBuildDate.setStyle( "-fx-font-weight:bold; -fx-text-fill:white; -fx-font-size:32px;" );
+        lastBuildDate.setFont( UIUtils.font( 32, FontWeight.BOLD ) );
+        lastBuildDate.setTextFill( Color.WHITE );
         lastBuildDate.setWrapText( true );
+        lastBuildDate.setEffect( UIUtils.shadowEffect( ) );
         lastBuildDate.textProperty( ).bind( createStringBinding( ( ) -> {
             final LocalDateTime localDateTime = build.lastFinishedDateProperty( ).get( );
             if ( localDateTime == null )
@@ -181,8 +187,10 @@ final class TileView extends StackPane {
         timeLeftLabel.setMinWidth( 110 );
         timeLeftLabel.setTextAlignment( CENTER );
         timeLeftLabel.setAlignment( Pos.CENTER );
-        timeLeftLabel.setStyle( "-fx-font-weight:bold; -fx-text-fill:white; -fx-font-size:32px;" );
+        timeLeftLabel.setFont( UIUtils.font( 32, FontWeight.BOLD ) );
+        timeLeftLabel.setTextFill( Color.WHITE );
         timeLeftLabel.setWrapText( true );
+        timeLeftLabel.setEffect( UIUtils.shadowEffect( ) );
         timeLeftLabel.textProperty( ).bind( createStringBinding( ( ) -> {
             final java.time.Duration timeLeft = build.timeLeftProperty( ).get( );
             return ( timeLeft.isNegative( ) ? "+ " : "" ) + ( abs( timeLeft.toMinutes( ) ) + 1 ) + "\nmin";

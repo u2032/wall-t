@@ -13,7 +13,7 @@ import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Paint;
-import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 import javafx.scene.text.TextAlignment;
 import javafx.util.StringConverter;
 import utils.teamcity.controller.api.ApiVersion;
@@ -46,7 +46,7 @@ final class ConfigurationView extends BorderPane {
         titlePane.setAlignment( Pos.CENTER );
 
         final Label label = new Label( "Configuration" );
-        label.setFont( Font.font( 50 ) );
+        label.setFont( UIUtils.font( 50 ) );
 
         titlePane.getChildren( ).add( label );
         return titlePane;
@@ -81,7 +81,7 @@ final class ConfigurationView extends BorderPane {
         content.getChildren( ).add( connectionInformation );
 
         final Label buildTypesListLabel = new Label( "Monitored Build types" );
-        buildTypesListLabel.setStyle( "-fx-font-weight:bold; -fx-font-size:20px;" );
+        buildTypesListLabel.setFont( UIUtils.font( 20, FontWeight.BOLD ) );
         final TableView<BuildTypeViewModel> buildTypesList = buildBuildTypesListTableView( );
         content.widthProperty( ).addListener( ( o, oldValue, newValue ) -> buildTypesList.setMaxWidth( newValue.doubleValue( ) * 0.9 ) );
         buildTypesList.disableProperty( ).bind( _model.loadingProperty( ) );
@@ -89,7 +89,7 @@ final class ConfigurationView extends BorderPane {
         content.getChildren( ).addAll( buildTypesListLabel, buildTypesList );
 
         final Label projectListLabel = new Label( "Monitored Projects" );
-        projectListLabel.setStyle( "-fx-font-weight:bold; -fx-font-size:20px;" );
+        projectListLabel.setFont( UIUtils.font( 20, FontWeight.BOLD ) );
         final TableView<ProjectViewModel> projectList = buildProjectListTableView( );
         content.widthProperty( ).addListener( ( o, oldValue, newValue ) -> projectList.setMaxWidth( newValue.doubleValue( ) * 0.9 ) );
         projectList.disableProperty( ).bind( _model.loadingProperty( ) );

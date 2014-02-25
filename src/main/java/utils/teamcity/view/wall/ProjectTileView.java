@@ -11,6 +11,8 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.text.FontWeight;
 import javafx.util.Duration;
 import utils.teamcity.view.UIUtils;
 
@@ -58,10 +60,12 @@ final class ProjectTileView extends HBox {
 
     private void createBuildInformation( ) {
         final Label tileTitle = new Label( );
-        tileTitle.setStyle( "-fx-font-weight:bold; -fx-text-fill:white; -fx-font-size:50px;" );
+        tileTitle.setFont( UIUtils.font( 50, FontWeight.BOLD ) );
+        tileTitle.setTextFill( Color.WHITE );
         tileTitle.setPadding( new Insets( 5 ) );
         tileTitle.setWrapText( true );
         tileTitle.textProperty( ).bind( _model.displayedNameProperty( ) );
+        tileTitle.setEffect( UIUtils.shadowEffect( ) );
         tileTitle.prefWidthProperty( ).bind( widthProperty( ) );
         tileTitle.prefHeightProperty( ).bind( heightProperty( ) );
         tileTitle.alignmentProperty( ).bind( createObjectBinding( ( ) -> _model.isLightMode( ) ? Pos.CENTER : CENTER_LEFT, _model.lightModeProperty( ) ) );
@@ -133,7 +137,9 @@ final class ProjectTileView extends HBox {
         background.setFitHeight( 80 );
 
         final Label label = new Label( "8" );
-        label.setStyle( "-fx-font-weight:bold; -fx-text-fill:white; -fx-font-size:40px;" );
+        label.setFont( UIUtils.font( 40, FontWeight.BOLD ) );
+        label.setTextFill( Color.WHITE );
+        label.setEffect( UIUtils.shadowEffect( ) );
         label.textProperty( ).bind( _model.successCountProperty( ).asString( ) );
         pane.getChildren( ).addAll( background, label );
         return pane;
@@ -146,7 +152,9 @@ final class ProjectTileView extends HBox {
         background.setFitHeight( 80 );
 
         final Label label = new Label( );
-        label.setStyle( "-fx-font-weight:bold; -fx-text-fill:white; -fx-font-size:40px;" );
+        label.setFont( UIUtils.font( 40, FontWeight.BOLD ) );
+        label.setTextFill( Color.WHITE );
+        label.setEffect( UIUtils.shadowEffect( ) );
         label.textProperty( ).bind( _model.failureCountProperty( ).asString( ) );
         pane.getChildren( ).addAll( background, label );
         return pane;
