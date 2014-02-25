@@ -111,7 +111,7 @@ final class ApiController implements IApiController {
                 @Override
                 public void onSuccess( final ProjectList result ) {
                     final List<ProjectData> projects = result.getProjects( ).stream( )
-                            .map( ( project ) -> new ProjectData( project.getId( ), project.getName( ), project.getParentId( ) ) )
+                            .map( ( project ) -> new ProjectData( project.getId( ), project.getName( ), Optional.ofNullable( project.getParentId( ) ) ) )
                             .collect( Collectors.toList( ) );
                     _projectManager.registerProjects( projects );
                     _eventBus.post( _projectManager );

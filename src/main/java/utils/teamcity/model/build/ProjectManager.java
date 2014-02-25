@@ -25,7 +25,7 @@ public final class ProjectManager implements IProjectManager {
     @Inject
     public ProjectManager( final Configuration configuration ) {
         for ( final SavedProjectData savedData : configuration.getSavedProjects( ) ) {
-            final ProjectData data = new ProjectData( savedData.getId( ), savedData.getName( ), savedData.getParentId( ) );
+            final ProjectData data = new ProjectData( savedData.getId( ), savedData.getName( ), Optional.ofNullable( savedData.getParentId( ) ) );
             data.setAliasName( savedData.getAliasName( ) );
             _projects.add( data );
             activateMonitoring( data );
@@ -96,7 +96,7 @@ public final class ProjectManager implements IProjectManager {
     public List<ProjectData> getAllChildrenOf( final ProjectData data ) {
         final ImmutableList.Builder<ProjectData> builder = ImmutableList.builder( );
 
-        final List<ProjectData> directChildren = getProjects( ).stream( ).filter( p -> data.getId( ).equals( p.getParentId( ) ) ).collect( Collectors.toList( ) );
+        final List<ProjectData> directChildren = getProjects( ).stream( ).filter( p -> p.getParentId( ).isPresent( ) && data.getId( ).equals( p.getParentId( ).get( ) ) ).collect( Collectors.toList( ) );
         builder.addAll( directChildren );
 
         for ( final ProjectData child : directChildren ) {

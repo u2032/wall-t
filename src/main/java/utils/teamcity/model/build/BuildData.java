@@ -12,16 +12,14 @@ import java.util.Optional;
 public final class BuildData {
 
     private final int _id;
-    private final String _buildTypeId;
     private final BuildStatus _status;
     private final BuildState _state;
     private final int _percentageComplete;
     private final Optional<LocalDateTime> _finishedDate;
     private final Duration _timeLeft;
 
-    public BuildData( final int id, final String buildTypeId, final BuildStatus status, final BuildState state, final int percentageComplete, final Optional<LocalDateTime> finishedDate, Duration timeLeft ) {
+    public BuildData( final int id, final BuildStatus status, final BuildState state, final int percentageComplete, final Optional<LocalDateTime> finishedDate, Duration timeLeft ) {
         _id = id;
-        _buildTypeId = buildTypeId;
         _status = status;
         _state = state;
         _percentageComplete = percentageComplete;
@@ -39,10 +37,6 @@ public final class BuildData {
 
     public int getId( ) {
         return _id;
-    }
-
-    public String getBuildTypeId( ) {
-        return _buildTypeId;
     }
 
     public int getPercentageComplete( ) {

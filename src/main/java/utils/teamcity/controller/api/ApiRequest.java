@@ -56,6 +56,6 @@ public final class ApiRequest {
 
     @Override
     public String toString( ) {
-        return "ApiRequest{" + " '" + _serverUrl + "', user:" + _username + ( isNullOrEmpty( getPassword( ) ) ? " with no password" : " with password" ) + " }";
+        return "ApiRequest{" + " '" + _serverUrl + "', user:" + _username + ( isNullOrEmpty( getPassword( ) ) || isGuestMode( ) ? " with no password" : " with password" ) + " }";
     }
 }

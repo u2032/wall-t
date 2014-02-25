@@ -41,7 +41,9 @@ public final class ApiModule extends AbstractModule {
                 .setAllowSslConnectionPool( true )
                 .setMaxConnectionLifeTimeInMs( 60000 )
                 .setMaximumNumberOfRedirects( 5 )
+                .setConnectionTimeoutInMs( 30000 )
                 .setRequestTimeoutInMs( 30000 )
+//                .setIdleConnectionInPoolTimeoutInMs(  )
                 .setMaximumConnectionsPerHost( 5 )
                 .build( );
     }
@@ -56,18 +58,33 @@ public final class ApiModule extends AbstractModule {
     @Singleton
     public Map<ApiVersion, Function<Build, BuildData>> controllerByApiVersion( ) {
         return ImmutableMap.of(
-                ApiVersion.API_8_0,
-                build -> new BuildData( build.getId( ), build.getBuildType( ), build.getStatus( ),
+                ApiVersion.API_6_0,
+                build -> new BuildData( build.getId( ), build.getStatus( ),
                         build.isRunning( ) ? BuildState.running : BuildState.finished,
                         build.isRunning( ) ? build.getRunningInformation( ).getPercentageComplete( ) : 100,
-                        Optional.ofNullable( build.getFinishedDate( ) ),
+                        Optional.ofNullable( build.getFinishDate( ) ),
+                        build.isRunning( ) ? Duration.of( build.getRunningInformation( ).getEstimatedTotalTime( ) - build.getRunningInformation( ).getElapsedTime( ), ChronoUnit.SECONDS ) : Duration.ZERO ),
+
+
+                ApiVersion.API_7_1,
+                build -> new BuildData( build.getId( ), build.getStatus( ),
+                        build.isRunning( ) ? BuildState.running : BuildState.finished,
+                        build.isRunning( ) ? build.getRunningInformation( ).getPercentageComplete( ) : 100,
+                        Optional.ofNullable( build.getFinishDate( ) ),
+                        build.isRunning( ) ? Duration.of( build.getRunningInformation( ).getEstimatedTotalTime( ) - build.getRunningInformation( ).getElapsedTime( ), ChronoUnit.SECONDS ) : Duration.ZERO ),
+
+                ApiVersion.API_8_0,
+                build -> new BuildData( build.getId( ), build.getStatus( ),
+                        build.isRunning( ) ? BuildState.running : BuildState.finished,
+                        build.isRunning( ) ? build.getRunningInformation( ).getPercentageComplete( ) : 100,
+                        Optional.ofNullable( build.getFinishDate( ) ),
                         build.isRunning( ) ? Duration.of( build.getRunningInformation( ).getEstimatedTotalTime( ) - build.getRunningInformation( ).getElapsedTime( ), ChronoUnit.SECONDS ) : Duration.ZERO ),
 
                 ApiVersion.API_8_1,
-                build -> new BuildData( build.getId( ), build.getBuildType( ), build.getStatus( ),
+                build -> new BuildData( build.getId( ), build.getStatus( ),
                         build.getState( ),
                         build.getState( ) == BuildState.running ? build.getRunningInformation( ).getPercentageComplete( ) : 100,
-                        Optional.ofNullable( build.getFinishedDate( ) ),
+                        Optional.ofNullable( build.getFinishDate( ) ),
                         build.getState( ) == BuildState.running ? Duration.of( build.getRunningInformation( ).getEstimatedTotalTime( ) - build.getRunningInformation( ).getElapsedTime( ), ChronoUnit.SECONDS ) : Duration.ZERO )
         );
     }

@@ -89,7 +89,7 @@ public final class ConfigurationController implements IConfigurationController {
         final Ordering<ProjectData> ordering = Ordering.from( Comparator.comparingInt( _projectManager::getPosition ) );
 
         final List<SavedProjectData> projectToSaved = ordering.sortedCopy( monitoredProjects ).stream( )
-                .map( data -> new SavedProjectData( data.getId( ), data.getName( ), data.getParentId( ), data.getAliasName( ) ) )
+                .map( data -> new SavedProjectData( data.getId( ), data.getName( ), data.getParentId( ).orElse( null ), data.getAliasName( ) ) )
                 .collect( Collectors.toList( ) );
 
         _configuration.setSavedProjects( projectToSaved );

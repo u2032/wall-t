@@ -19,12 +19,12 @@ public final class ProjectData {
 
     private final String _id;
     private final String _name;
-    private final String _parentId;
+    private final Optional<String> _parentId;
 
     private final List<BuildTypeData> _buildTypes = Lists.newArrayList( );
     private String _aliasName;
 
-    public ProjectData( final String id, final String name, final String parentId ) {
+    public ProjectData( final String id, final String name, final Optional<String> parentId ) {
         _id = id;
         _name = name;
         _parentId = parentId;
@@ -38,7 +38,7 @@ public final class ProjectData {
         return _name;
     }
 
-    public String getParentId( ) {
+    public Optional<String> getParentId( ) {
         return _parentId;
     }
 
