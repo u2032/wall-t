@@ -28,8 +28,8 @@ final class ProjectTileViewModel {
     private final StringProperty _displayedName = new SimpleStringProperty( );
     private final ObjectProperty<Background> _background = new SimpleObjectProperty<>( );
 
-    private final IntegerProperty _successCount = new SimpleIntegerProperty( );
-    private final IntegerProperty _failureCount = new SimpleIntegerProperty( );
+    private final IntegerProperty _successCount = new SimpleIntegerProperty( -1 );
+    private final IntegerProperty _failureCount = new SimpleIntegerProperty( -1 );
 
     private final BooleanProperty _hasSuccessRunning = new SimpleBooleanProperty( );
     private final BooleanProperty _hasFailureRunning = new SimpleBooleanProperty( );

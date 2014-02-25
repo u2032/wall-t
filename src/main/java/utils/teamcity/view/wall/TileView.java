@@ -45,10 +45,12 @@ final class TileView extends StackPane {
         getChildren( ).addAll( progressPane, tileContent );
 
         _model.runningProperty( ).addListener( ( o, oldVallue, newValue ) -> {
-            if ( newValue )
+            if ( newValue ) {
                 startRunningAnimation( );
-            else
+            } else {
                 stopRunningAnimation( );
+                setOpacity( 1 );
+            }
         } );
     }
 
@@ -58,7 +60,6 @@ final class TileView extends StackPane {
         transition.setToValue( 0.5 );
         transition.setCycleCount( Timeline.INDEFINITE );
         transition.setAutoReverse( true );
-        transition.setOnFinished( ( ae ) -> setOpacity( 1 ) );
         return transition;
     }
 

@@ -1,9 +1,8 @@
 package utils.teamcity.view.wall;
 
+import javafx.animation.Animation;
 import javafx.animation.FadeTransition;
 import javafx.animation.Timeline;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
@@ -41,20 +40,19 @@ final class ProjectTileView extends HBox {
         setStyle( "-fx-border-color:white; -fx-border-radius:5;" );
         backgroundProperty( ).bind( project.backgroundProperty( ) );
 
-        _successRunningAnimation = prepareRunningAnimation( ( ae ) -> getSuccessOpacity( ) );
-        _failureRunningAnimation = prepareRunningAnimation( ( ae ) -> getFailureOpacity( ) );
+        _successRunningAnimation = prepareRunningAnimation( );
+        _failureRunningAnimation = prepareRunningAnimation( );
 
         createBuildInformation( );
     }
 
 
-    private FadeTransition prepareRunningAnimation( final EventHandler<ActionEvent> onFinished ) {
+    private FadeTransition prepareRunningAnimation( ) {
         final FadeTransition transition = new FadeTransition( Duration.millis( 1500 ) );
         transition.setFromValue( 1.0 );
         transition.setToValue( 0.5 );
         transition.setCycleCount( Timeline.INDEFINITE );
         transition.setAutoReverse( true );
-        transition.setOnFinished( onFinished );
         return transition;
     }
 
@@ -94,6 +92,7 @@ final class ProjectTileView extends HBox {
                 _successRunningAnimation.play( );
             } else {
                 _successRunningAnimation.stop( );
+                successBox.setOpacity( getSuccessBoxOpacity( ) );
             }
         } );
 
@@ -102,6 +101,16 @@ final class ProjectTileView extends HBox {
                 _failureRunningAnimation.play( );
             } else {
                 _failureRunningAnimation.stop( );
+                failureBox.setOpacity( getFailureBoxOpacity( ) );
+            }
+        } );
+
+        _model.failureCountProperty( ).addListener( ( observable, oldValue, newValue ) -> {
+            if ( _successRunningAnimation.getStatus( ) != Animation.Status.RUNNING ) {
+                successBox.setOpacity( getSuccessBoxOpacity( ) );
+            }
+            if ( _failureRunningAnimation.getStatus( ) != Animation.Status.RUNNING ) {
+                failureBox.setOpacity( getFailureBoxOpacity( ) );
             }
         } );
 
@@ -109,12 +118,12 @@ final class ProjectTileView extends HBox {
         return contextPart;
     }
 
-    private double getFailureOpacity( ) {
+    private double getFailureBoxOpacity( ) {
         return _model.getFailureCount( ) > 0 ? 1 : 0.5;
     }
 
-    private double getSuccessOpacity( ) {
-        return _model.getFailureCount( ) > 0 ? 0.5 : 1;
+    private double getSuccessBoxOpacity( ) {
+        return _model.getFailureCount( ) <= 0 ? 1 : 0.5;
     }
 
     private StackPane createSuccessBox( ) {
