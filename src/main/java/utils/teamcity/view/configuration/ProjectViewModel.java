@@ -13,7 +13,7 @@ import javax.inject.Inject;
  *
  * @author Cedric Longo
  */
-public class ProjectViewModel implements IPositionable {
+final class ProjectViewModel implements IPositionable {
 
     private final StringProperty _id = new SimpleStringProperty( );
     private final StringProperty _name = new SimpleStringProperty( );

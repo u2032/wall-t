@@ -77,28 +77,52 @@ final class ConfigurationViewModel {
         _configurationController = configurationController;
 
         _proxyUse.setValue( _configuration.isUseProxy( ) );
-        _proxyUse.addListener( ( o, oldValue, newValue ) -> configuration.setUseProxy( newValue ) );
+        _proxyUse.addListener( ( o, oldValue, newValue ) -> {
+            invalidateConnectInformation( );
+            configuration.setUseProxy( newValue );
+        } );
 
         _proxyServerUrl.setValue( _configuration.getProxyHost( ) );
-        _proxyServerUrl.addListener( ( o, oldValue, newValue ) -> configuration.setProxyHost( newValue ) );
+        _proxyServerUrl.addListener( ( o, oldValue, newValue ) -> {
+            invalidateConnectInformation( );
+            configuration.setProxyHost( newValue );
+        } );
 
         _proxyServerPort.setValue( String.valueOf( _configuration.getProxyPort( ) ) );
-        _proxyServerPort.addListener( ( o, oldValue, newValue ) -> configuration.setProxyPort( Integer.valueOf( newValue ) ) );
+        _proxyServerPort.addListener( ( o, oldValue, newValue ) -> {
+            invalidateConnectInformation( );
+            configuration.setProxyPort( Integer.valueOf( newValue ) );
+        } );
 
         _proxyCredentialsUser.setValue( _configuration.getProxyCredentialsUser( ) );
-        _proxyCredentialsUser.addListener( ( o, oldValue, newValue ) -> configuration.setProxyCredentialsUser( newValue ) );
+        _proxyCredentialsUser.addListener( ( o, oldValue, newValue ) -> {
+            invalidateConnectInformation( );
+            configuration.setProxyCredentialsUser( newValue );
+        } );
 
         _proxyCredentialsPassword.setValue( _configuration.getProxyCredentialsPassword( ) );
-        _proxyCredentialsPassword.addListener( ( o, oldValue, newValue ) -> configuration.setProxyCredentialsPassword( newValue ) );
+        _proxyCredentialsPassword.addListener( ( o, oldValue, newValue ) -> {
+            invalidateConnectInformation( );
+            configuration.setProxyCredentialsPassword( newValue );
+        } );
 
         _serverUrl.setValue( configuration.getServerUrl( ) );
-        _serverUrl.addListener( ( object, oldValue, newValue ) -> configuration.setServerUrl( newValue ) );
+        _serverUrl.addListener( ( object, oldValue, newValue ) -> {
+            invalidateConnectInformation( );
+            configuration.setServerUrl( newValue );
+        } );
 
         _credentialsUser.setValue( configuration.getCredentialsUser( ) );
-        _credentialsUser.addListener( ( object, oldValue, newValue ) -> configuration.setCredentialsUser( newValue ) );
+        _credentialsUser.addListener( ( object, oldValue, newValue ) -> {
+            invalidateConnectInformation( );
+            configuration.setCredentialsUser( newValue );
+        } );
 
         _credentialsPassword.setValue( configuration.getCredentialsPassword( ) );
-        _credentialsPassword.addListener( ( object, oldValue, newValue ) -> configuration.setCredentialsPassword( newValue ) );
+        _credentialsPassword.addListener( ( object, oldValue, newValue ) -> {
+            invalidateConnectInformation( );
+            configuration.setCredentialsPassword( newValue );
+        } );
 
         _maxTilesByColumn.setValue( configuration.getMaxTilesByColumn( ) );
         _maxTilesByColumn.addListener( ( object, oldValue, newValue ) -> configuration.setMaxTilesByColumn( newValue.intValue( ) ) );
@@ -111,6 +135,10 @@ final class ConfigurationViewModel {
 
         updateBuildTypeList( buildManager );
         updateProjectList( projectManager );
+    }
+
+    void invalidateConnectInformation( ) {
+        _loadingFailure.setValue( true );
     }
 
     BooleanProperty proxyUseProperty( ) {

@@ -40,11 +40,12 @@ public final class WallApplication extends Application {
     public static final int MIN_WIDTH = 1024;
     public static final int MIN_HEIGHT = 800;
     public static final Logger LOGGER = LoggerFactory.getLogger( Loggers.MAIN );
+
     private final Injector _injector;
     private final ExecutorService _executorService;
     private final ScheduledExecutorService _scheduledExecutorService;
-    private final EventBus _eventBus;
     private final IApiMonitoringService _apiMonitoringService;
+    private final EventBus _eventBus;
 
     private Stage _primaryStage;
 
