@@ -9,4 +9,7 @@ public interface IApiMonitoringService {
 
     void start( );
 
+    void pause( );
+
+    void activate( );
 }

@@ -35,6 +35,9 @@ public final class ApiMonitoringService implements IApiMonitoringService {
     private final IBuildManager _buildManager;
     private final EventBus _eventBus;
 
+    private boolean _active;
+
+
     @Inject
     public ApiMonitoringService( final ScheduledExecutorService executorService, final IApiController apiController, final IProjectManager projectManager, final IBuildManager buildManager, final EventBus eventBus ) {
         _executorService = executorService;
@@ -50,6 +53,22 @@ public final class ApiMonitoringService implements IApiMonitoringService {
         _executorService.scheduleWithFixedDelay( checkRunningBuildStatus( ), 30, 10, TimeUnit.SECONDS );
         _executorService.scheduleWithFixedDelay( checkQueuedBuildStatus( ), 30, 10, TimeUnit.SECONDS );
         _executorService.scheduleWithFixedDelay( checkDataAreAlwaysSync( ), 2, 10, TimeUnit.MINUTES );
+        LOGGER.info( "Monitoring service configured." );
+    }
+
+    public synchronized boolean isActive( ) {
+        return _active;
+    }
+
+    @Override
+    public synchronized void pause( ) {
+        _active = false;
+        LOGGER.info( "Monitoring service paused." );
+    }
+
+    @Override
+    public synchronized void activate( ) {
+        _active = true;
         LOGGER.info( "Monitoring service started." );
     }
 
@@ -67,9 +86,11 @@ public final class ApiMonitoringService implements IApiMonitoringService {
         return allMonitoredBuildTypes;
     }
 
-
     private Runnable checkIdleBuildStatus( ) {
         return ( ) -> {
+            if ( !isActive( ) )
+                return;
+
             final List<BuildTypeData> monitoredBuilds = getAllMonitoredBuildTypes( ).stream( )
                     .filter( b -> !b.hasRunningBuild( ) )
                     .collect( Collectors.toList( ) );
@@ -81,6 +102,9 @@ public final class ApiMonitoringService implements IApiMonitoringService {
 
     private Runnable checkRunningBuildStatus( ) {
         return ( ) -> {
+            if ( !isActive( ) )
+                return;
+
             final List<BuildTypeData> monitoredBuilds = getAllMonitoredBuildTypes( ).stream( )
                     .filter( BuildTypeData::hasRunningBuild )
                     .collect( Collectors.toList( ) );
@@ -91,11 +115,18 @@ public final class ApiMonitoringService implements IApiMonitoringService {
     }
 
     private Runnable checkQueuedBuildStatus( ) {
-        return _apiController::requestQueuedBuilds;
+        return ( ) -> {
+            if ( !isActive( ) )
+                return;
+            _apiController.requestQueuedBuilds( );
+        };
     }
 
     private Runnable checkDataAreAlwaysSync( ) {
         return ( ) -> {
+            if ( !isActive( ) )
+                return;
+
             final Instant cut = Instant.now( ).minus( 5, ChronoUnit.MINUTES );
 
             final Collection<BuildTypeData> monitoredBuilds = getAllMonitoredBuildTypes( );

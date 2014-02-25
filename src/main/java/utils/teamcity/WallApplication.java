@@ -24,6 +24,7 @@ import utils.teamcity.model.logger.Loggers;
 import utils.teamcity.view.UIUtils;
 import utils.teamcity.view.configuration.ConfigurationScene;
 import utils.teamcity.view.configuration.ConfigurationViewModule;
+import utils.teamcity.view.wall.WallScene;
 import utils.teamcity.view.wall.WallViewModule;
 
 import java.util.concurrent.ExecutorService;
@@ -43,6 +44,8 @@ public final class WallApplication extends Application {
     private final ExecutorService _executorService;
     private final ScheduledExecutorService _scheduledExecutorService;
     private final EventBus _eventBus;
+    private final IApiMonitoringService _apiMonitoringService;
+
     private Stage _primaryStage;
 
     public WallApplication( ) {
@@ -51,6 +54,7 @@ public final class WallApplication extends Application {
         _executorService = _injector.getInstance( ExecutorService.class );
         _scheduledExecutorService = _injector.getInstance( ScheduledExecutorService.class );
         _eventBus = _injector.getInstance( EventBus.class );
+        _apiMonitoringService = _injector.getInstance( IApiMonitoringService.class );
     }
 
     public static void main( final String[] args ) {
@@ -87,11 +91,10 @@ public final class WallApplication extends Application {
         primaryStage.setWidth( MIN_WIDTH );
         primaryStage.setHeight( MIN_HEIGHT );
 
+        _apiMonitoringService.start( );
         _eventBus.post( new SceneEvent( ConfigurationScene.class ) );
 
         primaryStage.show( );
-
-        _injector.getInstance( IApiMonitoringService.class ).start( );
     }
 
     @Override
@@ -118,5 +121,10 @@ public final class WallApplication extends Application {
                 } );
         LOGGER.info( "Change scene to " + sceneType.getType( ).getSimpleName( ) );
         _primaryStage.setScene( scene );
+
+        if ( scene instanceof WallScene )
+            _apiMonitoringService.activate( );
+        else
+            _apiMonitoringService.pause( );
     }
 }

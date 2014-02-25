@@ -223,7 +223,7 @@ final class ConfigurationViewModel {
                     .collect( Collectors.toList( ) );
 
             final Ordering<BuildTypeViewModel> ordering =
-                    Ordering.from( comparingInt( ( BuildTypeViewModel value ) -> value.getPosition( ) ) )
+                    Ordering.from( comparingInt( ( IPositionable value ) -> value.getPosition( ) ) )
                             .compound( comparing( ( BuildTypeViewModel value ) -> value.getProjectName( ) ) )
                             .compound( comparing( ( BuildTypeViewModel value ) -> value.getName( ) ) );
 
@@ -240,7 +240,7 @@ final class ConfigurationViewModel {
                     .collect( Collectors.toList( ) );
 
             final Ordering<ProjectViewModel> ordering =
-                    Ordering.from( comparingInt( ( ProjectViewModel value ) -> value.getPosition( ) ) )
+                    Ordering.from( comparingInt( ( IPositionable value ) -> value.getPosition( ) ) )
                             .compound( comparing( ( ProjectViewModel value ) -> value.getName( ) ) );
 
             _project.setAll( ordering.sortedCopy( viewModels ) );
