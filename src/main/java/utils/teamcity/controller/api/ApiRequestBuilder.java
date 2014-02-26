@@ -7,6 +7,7 @@ import java.net.URISyntaxException;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Strings.nullToEmpty;
 
 /**
  * Date: 16/02/14
@@ -32,14 +33,14 @@ public final class ApiRequestBuilder {
     }
 
     public ApiRequestBuilder to( final String serverUrl ) {
-        _serverUrl = serverUrl;
+        _serverUrl = checkNotNull( serverUrl, "Server URL is not specified" );
         if ( _serverUrl.endsWith( "/" ) )
             _serverUrl = _serverUrl.substring( 0, _serverUrl.length( ) - 1 );
         return this;
     }
 
     public ApiRequestBuilder request( final String path ) {
-        _path = path;
+        _path = nullToEmpty( path );
         if ( _path.endsWith( "/" ) )
             _path = _path.substring( 0, _path.length( ) - 1 );
         return this;
@@ -53,7 +54,7 @@ public final class ApiRequestBuilder {
     }
 
     public ApiRequestBuilder withPassword( final String password ) {
-        _password = password;
+        _password = nullToEmpty( password );
         return this;
     }
 
