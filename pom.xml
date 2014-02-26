@@ -95,7 +95,8 @@
                 <artifactId>maven-assembly-plugin</artifactId>
                 <version>2.2</version>
                 <configuration>
-                    <descriptor>src/main/assembly/bin.xml</descriptor>
+                    <descriptor>src/main/assembly/packaging.xml</descriptor>
+                    <appendAssemblyId>false</appendAssemblyId>
                 </configuration>
                 <executions>
                     <execution>
