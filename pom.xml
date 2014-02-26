@@ -4,7 +4,7 @@
 
     <groupId>utils.teamcity</groupId>
     <artifactId>Wall-T</artifactId>
-    <version>0.1.0-SNAPSHOT</version>
+    <version>1.0-SNAPSHOT</version>
 
     <packaging>jar</packaging>
 

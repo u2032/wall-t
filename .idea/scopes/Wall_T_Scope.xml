@@ -1,0 +1,3 @@
+<component name="DependencyValidationManager">
+  <scope name="Wall-T Scope" pattern="src:utils.teamcity..*" />
+</component>

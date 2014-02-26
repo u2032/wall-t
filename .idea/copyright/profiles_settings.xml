@@ -1,5 +1,13 @@
 <component name="CopyrightManager">
-  <settings default="">
-    <module2copyright />
+  <settings default="Wall-T Copyright">
+    <module2copyright>
+      <element module="Project Files" copyright="Wall-T Copyright" />
+    </module2copyright>
+    <LanguageOptions name="JAVA">
+      <option name="fileTypeOverride" value="3" />
+      <option name="separateBefore" value="true" />
+      <option name="separateAfter" value="true" />
+      <option name="filler" value="*" />
+    </LanguageOptions>
   </settings>
 </component>
