@@ -7,6 +7,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 
 import javax.inject.Inject;
@@ -25,12 +26,14 @@ final class WallView extends StackPane {
     public static final int GAP_SPACE = 10;
 
     private final WallViewModel _model;
+    private final Map<Class<?>, WallViewModule.TileViewProvider> _nodeFromModelFactory;
 
     private Node _currentDisplayedScreen;
 
     @Inject
-    WallView( final WallViewModel model ) {
+    WallView( final WallViewModel model, final Map<Class<?>, WallViewModule.TileViewProvider> nodeFromModelFactory ) {
         _model = model;
+        _nodeFromModelFactory = nodeFromModelFactory;
         setStyle( "-fx-background-color:black;" );
 
         _model.getDisplayedBuilds( ).addListener( (ListChangeListener<TileViewModel>) c -> updateLayout( ) );
@@ -112,39 +115,30 @@ final class WallView extends StackPane {
             final List<Object> buildList = x < size( partition ) ? Iterables.get( partition, x ) : Collections.emptyList( );
             for ( int y = 0; y < byColums; y++ ) {
                 if ( buildList.isEmpty( ) ) {
-                    createEmptytile( screenPane, x, y, nbColums, byColums );
+                    createEmptyTile( screenPane, x, y, nbColums, byColums );
                     continue;
                 }
 
                 final Object build = Iterables.get( buildList, y );
                 if ( build == null )
-                    createEmptytile( screenPane, x, y, nbColums, byColums );
-                else if ( build instanceof TileViewModel )
-                    createTileForBuildType( screenPane, (TileViewModel) build, x, y, nbColums, byColums );
-                else if ( build instanceof ProjectTileViewModel )
-                    createTileForProject( screenPane, (ProjectTileViewModel) build, x, y, nbColums, byColums );
+                    createEmptyTile( screenPane, x, y, nbColums, byColums );
+                else
+                    createTileFromModel( screenPane, build, x, y, nbColums, byColums );
             }
         }
 
         return screenPane;
     }
 
-    private void createEmptytile( final GridPane screenPane, final int x, final int y, final int nbColumns, final int nbRows ) {
-        final StackPane tile = new StackPane( );
+    private void createEmptyTile( final GridPane screenPane, final int x, final int y, final int nbColumns, final int nbRows ) {
+        final Pane tile = new Pane( );
         tile.prefWidthProperty( ).bind( widthProperty( ).add( -( nbColumns + 1 ) * GAP_SPACE ).divide( nbColumns ) );
         tile.prefHeightProperty( ).bind( heightProperty( ).add( -( nbRows + 1 ) * GAP_SPACE ).divide( nbRows ) );
         screenPane.add( tile, x, y );
     }
 
-    private void createTileForBuildType( final GridPane screenPane, final TileViewModel build, final int x, final int y, final int nbColumns, final int nbRows ) {
-        final StackPane tile = new TileView( build );
-        tile.prefWidthProperty( ).bind( widthProperty( ).add( -( nbColumns + 1 ) * GAP_SPACE ).divide( nbColumns ) );
-        tile.prefHeightProperty( ).bind( heightProperty( ).add( -( nbRows + 1 ) * GAP_SPACE ).divide( nbRows ) );
-        screenPane.add( tile, x, y );
-    }
-
-    private void createTileForProject( final GridPane screenPane, final ProjectTileViewModel build, final int x, final int y, final int nbColumns, final int nbRows ) {
-        final ProjectTileView tile = new ProjectTileView( build );
+    private void createTileFromModel( final GridPane screenPane, final Object model, final int x, final int y, final int nbColumns, final int nbRows ) {
+        final Pane tile = _nodeFromModelFactory.get( model.getClass( ) ).get( model );
         tile.prefWidthProperty( ).bind( widthProperty( ).add( -( nbColumns + 1 ) * GAP_SPACE ).divide( nbColumns ) );
         tile.prefHeightProperty( ).bind( heightProperty( ).add( -( nbRows + 1 ) * GAP_SPACE ).divide( nbRows ) );
         screenPane.add( tile, x, y );

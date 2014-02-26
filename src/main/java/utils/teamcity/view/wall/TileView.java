@@ -29,7 +29,6 @@ import static javafx.scene.text.TextAlignment.LEFT;
  */
 final class TileView extends StackPane {
 
-
     private final TileViewModel _model;
     private final FadeTransition _runningAnimation;
 
