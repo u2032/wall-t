@@ -10,11 +10,9 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 
 import javax.inject.Inject;
-import java.util.Collection;
-import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.*;
 
+import static com.google.common.collect.Iterables.size;
 import static java.lang.Math.max;
 
 /**
@@ -82,7 +80,11 @@ final class WallView extends StackPane {
         final int maxByScreens = max( 1, maxTilesByColumn * maxTilesByRow );
 
         final int nbScreen = max( 1, totalTilesCount / maxByScreens + ( ( totalTilesCount % maxByScreens > 0 ? 1 : 0 ) ) );
-        final int byScreen = max( 1, totalTilesCount / nbScreen + ( ( totalTilesCount % nbScreen > 0 ? 1 : 0 ) ) );
+
+        int byScreen = max( 1, totalTilesCount / nbScreen + ( ( totalTilesCount % nbScreen > 0 ? 1 : 0 ) ) );
+        // We search to complete columns of screen with tiles, not to have empty blanks (ie having a number of column which are all completed)
+        while ( byScreen % maxTilesByColumn != 0 )
+            byScreen++;
 
         final int nbColums = max( 1, byScreen / maxTilesByColumn + ( ( byScreen % maxTilesByColumn > 0 ? 1 : 0 ) ) );
         final int byColums = max( 1, byScreen / nbColums + ( ( byScreen % nbColums > 0 ? 1 : 0 ) ) );
@@ -105,21 +107,33 @@ final class WallView extends StackPane {
         screenPane.setStyle( "-fx-background-color:black;" );
         screenPane.setAlignment( Pos.CENTER );
 
-        final Iterable<List<Object>> partition = Iterables.partition( buildsInScreen, byColums );
-        int x = 0;
-        int y = 0;
-        for ( final List<Object> buildList : partition ) {
-            for ( final Object build : buildList ) {
-                if ( build instanceof TileViewModel )
+        final Iterable<List<Object>> partition = Iterables.paddedPartition( buildsInScreen, byColums );
+        for ( int x = 0; x < nbColums; x++ ) {
+            final List<Object> buildList = x < size( partition ) ? Iterables.get( partition, x ) : Collections.emptyList( );
+            for ( int y = 0; y < byColums; y++ ) {
+                if ( buildList.isEmpty( ) ) {
+                    createEmptytile( screenPane, x, y, nbColums, byColums );
+                    continue;
+                }
+
+                final Object build = Iterables.get( buildList, y );
+                if ( build == null )
+                    createEmptytile( screenPane, x, y, nbColums, byColums );
+                else if ( build instanceof TileViewModel )
                     createTileForBuildType( screenPane, (TileViewModel) build, x, y, nbColums, byColums );
                 else if ( build instanceof ProjectTileViewModel )
                     createTileForProject( screenPane, (ProjectTileViewModel) build, x, y, nbColums, byColums );
-                y++;
             }
-            y = 0;
-            x++;
         }
+
         return screenPane;
+    }
+
+    private void createEmptytile( final GridPane screenPane, final int x, final int y, final int nbColumns, final int nbRows ) {
+        final StackPane tile = new StackPane( );
+        tile.prefWidthProperty( ).bind( widthProperty( ).add( -( nbColumns + 1 ) * GAP_SPACE ).divide( nbColumns ) );
+        tile.prefHeightProperty( ).bind( heightProperty( ).add( -( nbRows + 1 ) * GAP_SPACE ).divide( nbRows ) );
+        screenPane.add( tile, x, y );
     }
 
     private void createTileForBuildType( final GridPane screenPane, final TileViewModel build, final int x, final int y, final int nbColumns, final int nbRows ) {
