@@ -190,7 +190,7 @@ final class TileViewModel {
         return _percentageComplete;
     }
 
-    boolean getRunning( ) {
+    boolean isRunning( ) {
         return _running.get( );
     }
 

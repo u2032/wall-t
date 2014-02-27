@@ -22,10 +22,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.FontWeight;
 import javafx.util.Duration;
@@ -101,27 +98,21 @@ final class ProjectTileView extends HBox {
         contextPart.setAlignment( Pos.CENTER );
 
         final StackPane successBox = createSuccessBox( );
+        successBox.setOpacity( getSuccessBoxOpacity( ) );
         _successRunningAnimation.setNode( successBox );
 
         final StackPane failureBox = createFailureBox( );
+        failureBox.setOpacity( getFailureBoxOpacity( ) );
         _failureRunningAnimation.setNode( failureBox );
 
+        checkSuccessAnimationRunning( _model.hasSuccessRunning( ), successBox );
         _model.hasSuccessRunningProperty( ).addListener( ( o, oldVallue, newValue ) -> {
-            if ( newValue ) {
-                _successRunningAnimation.play( );
-            } else {
-                _successRunningAnimation.stop( );
-                successBox.setOpacity( getSuccessBoxOpacity( ) );
-            }
+            checkSuccessAnimationRunning( newValue, successBox );
         } );
 
+        checkFailureAnimationRunning( _model.hasFailureRunning( ), failureBox );
         _model.hasFailureRunningProperty( ).addListener( ( o, oldVallue, newValue ) -> {
-            if ( newValue ) {
-                _failureRunningAnimation.play( );
-            } else {
-                _failureRunningAnimation.stop( );
-                failureBox.setOpacity( getFailureBoxOpacity( ) );
-            }
+            checkFailureAnimationRunning( newValue, failureBox );
         } );
 
         _model.failureCountProperty( ).addListener( ( observable, oldValue, newValue ) -> {
@@ -135,14 +126,6 @@ final class ProjectTileView extends HBox {
 
         contextPart.getChildren( ).addAll( successBox, failureBox );
         return contextPart;
-    }
-
-    private double getFailureBoxOpacity( ) {
-        return _model.getFailureCount( ) > 0 ? 1 : 0.5;
-    }
-
-    private double getSuccessBoxOpacity( ) {
-        return _model.getFailureCount( ) <= 0 ? 1 : 0.5;
     }
 
     private StackPane createSuccessBox( ) {
@@ -175,5 +158,30 @@ final class ProjectTileView extends HBox {
         return pane;
     }
 
+    private double getFailureBoxOpacity( ) {
+        return _model.getFailureCount( ) > 0 ? 1 : 0.5;
+    }
+
+    private double getSuccessBoxOpacity( ) {
+        return _model.getFailureCount( ) <= 0 ? 1 : 0.5;
+    }
+
+    private void checkSuccessAnimationRunning( final Boolean isRunning, final Pane successBox ) {
+        if ( isRunning ) {
+            _successRunningAnimation.play( );
+        } else {
+            _successRunningAnimation.stop( );
+            successBox.setOpacity( getSuccessBoxOpacity( ) );
+        }
+    }
+
+    private void checkFailureAnimationRunning( final Boolean isRunning, final Pane failureBox ) {
+        if ( isRunning ) {
+            _failureRunningAnimation.play( );
+        } else {
+            _failureRunningAnimation.stop( );
+            failureBox.setOpacity( getFailureBoxOpacity( ) );
+        }
+    }
 
 }

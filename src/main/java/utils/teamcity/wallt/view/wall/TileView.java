@@ -60,13 +60,9 @@ final class TileView extends StackPane {
         final HBox tileContent = createBuildInformation( );
         getChildren( ).addAll( progressPane, tileContent );
 
+        checkAnimationRunning( _model.isRunning( ) );
         _model.runningProperty( ).addListener( ( o, oldVallue, newValue ) -> {
-            if ( newValue ) {
-                startRunningAnimation( );
-            } else {
-                stopRunningAnimation( );
-                setOpacity( 1 );
-            }
+            checkAnimationRunning( newValue );
         } );
     }
 
@@ -120,6 +116,7 @@ final class TileView extends StackPane {
         final VBox contextPart = new VBox( );
         contextPart.setAlignment( Pos.CENTER );
 
+        // Box with icons
         final HBox statusBox = new HBox( );
         statusBox.setAlignment( Pos.CENTER );
         statusBox.setSpacing( 5 );
@@ -132,6 +129,7 @@ final class TileView extends StackPane {
         image.imageProperty( ).bind( build.imageProperty( ) );
         statusBox.getChildren( ).addAll( queuedIcon, image );
 
+        // Box with contextual build info
         final HBox lastBuildInfoPart = createLastBuildInfoBox( build );
         lastBuildInfoPart.visibleProperty( ).bind( build.runningProperty( ).not( ) );
 
@@ -193,6 +191,7 @@ final class TileView extends StackPane {
         final HBox lastBuildInfoPart = new HBox( );
         lastBuildInfoPart.setSpacing( 5 );
         lastBuildInfoPart.setAlignment( Pos.CENTER );
+
         final ImageView lastBuildIcon = new ImageView( UIUtils.createImage( "timeLeft.png" ) );
         lastBuildIcon.setPreserveRatio( true );
         lastBuildIcon.setFitWidth( 32 );
@@ -214,12 +213,12 @@ final class TileView extends StackPane {
         return lastBuildInfoPart;
     }
 
-
-    public void startRunningAnimation( ) {
-        _runningAnimation.play( );
-    }
-
-    public void stopRunningAnimation( ) {
-        _runningAnimation.stop( );
+    private void checkAnimationRunning( final boolean isRunning ) {
+        if ( isRunning ) {
+            _runningAnimation.play( );
+        } else {
+            _runningAnimation.stop( );
+            setOpacity( 1 );
+        }
     }
 }
