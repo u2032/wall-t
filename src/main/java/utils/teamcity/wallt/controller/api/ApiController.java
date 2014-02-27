@@ -45,7 +45,7 @@ import static com.google.common.util.concurrent.Futures.addCallback;
  */
 final class ApiController implements IApiController {
 
-    private static final int MAX_BUILDS_TO_CONSIDER = 5;
+    private static final int MAX_BUILDS_TO_CONSIDER = 3;
 
     private static final Logger LOGGER = LoggerFactory.getLogger( Loggers.MAIN );
 
@@ -181,7 +181,7 @@ final class ApiController implements IApiController {
             addCallback( buildListFuture, new FutureCallback<BuildList>( ) {
                 @Override
                 public void onSuccess( final BuildList result ) {
-                    // We consider only 5 last builds
+                    // We consider only last builds
                     final List<Build> buildToRequest = result.getBuilds( ).stream( )
                             .limit( MAX_BUILDS_TO_CONSIDER )
                             .collect( Collectors.toList( ) );
