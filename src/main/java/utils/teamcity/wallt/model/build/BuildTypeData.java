@@ -85,6 +85,7 @@ public final class BuildTypeData {
     public Optional<BuildData> getLastBuild( final BuildState state ) {
         return getBuilds( ).stream( )
                 .filter( build -> build.getState( ) == state )
+                .filter( build -> build.getStatus( ) != BuildStatus.UNKNOWN )
                 .findFirst( );
     }
 

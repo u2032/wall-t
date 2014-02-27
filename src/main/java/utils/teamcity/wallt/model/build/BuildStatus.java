@@ -22,6 +22,7 @@ package utils.teamcity.wallt.model.build;
  */
 public enum BuildStatus {
 
+    UNKNOWN,
     SUCCESS,
     FAILURE,
     ERROR
