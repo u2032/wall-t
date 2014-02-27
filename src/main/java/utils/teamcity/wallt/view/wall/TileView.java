@@ -87,7 +87,6 @@ final class TileView extends StackPane {
     private HBox createBuildInformation( ) {
         final HBox tileContent = new HBox( );
         tileContent.setAlignment( CENTER_LEFT );
-        tileContent.setSpacing( 10 );
 
         final Label tileTitle = new Label( );
         tileTitle.setFont( UIUtils.font( 50, FontWeight.BOLD ) );
@@ -105,7 +104,7 @@ final class TileView extends StackPane {
 
         final VBox contextPart = createContextPart( _model );
         contextPart.visibleProperty( ).bind( _model.lightModeProperty( ).not( ) );
-        contextPart.minWidthProperty( ).bind( createIntegerBinding( ( ) -> contextPart.isVisible( ) ? 150 : 0, contextPart.visibleProperty( ) ) );
+        contextPart.minWidthProperty( ).bind( createIntegerBinding( ( ) -> contextPart.isVisible( ) ? 145 : 0, contextPart.visibleProperty( ) ) );
         contextPart.maxWidthProperty( ).bind( contextPart.minWidthProperty( ) );
         tileContent.getChildren( ).add( contextPart );
         return tileContent;
@@ -119,13 +118,11 @@ final class TileView extends StackPane {
         // Box with icons
         final HBox statusBox = new HBox( );
         statusBox.setAlignment( Pos.CENTER );
-        statusBox.setSpacing( 5 );
 
         final ImageView queuedIcon = queueImageView( build );
 
         final ImageView image = new ImageView( );
         image.setPreserveRatio( true );
-        image.setFitWidth( 90 );
         image.imageProperty( ).bind( build.imageProperty( ) );
         statusBox.getChildren( ).addAll( queuedIcon, image );
 
@@ -138,30 +135,23 @@ final class TileView extends StackPane {
 
         final StackPane infoBox = new StackPane( lastBuildInfoPart, timeLeftInfoBox );
         infoBox.setAlignment( Pos.CENTER );
-        infoBox.visibleProperty( ).bind( contextPart.heightProperty( ).greaterThan( 150 ) );
+        infoBox.minHeightProperty( ).bind( createDoubleBinding( ( ) -> {
+            return infoBox.isVisible( ) ? 100. : 0;
+        }, infoBox.visibleProperty( ) ) );
+        infoBox.maxHeightProperty( ).bind( infoBox.minHeightProperty( ) );
+        infoBox.visibleProperty( ).bind( contextPart.heightProperty( ).greaterThan( 170 ) );
+
+        image.fitHeightProperty( ).bind( createDoubleBinding( ( ) -> {
+            return Math.min( 90, contextPart.getHeight( ) - infoBox.getHeight( ) );
+        }, contextPart.heightProperty( ), infoBox.heightProperty( ) ) );
+        queuedIcon.fitHeightProperty( ).bind( image.fitHeightProperty( ) );
 
         contextPart.getChildren( ).addAll( statusBox, infoBox );
         return contextPart;
     }
 
-
-    private ImageView queueImageView( final TileViewModel build ) {
-        final ImageView queuedIcon = new ImageView( UIUtils.createImage( "queued.png" ) );
-        queuedIcon.setPreserveRatio( true );
-        queuedIcon.setFitWidth( 50 );
-        queuedIcon.visibleProperty( ).bind( build.queuedProperty( ) );
-
-        final RotateTransition transition = new RotateTransition( Duration.seconds( 3 ), queuedIcon );
-        transition.setByAngle( 360 );
-        transition.setCycleCount( Timeline.INDEFINITE );
-        transition.play( );
-
-        return queuedIcon;
-    }
-
     private HBox createLastBuildInfoBox( final TileViewModel build ) {
         final HBox lastBuildInfoPart = new HBox( );
-        lastBuildInfoPart.setSpacing( 5 );
         lastBuildInfoPart.setAlignment( Pos.CENTER );
 
         final ImageView lastBuildIcon = new ImageView( UIUtils.createImage( "lastBuild.png" ) );
@@ -175,6 +165,7 @@ final class TileView extends StackPane {
         lastBuildDate.setFont( UIUtils.font( 32, FontWeight.BOLD ) );
         lastBuildDate.setTextFill( Color.WHITE );
         lastBuildDate.setWrapText( true );
+//        lastBuildDate.setLineSpacing( 2 );  // TODO: Seems do not work
         lastBuildDate.setEffect( UIUtils.shadowEffect( ) );
         lastBuildDate.textProperty( ).bind( createStringBinding( ( ) -> {
             final LocalDateTime localDateTime = build.lastFinishedDateProperty( ).get( );
@@ -189,7 +180,6 @@ final class TileView extends StackPane {
 
     private HBox createTimeLeftInfoBox( final TileViewModel build ) {
         final HBox lastBuildInfoPart = new HBox( );
-        lastBuildInfoPart.setSpacing( 5 );
         lastBuildInfoPart.setAlignment( Pos.CENTER );
 
         final ImageView lastBuildIcon = new ImageView( UIUtils.createImage( "timeLeft.png" ) );
@@ -211,6 +201,21 @@ final class TileView extends StackPane {
 
         lastBuildInfoPart.getChildren( ).addAll( lastBuildIcon, timeLeftLabel );
         return lastBuildInfoPart;
+    }
+
+
+    private ImageView queueImageView( final TileViewModel build ) {
+        final ImageView queuedIcon = new ImageView( UIUtils.createImage( "queued.png" ) );
+        queuedIcon.setPreserveRatio( true );
+        queuedIcon.setFitHeight( 40 );
+        queuedIcon.visibleProperty( ).bind( build.queuedProperty( ) );
+
+        final RotateTransition transition = new RotateTransition( Duration.seconds( 3 ), queuedIcon );
+        transition.setByAngle( 360 );
+        transition.setCycleCount( Timeline.INDEFINITE );
+        transition.play( );
+
+        return queuedIcon;
     }
 
     private void checkAnimationRunning( final boolean isRunning ) {
