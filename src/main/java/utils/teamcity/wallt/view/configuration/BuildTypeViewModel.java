@@ -48,7 +48,10 @@ final class BuildTypeViewModel implements IPositionable {
         _name.setValue( data.getName( ) );
 
         _aliasName.setValue( data.getAliasName( ) );
-        _aliasName.addListener( ( o, oldValue, newValue ) -> data.setAliasName( newValue ) );
+        _aliasName.addListener( ( o, oldValue, newValue ) -> {
+            data.setAliasName( newValue );
+            eventBus.post( data );
+        } );
 
         _selected.setValue( buildManager.getMonitoredBuildTypes( ).contains( data ) );
         _selected.addListener( ( o, oldValue, newValue ) -> {

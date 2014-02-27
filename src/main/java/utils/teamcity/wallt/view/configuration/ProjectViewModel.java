@@ -46,7 +46,10 @@ final class ProjectViewModel implements IPositionable {
         _name.setValue( data.getName( ) );
 
         _aliasName.setValue( data.getAliasName( ) );
-        _aliasName.addListener( ( o, oldValue, newValue ) -> data.setAliasName( newValue ) );
+        _aliasName.addListener( ( o, oldValue, newValue ) -> {
+            data.setAliasName( newValue );
+            eventBus.post( data );
+        } );
 
         _selected.setValue( projectManager.getMonitoredProjects( ).contains( data ) );
         _selected.addListener( ( o, oldValue, newValue ) -> {
