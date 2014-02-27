@@ -38,7 +38,7 @@ import static java.lang.Math.max;
  */
 final class WallView extends StackPane {
 
-    public static final int GAP_SPACE = 10;
+    public static final int GAP_SPACE = 5;
 
     private final WallViewModel _model;
     private final Map<Class<?>, WallViewModule.TileViewProvider> _nodeFromModelFactory;
