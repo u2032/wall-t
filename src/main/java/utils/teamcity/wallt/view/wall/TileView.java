@@ -144,7 +144,9 @@ final class TileView extends StackPane {
         image.fitHeightProperty( ).bind( createDoubleBinding( ( ) -> {
             return Math.min( 90, contextPart.getHeight( ) - infoBox.getHeight( ) );
         }, contextPart.heightProperty( ), infoBox.heightProperty( ) ) );
-        queuedIcon.fitHeightProperty( ).bind( image.fitHeightProperty( ) );
+        queuedIcon.fitHeightProperty( ).bind( createDoubleBinding( ( ) -> {
+            return Math.min( 40., image.getFitHeight( ) );
+        }, image.fitHeightProperty( ) ) );
 
         contextPart.getChildren( ).addAll( statusBox, infoBox );
         return contextPart;
@@ -165,7 +167,7 @@ final class TileView extends StackPane {
         lastBuildDate.setFont( UIUtils.font( 32, FontWeight.BOLD ) );
         lastBuildDate.setTextFill( Color.WHITE );
         lastBuildDate.setWrapText( true );
-//        lastBuildDate.setLineSpacing( 2 );  // TODO: Seems do not work
+        lastBuildDate.setLineSpacing( 2 );  // TODO: Seems do not work
         lastBuildDate.setEffect( UIUtils.shadowEffect( ) );
         lastBuildDate.textProperty( ).bind( createStringBinding( ( ) -> {
             final LocalDateTime localDateTime = build.lastFinishedDateProperty( ).get( );
@@ -207,7 +209,6 @@ final class TileView extends StackPane {
     private ImageView queueImageView( final TileViewModel build ) {
         final ImageView queuedIcon = new ImageView( UIUtils.createImage( "queued.png" ) );
         queuedIcon.setPreserveRatio( true );
-        queuedIcon.setFitHeight( 40 );
         queuedIcon.visibleProperty( ).bind( build.queuedProperty( ) );
 
         final RotateTransition transition = new RotateTransition( Duration.seconds( 3 ), queuedIcon );
