@@ -57,7 +57,8 @@ final class BuildDataManager implements IBuildManager {
 
     @Override
     public synchronized void registerBuildTypes( final List<BuildTypeData> typeList ) {
-        final List<String> previousMonitored = _monitoredBuildTypes.stream( ).map( BuildTypeData::getId ).collect( Collectors.toList( ) );
+        final List<BuildTypeData> previousMonitored = _monitoredBuildTypes.stream( ).collect( Collectors.toList( ) );
+        final List<String> previousMonitoredIds = previousMonitored.stream( ).map( BuildTypeData::getId ).collect( Collectors.toList( ) );
 
         _buildTypes.clear( );
         _monitoredBuildTypes.clear( );
@@ -65,8 +66,15 @@ final class BuildDataManager implements IBuildManager {
         _buildTypes.addAll( typeList );
 
         final List<BuildTypeData> monitoredBuildTypes = _buildTypes.stream( )
-                .filter( ( t ) -> previousMonitored.contains( t.getId( ) ) )
-                .sorted( ( o1, o2 ) -> Integer.compare( previousMonitored.indexOf( o1.getId( ) ), previousMonitored.indexOf( o2.getId( ) ) ) )
+                .filter( ( t ) -> previousMonitoredIds.contains( t.getId( ) ) )
+                .sorted( ( o1, o2 ) -> Integer.compare( previousMonitoredIds.indexOf( o1.getId( ) ), previousMonitoredIds.indexOf( o2.getId( ) ) ) )
+                .map( ( bt ) -> {
+                    bt.setAliasName( previousMonitored.stream( )
+                            .filter( ( t ) -> t.getId( ).equals( bt.getId( ) ) )
+                            .findFirst( ).get( ).getAliasName( )
+                    );
+                    return bt;
+                } )
                 .collect( Collectors.toList( ) );
 
         _monitoredBuildTypes.addAll( monitoredBuildTypes );

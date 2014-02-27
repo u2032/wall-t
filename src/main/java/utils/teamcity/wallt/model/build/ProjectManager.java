@@ -49,7 +49,8 @@ public final class ProjectManager implements IProjectManager {
 
     @Override
     public synchronized void registerProjects( final List<ProjectData> projects ) {
-        final List<String> previousMonitored = _monitoredProjects.stream( ).map( ProjectData::getId ).collect( Collectors.toList( ) );
+        final List<ProjectData> previousMonitored = _monitoredProjects.stream( ).collect( Collectors.toList( ) );
+        final List<String> previousMonitoredIds = previousMonitored.stream( ).map( ProjectData::getId ).collect( Collectors.toList( ) );
 
         _projects.clear( );
         _monitoredProjects.clear( );
@@ -57,8 +58,15 @@ public final class ProjectManager implements IProjectManager {
         _projects.addAll( projects );
 
         final List<ProjectData> monitoredBuildTypes = _projects.stream( )
-                .filter( ( t ) -> previousMonitored.contains( t.getId( ) ) )
-                .sorted( ( o1, o2 ) -> Integer.compare( previousMonitored.indexOf( o1.getId( ) ), previousMonitored.indexOf( o2.getId( ) ) ) )
+                .filter( ( t ) -> previousMonitoredIds.contains( t.getId( ) ) )
+                .sorted( ( o1, o2 ) -> Integer.compare( previousMonitoredIds.indexOf( o1.getId( ) ), previousMonitoredIds.indexOf( o2.getId( ) ) ) )
+                .map( ( bt ) -> {
+                    bt.setAliasName( previousMonitored.stream( )
+                            .filter( ( t ) -> t.getId( ).equals( bt.getId( ) ) )
+                            .findFirst( ).get( ).getAliasName( )
+                    );
+                    return bt;
+                } )
                 .collect( Collectors.toList( ) );
 
         _monitoredProjects.addAll( monitoredBuildTypes );
