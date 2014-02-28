@@ -69,7 +69,7 @@ final class ApiRequestController implements IApiRequestController {
                         .setPrincipal( request.getUsername( ) )
                         .setPassword( request.getPassword( ) )
                         .setUsePreemptiveAuth( true )
-                        .setScheme( Realm.AuthScheme.DIGEST )
+                        .setScheme( Realm.AuthScheme.BASIC )
                         .build( );
                 httpRequest.setRealm( realm );
             }
