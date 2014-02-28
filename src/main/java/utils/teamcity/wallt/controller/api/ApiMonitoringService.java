@@ -16,7 +16,9 @@
 package utils.teamcity.wallt.controller.api;
 
 import com.google.common.collect.Sets;
-import com.google.common.eventbus.EventBus;
+import com.google.common.util.concurrent.AsyncFunction;
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import utils.teamcity.wallt.model.build.BuildTypeData;
@@ -26,12 +28,12 @@ import utils.teamcity.wallt.model.build.ProjectData;
 import utils.teamcity.wallt.model.logger.Loggers;
 
 import javax.inject.Inject;
+import java.time.Duration;
 import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -48,18 +50,16 @@ public final class ApiMonitoringService implements IApiMonitoringService {
     private final IApiController _apiController;
     private final IProjectManager _projectManager;
     private final IBuildManager _buildManager;
-    private final EventBus _eventBus;
 
     private boolean _active;
 
 
     @Inject
-    public ApiMonitoringService( final ScheduledExecutorService executorService, final IApiController apiController, final IProjectManager projectManager, final IBuildManager buildManager, final EventBus eventBus ) {
+    public ApiMonitoringService( final ScheduledExecutorService executorService, final IApiController apiController, final IProjectManager projectManager, final IBuildManager buildManager ) {
         _executorService = executorService;
         _apiController = apiController;
         _projectManager = projectManager;
         _buildManager = buildManager;
-        _eventBus = eventBus;
     }
 
     @Override
@@ -67,7 +67,6 @@ public final class ApiMonitoringService implements IApiMonitoringService {
         _executorService.scheduleWithFixedDelay( checkIdleBuildStatus( ), 10, 60, TimeUnit.SECONDS );
         _executorService.scheduleWithFixedDelay( checkRunningBuildStatus( ), 10, 20, TimeUnit.SECONDS );
         _executorService.scheduleWithFixedDelay( checkQueuedBuildStatus( ), 10, 60, TimeUnit.SECONDS );
-        _executorService.scheduleWithFixedDelay( checkDataAreAlwaysSync( ), 10, 120, TimeUnit.SECONDS );
         LOGGER.info( "Monitoring service configured." );
     }
 
@@ -106,12 +105,13 @@ public final class ApiMonitoringService implements IApiMonitoringService {
             if ( !isActive( ) )
                 return;
 
+            final Instant before = Instant.now( );
             final List<BuildTypeData> monitoredBuilds = getAllMonitoredBuildTypes( ).stream( )
                     .filter( b -> !b.hasRunningBuild( ) )
                     .collect( Collectors.toList( ) );
 
-            for ( final BuildTypeData buildType : monitoredBuilds )
-                _apiController.requestLastBuildStatus( buildType );
+            checkBuildStatus( monitoredBuilds );
+            LOGGER.info( "Checking idle build status: done in {} s", Duration.between( before, Instant.now( ) ).getSeconds( ) );
         };
     }
 
@@ -120,39 +120,39 @@ public final class ApiMonitoringService implements IApiMonitoringService {
             if ( !isActive( ) )
                 return;
 
+            final Instant before = Instant.now( );
             final List<BuildTypeData> monitoredBuilds = getAllMonitoredBuildTypes( ).stream( )
                     .filter( BuildTypeData::hasRunningBuild )
                     .collect( Collectors.toList( ) );
 
-            for ( final BuildTypeData buildType : monitoredBuilds )
-                _apiController.requestLastBuildStatus( buildType );
+            checkBuildStatus( monitoredBuilds );
+            LOGGER.info( "Checking running build status: done in {} s", Duration.between( before, Instant.now( ) ).getSeconds( ) );
         };
+    }
+
+    private void checkBuildStatus( final Iterable<BuildTypeData> monitoredBuilds ) {
+        try {
+            ListenableFuture<Void> future = Futures.immediateFuture( null );
+            for ( final BuildTypeData buildType : monitoredBuilds )
+                future = Futures.transform( future, (AsyncFunction<Void, Void>) o -> _apiController.requestLastBuildStatus( buildType ) );
+            future.get( );
+        } catch ( InterruptedException | ExecutionException ignored ) {
+        }
     }
 
     private Runnable checkQueuedBuildStatus( ) {
         return ( ) -> {
             if ( !isActive( ) )
                 return;
-            _apiController.requestQueuedBuilds( );
-        };
-    }
 
-    private Runnable checkDataAreAlwaysSync( ) {
-        return ( ) -> {
-            if ( !isActive( ) )
-                return;
-
-            final Instant cut = Instant.now( ).minus( 5, ChronoUnit.MINUTES );
-
-            final Collection<BuildTypeData> monitoredBuilds = getAllMonitoredBuildTypes( );
-            for ( final BuildTypeData buildType : monitoredBuilds ) {
-                if ( buildType.clearIfOutdated( cut ) ) {
-                    _eventBus.post( buildType );
-                    final Optional<ProjectData> project = _projectManager.getProject( buildType.getProjectId( ) );
-                    if ( project.isPresent( ) )
-                        _eventBus.post( project );
-                }
+            try {
+                final Instant before = Instant.now( );
+                ListenableFuture<Void> future = _apiController.requestQueuedBuilds( );
+                future.get( );
+                LOGGER.info( "Checking queued builds: done in {} s", Duration.between( before, Instant.now( ) ).getSeconds( ) );
+            } catch ( InterruptedException | ExecutionException ignored ) {
             }
         };
     }
+
 }

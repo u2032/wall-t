@@ -18,7 +18,6 @@ package utils.teamcity.wallt.model.build;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 
-import java.time.Instant;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -44,7 +43,6 @@ public final class BuildTypeData {
     private String _aliasName;
 
     private boolean _queued;
-    private Instant _lastDataReceived = Instant.now( );
 
     public BuildTypeData( final String id, final String name, final String projectId, final String projectName ) {
         _id = id;
@@ -107,19 +105,6 @@ public final class BuildTypeData {
 
     public synchronized void setQueued( final boolean queued ) {
         _queued = queued;
-    }
-
-    public synchronized void touch( ) {
-        _lastDataReceived = Instant.now( );
-    }
-
-    public synchronized boolean clearIfOutdated( final Instant cut ) {
-        if ( _lastDataReceived.isBefore( cut ) ) {
-            _queued = false;
-            _lastBuilds.clear( );
-            return true;
-        }
-        return false;
     }
 
     public synchronized void registerBuild( final BuildData build ) {

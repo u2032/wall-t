@@ -62,7 +62,7 @@ public final class ApiModule extends AbstractModule {
                 .setMaximumNumberOfRedirects( 5 )
                 .setMaximumConnectionsPerHost( 10 )
                 .setConnectionTimeoutInMs( 60000 )
-                .setRequestTimeoutInMs( 60000 )
+                .setRequestTimeoutInMs( 30000 )
                 .setIdleConnectionInPoolTimeoutInMs( 600000 ) // 10 min idle
                 .build( );
     }

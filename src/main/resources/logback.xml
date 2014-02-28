@@ -7,6 +7,9 @@
     </appender>
 
     <appender name="MAIN_FILE" class="ch.qos.logback.core.FileAppender">
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>INFO</level>
+        </filter>
         <file>logs/main.log</file>
         <append>false</append>
         <encoder>
@@ -29,7 +32,7 @@
         <appender-ref ref="CONSOLE"/>
     </root>
 
-    <logger name="TCWall.Main" additivity="false" level="INFO">
+    <logger name="TCWall.Main" additivity="false" level="DEBUG">
         <appender-ref ref="MAIN_FILE"/>
         <appender-ref ref="CONSOLE"/>
     </logger>

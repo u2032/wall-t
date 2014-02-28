@@ -26,6 +26,14 @@ import utils.teamcity.wallt.model.build.BuildTypeData;
 public interface IApiController {
 
     /**
+     * Request all project list, and populate {@link utils.teamcity.wallt.model.build.IProjectManager} with {@link utils.teamcity.wallt.model.build.ProjectData}
+     * Moreover, this method must dispath to {@link EventBus} the {@link utils.teamcity.wallt.model.build.IProjectManager} if needs view update
+     *
+     * @return Future which can be listened for completion
+     */
+    ListenableFuture<Void> loadProjectList( );
+
+    /**
      * Request all build type list, and populate {@link IBuildManager} with {@link BuildTypeData}
      * Moreover, this method must dispath to {@link EventBus} the {@link IBuildManager} if needs view update
      *
@@ -33,20 +41,21 @@ public interface IApiController {
      */
     ListenableFuture<Void> loadBuildTypeList( );
 
+
     /**
      * Request last builds status for specified build type and register them on builtType
      * Moreover, this method must dispath to {@link EventBus} the {@link BuildTypeData} if needs view update
      *
      * @param buildType Build type which is concerned
+     * @return Future which can be listened for completion
      */
-    void requestLastBuildStatus( final BuildTypeData buildType );
-
+    ListenableFuture<Void> requestLastBuildStatus( final BuildTypeData buildType );
 
     /**
      * Request build types in queue and flag them into IBuildManager
      * Moreover, this method must dispath to {@link EventBus} all {@link BuildTypeData} which need view update
+     *
+     * @return Future which can be listened for completion
      */
-    void requestQueuedBuilds( );
-
-    ListenableFuture<Void> loadProjectList( );
+    ListenableFuture<Void> requestQueuedBuilds( );
 }

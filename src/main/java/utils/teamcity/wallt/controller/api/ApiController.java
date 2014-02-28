@@ -16,6 +16,7 @@
 package utils.teamcity.wallt.controller.api;
 
 import com.google.common.base.Function;
+import com.google.common.collect.Lists;
 import com.google.common.eventbus.EventBus;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
@@ -78,46 +79,6 @@ final class ApiController implements IApiController {
     }
 
     @Override
-    public ListenableFuture<Void> loadBuildTypeList( ) {
-        if ( !getApiVersion( ).isSupported( ApiFeature.BUILD_TYPE_STATUS ) )
-            return Futures.immediateFuture( null );
-
-        final SettableFuture<Void> ackFuture = SettableFuture.create( );
-
-        runInWorkerThread( ( ) -> {
-            final ListenableFuture<BuildTypeList> buildListFuture = _apiRequestController.sendRequest( getApiVersion( ), "buildTypes", BuildTypeList.class );
-            addCallback( buildListFuture, new FutureCallback<BuildTypeList>( ) {
-                @Override
-                public void onSuccess( final BuildTypeList result ) {
-                    final List<BuildTypeData> buildTypes = result.getBuildTypes( ).stream( )
-                            .map( ( btype ) -> _buildTypeProvider.get( getApiVersion( ) ).apply( btype ) )
-                            .collect( Collectors.toList( ) );
-                    _buildManager.registerBuildTypes( buildTypes );
-                    _eventBus.post( _buildManager );
-                    ackFuture.set( null );
-
-                    for ( final BuildTypeData buildType : _buildManager.getBuildTypes( ) ) {
-                        final Optional<ProjectData> project = _projectManager.getProject( buildType.getProjectId( ) );
-                        if ( project.isPresent( ) ) {
-                            project.get( ).registerBuildType( buildType );
-                            _eventBus.post( project.get( ) );
-                        }
-                        LOGGER.info( "Discovering build type " + buildType.getId( ) + " (" + buildType.getName( ) + ") on project " + buildType.getProjectId( ) + " (" + buildType.getProjectName( ) + ")" );
-                    }
-                }
-
-                @Override
-                public void onFailure( final Throwable t ) {
-                    LOGGER.error( "Error during loading build type list:", t );
-                    ackFuture.setException( t );
-                }
-            } );
-        } );
-
-        return ackFuture;
-    }
-
-    @Override
     public ListenableFuture<Void> loadProjectList( ) {
         if ( !getApiVersion( ).isSupported( ApiFeature.PROJECT_STATUS ) )
             return Futures.immediateFuture( null );
@@ -153,9 +114,52 @@ final class ApiController implements IApiController {
     }
 
     @Override
-    public void requestQueuedBuilds( ) {
+    public ListenableFuture<Void> loadBuildTypeList( ) {
+        if ( !getApiVersion( ).isSupported( ApiFeature.BUILD_TYPE_STATUS ) )
+            return Futures.immediateFuture( null );
+
+        final SettableFuture<Void> ackFuture = SettableFuture.create( );
+
+        runInWorkerThread( ( ) -> {
+            final ListenableFuture<BuildTypeList> buildListFuture = _apiRequestController.sendRequest( getApiVersion( ), "buildTypes", BuildTypeList.class );
+            addCallback( buildListFuture, new FutureCallback<BuildTypeList>( ) {
+                @Override
+                public void onSuccess( final BuildTypeList result ) {
+                    final List<BuildTypeData> buildTypes = result.getBuildTypes( ).stream( )
+                            .map( ( btype ) -> _buildTypeProvider.get( getApiVersion( ) ).apply( btype ) )
+                            .collect( Collectors.toList( ) );
+                    _buildManager.registerBuildTypes( buildTypes );
+                    _eventBus.post( _buildManager );
+
+                    for ( final BuildTypeData buildType : _buildManager.getBuildTypes( ) ) {
+                        final Optional<ProjectData> project = _projectManager.getProject( buildType.getProjectId( ) );
+                        if ( project.isPresent( ) ) {
+                            project.get( ).registerBuildType( buildType );
+                            _eventBus.post( project.get( ) );
+                        }
+                        LOGGER.info( "Discovering build type " + buildType.getId( ) + " (" + buildType.getName( ) + ") on project " + buildType.getProjectId( ) + " (" + buildType.getProjectName( ) + ")" );
+                    }
+
+                    ackFuture.set( null );
+                }
+
+                @Override
+                public void onFailure( final Throwable t ) {
+                    LOGGER.error( "Error during loading build type list:", t );
+                    ackFuture.setException( t );
+                }
+            } );
+        } );
+
+        return ackFuture;
+    }
+
+    @Override
+    public ListenableFuture<Void> requestQueuedBuilds( ) {
         if ( !getApiVersion( ).isSupported( ApiFeature.QUEUE_STATUS ) )
-            return;
+            return Futures.immediateFuture( null );
+
+        final SettableFuture<Void> ackFuture = SettableFuture.create( );
 
         runInWorkerThread( ( ) -> {
             final ListenableFuture<QueuedBuildList> buildQueueFuture = _apiRequestController.sendRequest( getApiVersion( ), "buildQueue", QueuedBuildList.class );
@@ -168,18 +172,25 @@ final class ApiController implements IApiController {
                     final List<BuildTypeData> modifiedStatusBuilds = _buildManager.registerBuildTypesInQueue( buildTypesInQueue );
                     for ( final BuildTypeData buildType : modifiedStatusBuilds )
                         _eventBus.post( buildType );
+
+                    ackFuture.set( null );
                 }
 
                 @Override
                 public void onFailure( final Throwable throwable ) {
+                    ackFuture.setException( throwable );
                     LOGGER.error( "Error during loading build queue:", throwable );
                 }
             } );
         } );
+
+        return ackFuture;
     }
 
     @Override
-    public void requestLastBuildStatus( final BuildTypeData buildType ) {
+    public ListenableFuture<Void> requestLastBuildStatus( final BuildTypeData buildType ) {
+        final SettableFuture<Void> ackFuture = SettableFuture.create( );
+
         runInWorkerThread( ( ) -> {
             final ListenableFuture<BuildList> buildListFuture = _apiRequestController.sendRequest( getApiVersion( ), "builds/?locator=buildType:" + buildType.getId( ) + ",running:any,count:" + MAX_BUILDS_TO_CONSIDER, BuildList.class );
             addCallback( buildListFuture, new FutureCallback<BuildList>( ) {
@@ -196,19 +207,35 @@ final class ApiController implements IApiController {
                         return previousBuildStatus.isPresent( ) && previousBuildStatus.get( ).getState( ) == BuildState.finished;
                     } );
 
+                    final List<ListenableFuture<Build>> futures = Lists.newArrayList( );
                     for ( final Build build : buildToRequest ) {
                         final ListenableFuture<Build> buildStatusFuture = _apiRequestController.sendRequest( getApiVersion( ), "builds/id:" + build.getId( ), Build.class );
                         addCallback( buildStatusFuture, registerBuildStatus( buildType, build ) );
+                        futures.add( buildStatusFuture );
                     }
-                    buildType.touch( );
+
+                    addCallback( Futures.successfulAsList( futures ), new FutureCallback<List<Build>>( ) {
+                        @Override
+                        public void onSuccess( final List<Build> build ) {
+                            ackFuture.set( null );
+                        }
+
+                        @Override
+                        public void onFailure( final Throwable throwable ) {
+                            ackFuture.setException( throwable );
+                        }
+                    } );
                 }
 
                 @Override
                 public void onFailure( final Throwable t ) {
+                    ackFuture.setException( t );
                     LOGGER.error( "Error during loading builds list for build type: " + buildType.getId( ), t );
                 }
             } );
         } );
+
+        return ackFuture;
     }
 
     private FutureCallback<Build> registerBuildStatus( final BuildTypeData buildType, final Build build ) {
