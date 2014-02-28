@@ -24,6 +24,7 @@ import javafx.scene.image.Image;
 import javafx.scene.layout.Background;
 import utils.teamcity.wallt.model.build.BuildData;
 import utils.teamcity.wallt.model.build.BuildState;
+import utils.teamcity.wallt.model.build.BuildStatus;
 import utils.teamcity.wallt.model.build.BuildTypeData;
 import utils.teamcity.wallt.model.configuration.Configuration;
 
@@ -137,6 +138,7 @@ final class TileViewModel {
     private void updateIcon( ) {
         final List<BuildData> buildToConsider = _buildTypeData.getBuilds( ).stream( )
                 .filter( build -> build.getState( ) == BuildState.finished )
+                .filter( build -> build.getStatus( ) != BuildStatus.UNKNOWN )
                 .limit( 3 )
                 .collect( Collectors.toList( ) );
 
