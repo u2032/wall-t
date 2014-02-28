@@ -56,17 +56,21 @@ final class ApiController implements IApiController {
     private final IProjectManager _projectManager;
     private final IApiRequestController _apiRequestController;
 
-    private final Map<ApiVersion, Function<Build, BuildData>> _buildFunctionsByVersion;
+    private final Map<ApiVersion, Function<Build, BuildData>> _buildProvider;
+    private final Map<ApiVersion, Function<BuildType, BuildTypeData>> _buildTypeProvider;
+    private final Map<ApiVersion, Function<Project, ProjectData>> _projectProvider;
 
     @Inject
-    ApiController( final Configuration configuration, final IProjectManager projectManager, final IBuildManager buildManager, final IApiRequestController apiRequestController, final EventBus eventBus, final ExecutorService executorService, final Map<ApiVersion, Function<Build, BuildData>> buildFunctionsByVersion ) {
+    ApiController( final Configuration configuration, final IProjectManager projectManager, final IBuildManager buildManager, final IApiRequestController apiRequestController, final EventBus eventBus, final ExecutorService executorService, final Map<ApiVersion, Function<Build, BuildData>> buildFunctionsByVersion, final Map<ApiVersion, Function<BuildType, BuildTypeData>> buildTypeProvider, final Map<ApiVersion, Function<Project, ProjectData>> projectProvider ) {
         _configuration = configuration;
         _projectManager = projectManager;
         _apiRequestController = apiRequestController;
         _buildManager = buildManager;
         _eventBus = eventBus;
         _executorService = executorService;
-        _buildFunctionsByVersion = buildFunctionsByVersion;
+        _buildProvider = buildFunctionsByVersion;
+        _buildTypeProvider = buildTypeProvider;
+        _projectProvider = projectProvider;
     }
 
     private void runInWorkerThread( final Runnable runnable ) {
@@ -86,7 +90,7 @@ final class ApiController implements IApiController {
                 @Override
                 public void onSuccess( final BuildTypeList result ) {
                     final List<BuildTypeData> buildTypes = result.getBuildTypes( ).stream( )
-                            .map( ( btype ) -> new BuildTypeData( btype.getId( ), btype.getName( ), btype.getProjectId( ), btype.getProjectName( ) ) )
+                            .map( ( btype ) -> _buildTypeProvider.get( getApiVersion( ) ).apply( btype ) )
                             .collect( Collectors.toList( ) );
                     _buildManager.registerBuildTypes( buildTypes );
                     _eventBus.post( _buildManager );
@@ -126,7 +130,7 @@ final class ApiController implements IApiController {
                 @Override
                 public void onSuccess( final ProjectList result ) {
                     final List<ProjectData> projects = result.getProjects( ).stream( )
-                            .map( ( project ) -> new ProjectData( project.getId( ), project.getName( ), Optional.ofNullable( project.getParentId( ) ) ) )
+                            .map( ( project ) -> _projectProvider.get( getApiVersion( ) ).apply( project ) )
                             .collect( Collectors.toList( ) );
                     _projectManager.registerProjects( projects );
                     _eventBus.post( _projectManager );
@@ -211,7 +215,7 @@ final class ApiController implements IApiController {
         return new FutureCallback<Build>( ) {
             @Override
             public void onSuccess( final Build result ) {
-                buildType.registerBuild( _buildFunctionsByVersion.get( getApiVersion( ) ).apply( result ) );
+                buildType.registerBuild( _buildProvider.get( getApiVersion( ) ).apply( result ) );
                 _eventBus.post( buildType );
 
                 final Optional<ProjectData> project = _projectManager.getProject( buildType.getProjectId( ) );

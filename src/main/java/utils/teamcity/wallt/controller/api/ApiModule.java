@@ -24,8 +24,12 @@ import com.google.inject.Singleton;
 import com.ning.http.client.AsyncHttpClient;
 import com.ning.http.client.AsyncHttpClientConfig;
 import utils.teamcity.wallt.controller.api.json.Build;
+import utils.teamcity.wallt.controller.api.json.BuildType;
+import utils.teamcity.wallt.controller.api.json.Project;
 import utils.teamcity.wallt.model.build.BuildData;
 import utils.teamcity.wallt.model.build.BuildState;
+import utils.teamcity.wallt.model.build.BuildTypeData;
+import utils.teamcity.wallt.model.build.ProjectData;
 
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
@@ -72,7 +76,43 @@ public final class ApiModule extends AbstractModule {
 
     @Provides
     @Singleton
-    public Map<ApiVersion, Function<Build, BuildData>> controllerByApiVersion( ) {
+    public Map<ApiVersion, Function<BuildType, BuildTypeData>> buildTypeByApiVersion( ) {
+        return ImmutableMap.of(
+                ApiVersion.API_6_0,
+                btype -> new BuildTypeData( btype.getId( ), btype.getName( ), btype.getProjectId( ), btype.getProjectName( ) ),
+
+                ApiVersion.API_7_1,
+                btype -> new BuildTypeData( btype.getId( ), btype.getName( ), btype.getProjectId( ), btype.getProjectName( ) ),
+
+                ApiVersion.API_8_0,
+                btype -> new BuildTypeData( btype.getId( ), btype.getName( ), btype.getProjectId( ), btype.getProjectName( ) ),
+
+                ApiVersion.API_8_1,
+                btype -> new BuildTypeData( btype.getId( ), btype.getName( ), btype.getProjectId( ), btype.getProjectName( ) )
+        );
+    }
+
+    @Provides
+    @Singleton
+    public Map<ApiVersion, Function<Project, ProjectData>> projectByApiVersion( ) {
+        return ImmutableMap.of(
+                ApiVersion.API_6_0,
+                project -> new ProjectData( project.getId( ), project.getName( ), Optional.empty( ) ),
+
+                ApiVersion.API_7_1,
+                project -> new ProjectData( project.getId( ), project.getName( ), Optional.empty( ) ),
+
+                ApiVersion.API_8_0,
+                project -> new ProjectData( project.getId( ), project.getName( ), Optional.empty( ) ),
+
+                ApiVersion.API_8_1,
+                project -> new ProjectData( project.getId( ), project.getName( ), Optional.ofNullable( project.getParentId( ) ) )
+        );
+    }
+
+    @Provides
+    @Singleton
+    public Map<ApiVersion, Function<Build, BuildData>> buildByApiVersion( ) {
         return ImmutableMap.of(
                 ApiVersion.API_6_0,
                 build -> new BuildData( build.getId( ), build.getStatus( ),
