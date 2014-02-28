@@ -60,11 +60,10 @@ public final class ApiModule extends AbstractModule {
                 .setAllowPoolingConnection( true )
                 .setAllowSslConnectionPool( true )
                 .setMaximumNumberOfRedirects( 5 )
-                .setMaximumConnectionsPerHost( 5 )
-                .setConnectionTimeoutInMs( 30000 )
-                .setRequestTimeoutInMs( 30000 )
-                .setMaxConnectionLifeTimeInMs( 120000 )
-                .setIdleConnectionInPoolTimeoutInMs( 60000 )
+                .setMaximumConnectionsPerHost( 10 )
+                .setConnectionTimeoutInMs( 60000 )
+                .setRequestTimeoutInMs( 60000 )
+                .setIdleConnectionInPoolTimeoutInMs( 600000 ) // 10 min idle
                 .build( );
     }
 

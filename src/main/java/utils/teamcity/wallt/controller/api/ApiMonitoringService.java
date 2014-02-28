@@ -64,10 +64,10 @@ public final class ApiMonitoringService implements IApiMonitoringService {
 
     @Override
     public void start( ) {
-        _executorService.scheduleWithFixedDelay( checkIdleBuildStatus( ), 20, 30, TimeUnit.SECONDS );
-        _executorService.scheduleWithFixedDelay( checkRunningBuildStatus( ), 30, 10, TimeUnit.SECONDS );
-        _executorService.scheduleWithFixedDelay( checkQueuedBuildStatus( ), 30, 10, TimeUnit.SECONDS );
-        _executorService.scheduleWithFixedDelay( checkDataAreAlwaysSync( ), 2, 10, TimeUnit.MINUTES );
+        _executorService.scheduleWithFixedDelay( checkIdleBuildStatus( ), 10, 60, TimeUnit.SECONDS );
+        _executorService.scheduleWithFixedDelay( checkRunningBuildStatus( ), 10, 20, TimeUnit.SECONDS );
+        _executorService.scheduleWithFixedDelay( checkQueuedBuildStatus( ), 10, 60, TimeUnit.SECONDS );
+        _executorService.scheduleWithFixedDelay( checkDataAreAlwaysSync( ), 10, 120, TimeUnit.SECONDS );
         LOGGER.info( "Monitoring service configured." );
     }
 
