@@ -23,8 +23,8 @@ import javafx.application.Platform;
 import javafx.beans.property.*;
 import javafx.scene.layout.Background;
 import utils.teamcity.wallt.model.build.BuildStatus;
+import utils.teamcity.wallt.model.build.IProjectManager;
 import utils.teamcity.wallt.model.build.ProjectData;
-import utils.teamcity.wallt.model.build.ProjectManager;
 import utils.teamcity.wallt.model.configuration.Configuration;
 
 import javax.inject.Inject;
@@ -37,7 +37,7 @@ import java.util.Set;
  */
 final class ProjectTileViewModel {
 
-    private final ProjectManager _projectManager;
+    private final IProjectManager _projectManager;
     private final ProjectData _projectData;
 
     private final StringProperty _displayedName = new SimpleStringProperty( );
@@ -57,7 +57,7 @@ final class ProjectTileViewModel {
     }
 
     @Inject
-    ProjectTileViewModel( final Configuration configuration, final ProjectManager projectManager, @Assisted final ProjectData projectData ) {
+    ProjectTileViewModel( final Configuration configuration, final IProjectManager projectManager, @Assisted final ProjectData projectData ) {
         _projectManager = projectManager;
         _projectData = projectData;
         updateConfiguration( configuration );
@@ -72,7 +72,7 @@ final class ProjectTileViewModel {
             return;
 
         Platform.runLater( ( ) -> {
-            _displayedName.set( Strings.isNullOrEmpty( data.getAliasName( ) ) ? data.getName( ) : data.getAliasName( ) );
+            _displayedName.set( Strings.isNullOrEmpty( _projectData.getAliasName( ) ) ? _projectData.getName( ) : _projectData.getAliasName( ) );
             updateSuccessFailureCount( );
             updateBackground( );
         } );

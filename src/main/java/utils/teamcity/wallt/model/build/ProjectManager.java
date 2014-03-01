@@ -32,7 +32,7 @@ import static java.lang.Math.min;
  *
  * @author Cedric Longo
  */
-public final class ProjectManager implements IProjectManager {
+final class ProjectManager implements IProjectManager {
 
     private final List<ProjectData> _projects = Lists.newArrayList( );
     private final List<ProjectData> _monitoredProjects = Lists.newArrayList( );
