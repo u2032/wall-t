@@ -87,7 +87,7 @@ public final class ApiMonitoringService implements IApiMonitoringService {
     }
 
     private Collection<BuildTypeData> getAllMonitoredBuildTypes( ) {
-        final Set<BuildTypeData> allMonitoredBuildTypes = Sets.newHashSet( );
+        final Set<BuildTypeData> allMonitoredBuildTypes = Sets.newLinkedHashSet( );
         allMonitoredBuildTypes.addAll( _buildManager.getMonitoredBuildTypes( ) );
 
         for ( final ProjectData projectData : _projectManager.getMonitoredProjects( ) ) {
