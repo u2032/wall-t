@@ -29,6 +29,8 @@ import utils.teamcity.wallt.model.logger.Loggers;
 
 import javax.inject.Inject;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 /**
  * Date: 17/02/14
  *
@@ -76,7 +78,7 @@ final class ApiRequestController implements IApiRequestController {
 
             if ( _configuration.isUseProxy( ) ) {
                 // CODEREVIEW Let the user choose the protocol ?
-                final ProxyServer proxyServer = new ProxyServer( ProxyServer.Protocol.HTTP, _configuration.getProxyHost( ), _configuration.getProxyPort( ), _configuration.getProxyCredentialsUser( ), _configuration.getProxyCredentialsPassword( ) );
+                final ProxyServer proxyServer = new ProxyServer( ProxyServer.Protocol.HTTP, checkNotNull( _configuration.getProxyHost( ), "Proxy hostname is not defined" ), _configuration.getProxyPort( ), _configuration.getProxyCredentialsUser( ), _configuration.getProxyCredentialsPassword( ) );
                 httpRequest.setProxyServer( proxyServer );
             }
 
