@@ -52,16 +52,16 @@ final class ProjectTileView extends HBox {
         setAlignment( CENTER_LEFT );
         setSpacing( 10 );
         setStyle( "-fx-border-color:white; -fx-border-radius:5;" );
-        backgroundProperty().bind( project.backgroundProperty() );
+        backgroundProperty( ).bind( project.backgroundProperty( ) );
 
-        _successRunningAnimation = prepareRunningAnimation();
-        _failureRunningAnimation = prepareRunningAnimation();
+        _successRunningAnimation = prepareRunningAnimation( );
+        _failureRunningAnimation = prepareRunningAnimation( );
 
-        createBuildInformation();
+        createBuildInformation( );
     }
 
 
-    private FadeTransition prepareRunningAnimation() {
+    private FadeTransition prepareRunningAnimation( ) {
         final FadeTransition transition = new FadeTransition( Duration.millis( 1500 ) );
         transition.setFromValue( 1.0 );
         transition.setToValue( 0.5 );
@@ -70,66 +70,66 @@ final class ProjectTileView extends HBox {
         return transition;
     }
 
-    private void createBuildInformation() {
-        final Label tileTitle = new Label();
+    private void createBuildInformation( ) {
+        final Label tileTitle = new Label( );
         tileTitle.setFont( UIUtils.font( 50, FontWeight.BOLD ) );
         tileTitle.setTextFill( Color.WHITE );
         tileTitle.setPadding( new Insets( 5 ) );
         tileTitle.setWrapText( true );
-        tileTitle.textProperty().bind( _model.displayedNameProperty() );
-        tileTitle.setEffect( UIUtils.shadowEffect() );
-        tileTitle.prefWidthProperty().bind( widthProperty() );
-        tileTitle.prefHeightProperty().bind( heightProperty() );
-        tileTitle.alignmentProperty().bind( createObjectBinding( () -> _model.isLightMode() ? Pos.CENTER : CENTER_LEFT, _model.lightModeProperty() ) );
-        tileTitle.textAlignmentProperty().bind( createObjectBinding( () -> _model.isLightMode() ? CENTER : LEFT, _model.lightModeProperty() ) );
+        tileTitle.textProperty( ).bind( _model.displayedNameProperty( ) );
+        tileTitle.setEffect( UIUtils.shadowEffect( ) );
+        tileTitle.prefWidthProperty( ).bind( widthProperty( ) );
+        tileTitle.prefHeightProperty( ).bind( heightProperty( ) );
+        tileTitle.alignmentProperty( ).bind( createObjectBinding( ( ) -> _model.isLightMode( ) ? Pos.CENTER : CENTER_LEFT, _model.lightModeProperty( ) ) );
+        tileTitle.textAlignmentProperty( ).bind( createObjectBinding( ( ) -> _model.isLightMode( ) ? CENTER : LEFT, _model.lightModeProperty( ) ) );
         HBox.setHgrow( tileTitle, Priority.SOMETIMES );
-        getChildren().add( tileTitle );
+        getChildren( ).add( tileTitle );
 
-        final VBox contextPart = createContextPart();
-        contextPart.visibleProperty().bind( _model.lightModeProperty().not() );
-        contextPart.minWidthProperty().bind( createIntegerBinding( () -> contextPart.isVisible() ? 90 : 0, contextPart.visibleProperty() ) );
-        contextPart.maxWidthProperty().bind( contextPart.minWidthProperty() );
-        getChildren().add( contextPart );
+        final VBox contextPart = createContextPart( );
+        contextPart.visibleProperty( ).bind( _model.lightModeProperty( ).not( ) );
+        contextPart.minWidthProperty( ).bind( createIntegerBinding( ( ) -> contextPart.isVisible( ) ? 90 : 0, contextPart.visibleProperty( ) ) );
+        contextPart.maxWidthProperty( ).bind( contextPart.minWidthProperty( ) );
+        getChildren( ).add( contextPart );
     }
 
 
-    private VBox createContextPart() {
-        final VBox contextPart = new VBox();
+    private VBox createContextPart( ) {
+        final VBox contextPart = new VBox( );
         contextPart.setAlignment( Pos.CENTER );
 
-        final StackPane successBox = createSuccessBox();
-        successBox.setOpacity( getSuccessBoxOpacity() );
+        final StackPane successBox = createSuccessBox( );
+        successBox.setOpacity( getSuccessBoxOpacity( ) );
         _successRunningAnimation.setNode( successBox );
 
-        final StackPane failureBox = createFailureBox();
-        failureBox.setOpacity( getFailureBoxOpacity() );
+        final StackPane failureBox = createFailureBox( );
+        failureBox.setOpacity( getFailureBoxOpacity( ) );
         _failureRunningAnimation.setNode( failureBox );
 
-        checkSuccessAnimationRunning( _model.hasSuccessRunning(), successBox );
-        _model.hasSuccessRunningProperty().addListener( ( o, oldVallue, newValue ) -> {
+        checkSuccessAnimationRunning( _model.hasSuccessRunning( ), successBox );
+        _model.hasSuccessRunningProperty( ).addListener( ( o, oldVallue, newValue ) -> {
             checkSuccessAnimationRunning( newValue, successBox );
         } );
 
-        checkFailureAnimationRunning( _model.hasFailureRunning(), failureBox );
-        _model.hasFailureRunningProperty().addListener( ( o, oldVallue, newValue ) -> {
+        checkFailureAnimationRunning( _model.hasFailureRunning( ), failureBox );
+        _model.hasFailureRunningProperty( ).addListener( ( o, oldVallue, newValue ) -> {
             checkFailureAnimationRunning( newValue, failureBox );
         } );
 
-        _model.failureCountProperty().addListener( ( observable, oldValue, newValue ) -> {
-            if ( _successRunningAnimation.getStatus() != Animation.Status.RUNNING ) {
-                successBox.setOpacity( getSuccessBoxOpacity() );
+        _model.failureCountProperty( ).addListener( ( observable, oldValue, newValue ) -> {
+            if ( _successRunningAnimation.getStatus( ) != Animation.Status.RUNNING ) {
+                successBox.setOpacity( getSuccessBoxOpacity( ) );
             }
-            if ( _failureRunningAnimation.getStatus() != Animation.Status.RUNNING ) {
-                failureBox.setOpacity( getFailureBoxOpacity() );
+            if ( _failureRunningAnimation.getStatus( ) != Animation.Status.RUNNING ) {
+                failureBox.setOpacity( getFailureBoxOpacity( ) );
             }
         } );
 
-        contextPart.getChildren().addAll( successBox, failureBox );
+        contextPart.getChildren( ).addAll( successBox, failureBox );
         return contextPart;
     }
 
-    private StackPane createSuccessBox() {
-        final StackPane pane = new StackPane();
+    private StackPane createSuccessBox( ) {
+        final StackPane pane = new StackPane( );
         final ImageView background = new ImageView( UIUtils.createImage( "icons/square-green.png" ) );
         background.setPreserveRatio( true );
         background.setFitHeight( 80 );
@@ -137,50 +137,50 @@ final class ProjectTileView extends HBox {
         final Label label = new Label( "8" );
         label.setFont( UIUtils.font( 40, FontWeight.BOLD ) );
         label.setTextFill( Color.WHITE );
-        label.setEffect( UIUtils.shadowEffect() );
-        label.textProperty().bind( _model.successCountProperty().asString() );
-        pane.getChildren().addAll( background, label );
+        label.setEffect( UIUtils.shadowEffect( ) );
+        label.textProperty( ).bind( _model.successCountProperty( ).asString( ) );
+        pane.getChildren( ).addAll( background, label );
         return pane;
     }
 
-    private StackPane createFailureBox() {
-        final StackPane pane = new StackPane();
+    private StackPane createFailureBox( ) {
+        final StackPane pane = new StackPane( );
         final ImageView background = new ImageView( UIUtils.createImage( "icons/square-red.png" ) );
         background.setPreserveRatio( true );
         background.setFitHeight( 80 );
 
-        final Label label = new Label();
+        final Label label = new Label( );
         label.setFont( UIUtils.font( 40, FontWeight.BOLD ) );
         label.setTextFill( Color.WHITE );
-        label.setEffect( UIUtils.shadowEffect() );
-        label.textProperty().bind( _model.failureCountProperty().asString() );
-        pane.getChildren().addAll( background, label );
+        label.setEffect( UIUtils.shadowEffect( ) );
+        label.textProperty( ).bind( _model.failureCountProperty( ).asString( ) );
+        pane.getChildren( ).addAll( background, label );
         return pane;
     }
 
-    private double getFailureBoxOpacity() {
-        return _model.getFailureCount() > 0 ? 1 : 0.5;
+    private double getFailureBoxOpacity( ) {
+        return _model.getFailureCount( ) > 0 ? 1 : 0.5;
     }
 
-    private double getSuccessBoxOpacity() {
-        return _model.getFailureCount() <= 0 ? 1 : 0.5;
+    private double getSuccessBoxOpacity( ) {
+        return _model.getFailureCount( ) <= 0 ? 1 : 0.5;
     }
 
     private void checkSuccessAnimationRunning( final Boolean isRunning, final Pane successBox ) {
         if ( isRunning ) {
-            _successRunningAnimation.play();
+            _successRunningAnimation.play( );
         } else {
-            _successRunningAnimation.stop();
-            successBox.setOpacity( getSuccessBoxOpacity() );
+            _successRunningAnimation.stop( );
+            successBox.setOpacity( getSuccessBoxOpacity( ) );
         }
     }
 
     private void checkFailureAnimationRunning( final Boolean isRunning, final Pane failureBox ) {
         if ( isRunning ) {
-            _failureRunningAnimation.play();
+            _failureRunningAnimation.play( );
         } else {
-            _failureRunningAnimation.stop();
-            failureBox.setOpacity( getFailureBoxOpacity() );
+            _failureRunningAnimation.stop( );
+            failureBox.setOpacity( getFailureBoxOpacity( ) );
         }
     }
 

@@ -36,7 +36,7 @@ enum BuildImage {
         _image = UIUtils.createImage( path );
     }
 
-    public Image getImage() {
+    public Image getImage( ) {
         return _image;
     }
 }
