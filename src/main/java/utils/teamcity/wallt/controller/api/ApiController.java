@@ -80,7 +80,7 @@ final class ApiController implements IApiController {
 
     @Override
     public ListenableFuture<Void> loadProjectList( ) {
-        if ( !getApiVersion( ).isSupported( ApiFeature.PROJECT_STATUS ) )
+        if ( !getApiVersion( ).isSupported( ApiFeature.PROJECT_STATUS, ApiFeature.BUILD_TYPE_STATUS ) )
             return Futures.immediateFuture( null );
 
         final SettableFuture<Void> ackFuture = SettableFuture.create( );
@@ -189,6 +189,9 @@ final class ApiController implements IApiController {
 
     @Override
     public ListenableFuture<Void> requestLastBuildStatus( final BuildTypeData buildType ) {
+        if ( !getApiVersion( ).isSupported( ApiFeature.BUILD_TYPE_STATUS ) )
+            return Futures.immediateFuture( null );
+
         final SettableFuture<Void> ackFuture = SettableFuture.create( );
 
         runInWorkerThread( ( ) -> {
@@ -258,7 +261,7 @@ final class ApiController implements IApiController {
         };
     }
 
-    public ApiVersion getApiVersion( ) {
+    private ApiVersion getApiVersion( ) {
         return _configuration.getApiVersion( );
     }
 }
