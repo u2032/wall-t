@@ -80,7 +80,7 @@ public final class ApiModule extends AbstractModule {
                 ApiVersion.API_6_0,
                 btype -> new BuildTypeData( btype.getId( ), btype.getName( ), btype.getProjectId( ), btype.getProjectName( ) ),
 
-                ApiVersion.API_7_1,
+                ApiVersion.API_7_0,
                 btype -> new BuildTypeData( btype.getId( ), btype.getName( ), btype.getProjectId( ), btype.getProjectName( ) ),
 
                 ApiVersion.API_8_0,
@@ -98,7 +98,7 @@ public final class ApiModule extends AbstractModule {
                 ApiVersion.API_6_0,
                 project -> new ProjectData( project.getId( ), project.getName( ), Optional.empty( ) ),
 
-                ApiVersion.API_7_1,
+                ApiVersion.API_7_0,
                 project -> new ProjectData( project.getId( ), project.getName( ), Optional.empty( ) ),
 
                 ApiVersion.API_8_0,
@@ -121,7 +121,7 @@ public final class ApiModule extends AbstractModule {
                         build.isRunning( ) ? Duration.of( build.getRunningInformation( ).getEstimatedTotalTime( ) - build.getRunningInformation( ).getElapsedTime( ), ChronoUnit.SECONDS ) : Duration.ZERO ),
 
 
-                ApiVersion.API_7_1,
+                ApiVersion.API_7_0,
                 build -> new BuildData( build.getId( ), build.getStatus( ),
                         build.isRunning( ) ? BuildState.running : BuildState.finished,
                         build.isRunning( ) ? build.getRunningInformation( ).getPercentageComplete( ) : 100,
