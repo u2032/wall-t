@@ -104,9 +104,12 @@ final class TileView extends StackPane {
 
         final VBox contextPart = createContextPart( _model );
         contextPart.visibleProperty( ).bind( _model.lightModeProperty( ).not( ) );
-        contextPart.minWidthProperty( ).bind( createIntegerBinding( ( ) -> contextPart.isVisible( ) ? 145 : 0, contextPart.visibleProperty( ) ) );
-        contextPart.maxWidthProperty( ).bind( contextPart.minWidthProperty( ) );
+        contextPart.prefWidthProperty( ).bind( createIntegerBinding( ( ) -> contextPart.isVisible( ) ? 145 : 0, contextPart.visibleProperty( ) ) );
+        contextPart.prefHeightProperty( ).bind( heightProperty( ) );
+        contextPart.setMinSize( USE_PREF_SIZE, USE_PREF_SIZE );
+        contextPart.setMaxSize( USE_PREF_SIZE, USE_PREF_SIZE );
         tileContent.getChildren( ).add( contextPart );
+
         return tileContent;
     }
 

@@ -149,6 +149,8 @@ final class WallView extends StackPane {
         final Pane tile = new Pane( );
         tile.prefWidthProperty( ).bind( widthProperty( ).add( -( nbColumns + 1 ) * GAP_SPACE ).divide( nbColumns ) );
         tile.prefHeightProperty( ).bind( heightProperty( ).add( -( nbRows + 1 ) * GAP_SPACE ).divide( nbRows ) );
+        tile.setMinSize( USE_PREF_SIZE, USE_PREF_SIZE );
+        tile.setMaxSize( USE_PREF_SIZE, USE_PREF_SIZE );
         screenPane.add( tile, x, y );
     }
 
@@ -156,6 +158,8 @@ final class WallView extends StackPane {
         final Pane tile = _nodeFromModelFactory.get( model.getClass( ) ).get( model );
         tile.prefWidthProperty( ).bind( widthProperty( ).add( -( nbColumns + 1 ) * GAP_SPACE ).divide( nbColumns ) );
         tile.prefHeightProperty( ).bind( heightProperty( ).add( -( nbRows + 1 ) * GAP_SPACE ).divide( nbRows ) );
+        tile.setMinSize( USE_PREF_SIZE, USE_PREF_SIZE );
+        tile.setMaxSize( USE_PREF_SIZE, USE_PREF_SIZE );
         screenPane.add( tile, x, y );
     }
 

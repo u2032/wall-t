@@ -87,8 +87,10 @@ final class ProjectTileView extends HBox {
 
         final VBox contextPart = createContextPart( );
         contextPart.visibleProperty( ).bind( _model.lightModeProperty( ).not( ) );
-        contextPart.minWidthProperty( ).bind( createIntegerBinding( ( ) -> contextPart.isVisible( ) ? 90 : 0, contextPart.visibleProperty( ) ) );
-        contextPart.maxWidthProperty( ).bind( contextPart.minWidthProperty( ) );
+        contextPart.prefWidthProperty( ).bind( createIntegerBinding( ( ) -> contextPart.isVisible( ) ? 90 : 0, contextPart.visibleProperty( ) ) );
+        contextPart.prefHeightProperty( ).bind( heightProperty( ) );
+        contextPart.setMinSize( USE_PREF_SIZE, USE_PREF_SIZE );
+        contextPart.setMaxSize( USE_PREF_SIZE, USE_PREF_SIZE );
         getChildren( ).add( contextPart );
     }
 
@@ -132,10 +134,10 @@ final class ProjectTileView extends HBox {
         final StackPane pane = new StackPane( );
         final ImageView background = new ImageView( UIUtils.createImage( "icons/square-green.png" ) );
         background.setPreserveRatio( true );
-        background.setFitHeight( 80 );
+        background.setFitHeight( 70 );
 
         final Label label = new Label( "8" );
-        label.setFont( UIUtils.font( 40, FontWeight.BOLD ) );
+        label.setFont( UIUtils.font( 32, FontWeight.BOLD ) );
         label.setTextFill( Color.WHITE );
         label.setEffect( UIUtils.shadowEffect( ) );
         label.textProperty( ).bind( _model.successCountProperty( ).asString( ) );
@@ -147,10 +149,10 @@ final class ProjectTileView extends HBox {
         final StackPane pane = new StackPane( );
         final ImageView background = new ImageView( UIUtils.createImage( "icons/square-red.png" ) );
         background.setPreserveRatio( true );
-        background.setFitHeight( 80 );
+        background.setFitHeight( 70 );
 
         final Label label = new Label( );
-        label.setFont( UIUtils.font( 40, FontWeight.BOLD ) );
+        label.setFont( UIUtils.font( 32, FontWeight.BOLD ) );
         label.setTextFill( Color.WHITE );
         label.setEffect( UIUtils.shadowEffect( ) );
         label.textProperty( ).bind( _model.failureCountProperty( ).asString( ) );
