@@ -2,7 +2,7 @@
 
 ==== What is it ? ====
 
-This application is a buil wall to monitor builds status over a TeamCity continous integration server.
+This application is a buil radiator to monitor builds status over a TeamCity continous integration server.
 
 
 ==== Quick Start ====
@@ -13,7 +13,12 @@ This application is a buil wall to monitor builds status over a TeamCity contino
     4. Enjoy !
 
 
+=== More information ? ===
+
+See the project page on internet at: https://code.google.com/p/wall-t/
+
+
 ==== Credits ====
 
 Developed by Cedric Longo. https://plus.google.com/+CédricLongo
-Released under the GNU GENERAL PUBLIC LICENSE VERSION 3.
+Released under the terms of the GNU GENERAL PUBLIC LICENSE V3.

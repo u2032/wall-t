@@ -1,0 +1,11 @@
+
+==== Credits ====
+
+Developed by Cedric Longo. https://plus.google.com/+CédricLongo
+
+The following icons:
+    icons/weather/
+    icons/timeLeft.png
+    icons/lastBuild.png
+    icons/queued.png
+have been produced by Augustin Bonne http://forkmotion.fr/

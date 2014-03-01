@@ -64,9 +64,9 @@ public final class WallApplication extends Application {
 
     private Stage _primaryStage;
 
-    public WallApplication( ) {
+    public WallApplication() {
         LOGGER.info( "Starting ..." );
-        _injector = Guice.createInjector( modules( ) );
+        _injector = Guice.createInjector( modules() );
         _executorService = _injector.getInstance( ExecutorService.class );
         _scheduledExecutorService = _injector.getInstance( ScheduledExecutorService.class );
         _eventBus = _injector.getInstance( EventBus.class );
@@ -77,70 +77,70 @@ public final class WallApplication extends Application {
         Application.launch( WallApplication.class, args );
     }
 
-    private Iterable<Module> modules( ) {
+    private Iterable<Module> modules() {
         return ImmutableList.<Module>of(
-                new WallApplicationModule( ),
-                new ThreadingModule( ),
-                new ApiModule( ),
-                new BuildDataModule( ),
-                new ConfigurationModule( ),
-                new ConfigurationViewModule( ),
-                new WallViewModule( )
+                new WallApplicationModule(),
+                new ThreadingModule(),
+                new ApiModule(),
+                new BuildDataModule(),
+                new ConfigurationModule(),
+                new ConfigurationViewModule(),
+                new WallViewModule()
         );
     }
 
     @Override
-    public void init( ) throws Exception {
+    public void init() throws Exception {
         _eventBus.register( this );
-        super.init( );
+        super.init();
     }
 
     @Override
     public void start( final Stage primaryStage ) throws Exception {
         _primaryStage = primaryStage;
 
-        primaryStage.setTitle( "Teamcity Wall" );
-        primaryStage.getIcons( ).addAll( UIUtils.createImage( "icon.png" ) );
+        primaryStage.setTitle( "Wall-T - Teamcity Radiator" );
+        primaryStage.getIcons().addAll( UIUtils.createImage( "icons/icon.png" ) );
 
         primaryStage.setMinWidth( MIN_WIDTH );
         primaryStage.setMinHeight( MIN_HEIGHT );
         primaryStage.setWidth( MIN_WIDTH );
         primaryStage.setHeight( MIN_HEIGHT );
 
-        _apiMonitoringService.start( );
+        _apiMonitoringService.start();
         _eventBus.post( new SceneEvent( ConfigurationScene.class ) );
 
-        primaryStage.show( );
+        primaryStage.show();
     }
 
     @Override
-    public void stop( ) throws Exception {
+    public void stop() throws Exception {
         LOGGER.info( "Stopping ..." );
-        _injector.getInstance( AsyncHttpClientConfig.class ).executorService( ).shutdownNow( );
-        _injector.getInstance( AsyncHttpClient.class ).close( );
+        _injector.getInstance( AsyncHttpClientConfig.class ).executorService().shutdownNow();
+        _injector.getInstance( AsyncHttpClient.class ).close();
 
-        _executorService.shutdownNow( );
-        _scheduledExecutorService.shutdownNow( );
-        super.stop( );
+        _executorService.shutdownNow();
+        _scheduledExecutorService.shutdownNow();
+        super.stop();
     }
 
     @Subscribe
     public void requestScene( final SceneEvent sceneType ) {
-        final Scene scene = _injector.getInstance( sceneType.getType( ) );
-        scene.getAccelerators( ).put( new KeyCodeCombination( KeyCode.F11 ),
-                ( ) -> {
-                    _primaryStage.setFullScreen( !_primaryStage.isFullScreen( ) );
+        final Scene scene = _injector.getInstance( sceneType.getType() );
+        scene.getAccelerators().put( new KeyCodeCombination( KeyCode.F11 ),
+                () -> {
+                    _primaryStage.setFullScreen( !_primaryStage.isFullScreen() );
                 } );
-        scene.getAccelerators( ).put( new KeyCodeCombination( KeyCode.ESCAPE ),
-                ( ) -> {
+        scene.getAccelerators().put( new KeyCodeCombination( KeyCode.ESCAPE ),
+                () -> {
                     _eventBus.post( new SceneEvent( ConfigurationScene.class ) );
                 } );
-        LOGGER.info( "Change scene to " + sceneType.getType( ).getSimpleName( ) );
+        LOGGER.info( "Change scene to " + sceneType.getType().getSimpleName() );
         _primaryStage.setScene( scene );
 
         if ( scene instanceof WallScene )
-            _apiMonitoringService.activate( );
+            _apiMonitoringService.activate();
         else
-            _apiMonitoringService.pause( );
+            _apiMonitoringService.pause();
     }
 }

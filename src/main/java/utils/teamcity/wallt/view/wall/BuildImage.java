@@ -25,10 +25,10 @@ import utils.teamcity.wallt.view.UIUtils;
  */
 enum BuildImage {
 
-    SUN( "weather/sun.png" ),
-    CLOUDY_SUN( "weather/cloudy_sun.png" ),
-    CLOUD( "weather/cloud.png" ),
-    RAIN( "weather/rain.png" );
+    SUN( "icons/weather/sun.png" ),
+    CLOUDY_SUN( "icons/weather/cloudy_sun.png" ),
+    CLOUD( "icons/weather/cloud.png" ),
+    RAIN( "icons/weather/rain.png" );
 
     private final Image _image;
 
@@ -36,7 +36,7 @@ enum BuildImage {
         _image = UIUtils.createImage( path );
     }
 
-    public Image getImage( ) {
+    public Image getImage() {
         return _image;
     }
 }
