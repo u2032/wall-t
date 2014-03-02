@@ -32,13 +32,13 @@ import static java.lang.Math.min;
  *
  * @author Cedric Longo
  */
-final class BuildDataManager implements IBuildManager {
+final class BuildTypeManager implements IBuildTypeManager {
 
     private final List<BuildTypeData> _buildTypes = Lists.newArrayList( );
     private final List<BuildTypeData> _monitoredBuildTypes = Lists.newArrayList( );
 
     @Inject
-    BuildDataManager( final Configuration configuration ) {
+    BuildTypeManager( final Configuration configuration ) {
         for ( final SavedBuildTypeData savedData : configuration.getSavedBuilds( ) ) {
             final BuildTypeData data = new BuildTypeData( savedData.getId( ), savedData.getName( ), savedData.getProjectId( ), savedData.getProjectName( ) );
             data.setAliasName( savedData.getAliasName( ) );

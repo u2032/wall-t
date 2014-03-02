@@ -22,7 +22,7 @@ import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import utils.teamcity.wallt.model.build.IBuildManager;
+import utils.teamcity.wallt.model.build.IBuildTypeManager;
 import utils.teamcity.wallt.model.build.IProjectManager;
 import utils.teamcity.wallt.model.configuration.Configuration;
 
@@ -48,7 +48,7 @@ final class WallViewModel {
     private final IntegerProperty _maxTilesByRow = new SimpleIntegerProperty( );
 
     @Inject
-    WallViewModel( final EventBus eventBus, final Configuration configuration, final IBuildManager buildManager, final IProjectManager projectManager, final TileViewModel.Factory tileViewModeFactory, final ProjectTileViewModel.Factory projectTileViewModeFactory ) {
+    WallViewModel( final EventBus eventBus, final Configuration configuration, final IBuildTypeManager buildManager, final IProjectManager projectManager, final TileViewModel.Factory tileViewModeFactory, final ProjectTileViewModel.Factory projectTileViewModeFactory ) {
         _eventBus = eventBus;
         _tileViewModeFactory = tileViewModeFactory;
         _projectTileViewModeFactory = projectTileViewModeFactory;
@@ -58,7 +58,7 @@ final class WallViewModel {
     }
 
     @Subscribe
-    public void updateBuildList( final IBuildManager buildManager ) {
+    public void updateBuildList( final IBuildTypeManager buildManager ) {
         Platform.runLater( ( ) -> {
             _displayedBuilds.forEach( _eventBus::unregister );
             _displayedBuilds.setAll( (List<TileViewModel>) buildManager.getMonitoredBuildTypes( ).stream( )

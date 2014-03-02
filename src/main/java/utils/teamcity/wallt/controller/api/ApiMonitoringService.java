@@ -22,7 +22,7 @@ import com.google.common.util.concurrent.ListenableFuture;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import utils.teamcity.wallt.model.build.BuildTypeData;
-import utils.teamcity.wallt.model.build.IBuildManager;
+import utils.teamcity.wallt.model.build.IBuildTypeManager;
 import utils.teamcity.wallt.model.build.IProjectManager;
 import utils.teamcity.wallt.model.build.ProjectData;
 import utils.teamcity.wallt.model.logger.Loggers;
@@ -49,13 +49,13 @@ public final class ApiMonitoringService implements IApiMonitoringService {
     private final ScheduledExecutorService _executorService;
     private final IApiController _apiController;
     private final IProjectManager _projectManager;
-    private final IBuildManager _buildManager;
+    private final IBuildTypeManager _buildManager;
 
     private boolean _active;
 
 
     @Inject
-    public ApiMonitoringService( final ScheduledExecutorService executorService, final IApiController apiController, final IProjectManager projectManager, final IBuildManager buildManager ) {
+    public ApiMonitoringService( final ScheduledExecutorService executorService, final IApiController apiController, final IProjectManager projectManager, final IBuildTypeManager buildManager ) {
         _executorService = executorService;
         _apiController = apiController;
         _projectManager = projectManager;

@@ -24,7 +24,7 @@ import java.util.Set;
  *
  * @author Cedric Longo
  */
-public interface IBuildManager {
+public interface IBuildTypeManager {
 
     void registerBuildTypes( List<BuildTypeData> typeList );
 

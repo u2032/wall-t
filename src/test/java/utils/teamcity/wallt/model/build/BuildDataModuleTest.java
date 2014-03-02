@@ -58,11 +58,11 @@ public class BuildDataModuleTest {
     public void can_inject_BuildTypeManager_as_IBuildTypeManager_in_singleton( ) throws Exception {
         // Setup
         // Exercise
-        final IBuildManager instance = _injector.getInstance( IBuildManager.class );
-        final IBuildManager instance2 = _injector.getInstance( IBuildManager.class );
+        final IBuildTypeManager instance = _injector.getInstance( IBuildTypeManager.class );
+        final IBuildTypeManager instance2 = _injector.getInstance( IBuildTypeManager.class );
         // Verify
         assertThat( instance, is( notNullValue( ) ) );
-        assertThat( instance, is( instanceOf( BuildDataManager.class ) ) );
+        assertThat( instance, is( instanceOf( BuildTypeManager.class ) ) );
         assertThat( instance, is( sameInstance( instance2 ) ) );
     }
 }

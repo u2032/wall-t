@@ -30,7 +30,7 @@ import org.slf4j.LoggerFactory;
 import utils.teamcity.wallt.controller.api.ApiVersion;
 import utils.teamcity.wallt.controller.api.IApiController;
 import utils.teamcity.wallt.controller.configuration.IConfigurationController;
-import utils.teamcity.wallt.model.build.IBuildManager;
+import utils.teamcity.wallt.model.build.IBuildTypeManager;
 import utils.teamcity.wallt.model.build.IProjectManager;
 import utils.teamcity.wallt.model.configuration.Configuration;
 import utils.teamcity.wallt.model.event.SceneEvent;
@@ -83,7 +83,7 @@ final class ConfigurationViewModel {
     private final EventBus _eventBus;
 
     @Inject
-    ConfigurationViewModel( final IProjectManager projectManager, final Configuration configuration, final IApiController apiController, final EventBus eventBus, final IBuildManager buildManager, final BuildTypeViewModel.Factory buildTypeViewModelFactory, final ProjectViewModel.Factory projectViewModelFactory, final IConfigurationController configurationController ) {
+    ConfigurationViewModel( final IProjectManager projectManager, final Configuration configuration, final IApiController apiController, final EventBus eventBus, final IBuildTypeManager buildManager, final BuildTypeViewModel.Factory buildTypeViewModelFactory, final ProjectViewModel.Factory projectViewModelFactory, final IConfigurationController configurationController ) {
         _configuration = configuration;
         _eventBus = eventBus;
         _apiController = apiController;
@@ -259,7 +259,7 @@ final class ConfigurationViewModel {
     }
 
     @Subscribe
-    public void updateBuildTypeList( final IBuildManager buildManager ) {
+    public void updateBuildTypeList( final IBuildTypeManager buildManager ) {
         Platform.runLater( ( ) -> {
             final List<BuildTypeViewModel> viewModels = buildManager.getBuildTypes( ).stream( )
                     .map( _buildTypeViewModelFactory::fromBuildTypeData )

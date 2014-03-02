@@ -21,7 +21,7 @@ import com.google.gson.GsonBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import utils.teamcity.wallt.model.build.BuildTypeData;
-import utils.teamcity.wallt.model.build.IBuildManager;
+import utils.teamcity.wallt.model.build.IBuildTypeManager;
 import utils.teamcity.wallt.model.build.IProjectManager;
 import utils.teamcity.wallt.model.build.ProjectData;
 import utils.teamcity.wallt.model.configuration.Configuration;
@@ -50,11 +50,11 @@ public final class ConfigurationController implements IConfigurationController {
 
     public static final Logger LOGGER = LoggerFactory.getLogger( Loggers.MAIN );
     private final Configuration _configuration;
-    private final IBuildManager _buildManager;
+    private final IBuildTypeManager _buildManager;
     private final IProjectManager _projectManager;
 
     @Inject
-    public ConfigurationController( final Configuration configuration, final IBuildManager buildManager, final IProjectManager projectManager ) {
+    public ConfigurationController( final Configuration configuration, final IBuildTypeManager buildManager, final IProjectManager projectManager ) {
         _configuration = configuration;
         _buildManager = buildManager;
         _projectManager = projectManager;

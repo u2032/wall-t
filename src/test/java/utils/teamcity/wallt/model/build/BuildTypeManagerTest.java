@@ -33,10 +33,10 @@ import static org.hamcrest.Matchers.is;
  *
  * @author Cedric Longo
  */
-public class BuildDataManagerTest {
+public class BuildTypeManagerTest {
 
     @Inject
-    private IBuildManager _buildManager;
+    private IBuildTypeManager _buildManager;
 
     @Before
     public void setUp( ) throws Exception {

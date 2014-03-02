@@ -19,7 +19,7 @@ import com.google.common.eventbus.EventBus;
 import com.google.inject.assistedinject.Assisted;
 import javafx.beans.property.*;
 import utils.teamcity.wallt.model.build.BuildTypeData;
-import utils.teamcity.wallt.model.build.IBuildManager;
+import utils.teamcity.wallt.model.build.IBuildTypeManager;
 
 import javax.inject.Inject;
 
@@ -42,7 +42,7 @@ final class BuildTypeViewModel implements IPositionable {
     }
 
     @Inject
-    BuildTypeViewModel( final IBuildManager buildManager, final EventBus eventBus, @Assisted final BuildTypeData data ) {
+    BuildTypeViewModel( final IBuildTypeManager buildManager, final EventBus eventBus, @Assisted final BuildTypeData data ) {
         _id.setValue( data.getId( ) );
         _projectName.setValue( data.getProjectName( ) );
         _name.setValue( data.getName( ) );

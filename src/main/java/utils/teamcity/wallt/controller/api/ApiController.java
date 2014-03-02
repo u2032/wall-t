@@ -50,7 +50,7 @@ final class ApiController implements IApiController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger( Loggers.MAIN );
 
-    private final IBuildManager _buildManager;
+    private final IBuildTypeManager _buildManager;
     private final EventBus _eventBus;
     private final ExecutorService _executorService;
     private final Configuration _configuration;
@@ -62,7 +62,7 @@ final class ApiController implements IApiController {
     private final Map<ApiVersion, Function<Project, ProjectData>> _projectProvider;
 
     @Inject
-    ApiController( final Configuration configuration, final IProjectManager projectManager, final IBuildManager buildManager, final IApiRequestController apiRequestController, final EventBus eventBus, final ExecutorService executorService, final Map<ApiVersion, Function<Build, BuildData>> buildFunctionsByVersion, final Map<ApiVersion, Function<BuildType, BuildTypeData>> buildTypeProvider, final Map<ApiVersion, Function<Project, ProjectData>> projectProvider ) {
+    ApiController( final Configuration configuration, final IProjectManager projectManager, final IBuildTypeManager buildManager, final IApiRequestController apiRequestController, final EventBus eventBus, final ExecutorService executorService, final Map<ApiVersion, Function<Build, BuildData>> buildFunctionsByVersion, final Map<ApiVersion, Function<BuildType, BuildTypeData>> buildTypeProvider, final Map<ApiVersion, Function<Project, ProjectData>> projectProvider ) {
         _configuration = configuration;
         _projectManager = projectManager;
         _apiRequestController = apiRequestController;
