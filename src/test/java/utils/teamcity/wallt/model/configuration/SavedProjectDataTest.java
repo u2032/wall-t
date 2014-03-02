@@ -13,32 +13,30 @@
  * If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 
-package utils.teamcity.wallt.model.build;
+package utils.teamcity.wallt.model.configuration;
 
+import org.junit.Test;
 
-import java.util.List;
-import java.util.Set;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
- * Date: 16/02/14
+ * Date: 01/03/14
  *
  * @author Cedric Longo
  */
-public interface IBuildManager {
+public class SavedProjectDataTest {
 
-    void registerBuildTypes( List<BuildTypeData> typeList );
+    @Test
+    public void data_is_correctly_set_into_object( ) {
+        // Setup
+        final SavedProjectData data = new SavedProjectData( "pId", "pName", "pParentId", "pAlias" );
+        // Exercise
+        // Verify
+        assertThat( data.getId( ), is( "pId" ) );
+        assertThat( data.getName( ), is( "pName" ) );
+        assertThat( data.getParentId( ), is( "pParentId" ) );
+        assertThat( data.getAliasName( ), is( "pAlias" ) );
+    }
 
-    List<BuildTypeData> getBuildTypes( );
-
-    List<BuildTypeData> getMonitoredBuildTypes( );
-
-    void activateMonitoring( BuildTypeData buildTypeData );
-
-    void unactivateMonitoring( BuildTypeData buildTypeData );
-
-    List<BuildTypeData> registerBuildTypesInQueue( Set<String> buildTypesInQueue );
-
-    int getPosition( BuildTypeData data );
-
-    void requestPosition( BuildTypeData data, int newValue );
 }

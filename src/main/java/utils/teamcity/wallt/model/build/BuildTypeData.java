@@ -21,6 +21,7 @@ import com.google.common.collect.Lists;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static com.google.common.collect.Lists.reverse;
 
@@ -31,7 +32,7 @@ import static com.google.common.collect.Lists.reverse;
  */
 public final class BuildTypeData {
 
-    private static final int MAX_BUILD_SIZE_TO_CACHE = 10;
+    static final int MAX_BUILD_SIZE_TO_CACHE = 10;
 
     private final LinkedList<BuildData> _lastBuilds = Lists.newLinkedList( );
 
@@ -75,7 +76,6 @@ public final class BuildTypeData {
         _aliasName = aliasName;
     }
 
-
     public boolean hasRunningBuild( ) {
         return getLastBuild( BuildState.running ).isPresent( );
     }
@@ -94,6 +94,13 @@ public final class BuildTypeData {
                 .findFirst( );
     }
 
+    public List<BuildData> getLastBuilds( final BuildState state, final int count ) {
+        return getBuilds( ).stream( )
+                .filter( build -> build.getState( ) == state )
+                .filter( build -> build.getStatus( ) != BuildStatus.UNKNOWN )
+                .limit( count )
+                .collect( Collectors.toList( ) );
+    }
 
     public final Optional<BuildData> getBuildById( final int id ) {
         return getBuilds( ).stream( ).filter( b -> b.getId( ) == id ).findFirst( );
@@ -116,10 +123,8 @@ public final class BuildTypeData {
             _lastBuilds.removeLast( );
     }
 
-
-    public synchronized List<BuildData> getBuilds( ) {
+    synchronized List<BuildData> getBuilds( ) {
         return ImmutableList.copyOf( _lastBuilds );
     }
-
 
 }

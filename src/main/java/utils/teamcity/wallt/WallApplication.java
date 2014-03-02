@@ -42,6 +42,7 @@ import utils.teamcity.wallt.view.configuration.ConfigurationViewModule;
 import utils.teamcity.wallt.view.wall.WallScene;
 import utils.teamcity.wallt.view.wall.WallViewModule;
 
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
 
@@ -77,7 +78,7 @@ public final class WallApplication extends Application {
         Application.launch( WallApplication.class, args );
     }
 
-    private Iterable<Module> modules( ) {
+    static List<Module> modules( ) {
         return ImmutableList.<Module>of(
                 new WallApplicationModule( ),
                 new ThreadingModule( ),

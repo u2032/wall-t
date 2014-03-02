@@ -13,32 +13,33 @@
  * If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 
-package utils.teamcity.wallt.model.build;
+package utils.teamcity.wallt;
 
+import com.google.common.collect.ImmutableList;
+import com.google.inject.Module;
 
 import java.util.List;
-import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
- * Date: 16/02/14
+ * Date: 01/03/14
  *
  * @author Cedric Longo
  */
-public interface IBuildManager {
+public final class TestModules {
 
-    void registerBuildTypes( List<BuildTypeData> typeList );
+    private TestModules( ) {
+    }
 
-    List<BuildTypeData> getBuildTypes( );
+    public static List<Module> defaultModules( ) {
+        return WallApplication.modules( );
+    }
 
-    List<BuildTypeData> getMonitoredBuildTypes( );
+    public static List<Module> defaultModulesWithOverride( final Class<? extends Module> moduleToOverwrite, final Module module ) {
+        return new ImmutableList.Builder<Module>( )
+                .addAll( WallApplication.modules( ).stream( ).filter( m -> m.getClass( ) != moduleToOverwrite ).collect( Collectors.<Module>toList( ) ) )
+                .add( module )
+                .build( );
+    }
 
-    void activateMonitoring( BuildTypeData buildTypeData );
-
-    void unactivateMonitoring( BuildTypeData buildTypeData );
-
-    List<BuildTypeData> registerBuildTypesInQueue( Set<String> buildTypesInQueue );
-
-    int getPosition( BuildTypeData data );
-
-    void requestPosition( BuildTypeData data, int newValue );
 }

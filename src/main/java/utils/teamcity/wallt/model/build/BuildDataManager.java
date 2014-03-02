@@ -22,7 +22,6 @@ import utils.teamcity.wallt.model.configuration.SavedBuildTypeData;
 
 import javax.inject.Inject;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -46,13 +45,6 @@ final class BuildDataManager implements IBuildManager {
             _buildTypes.add( data );
             activateMonitoring( data );
         }
-    }
-
-    @Override
-    public Optional<BuildTypeData> getBuild( final String id ) {
-        return getBuildTypes( ).stream( )
-                .filter( input -> input.getId( ).equals( id ) )
-                .findFirst( );
     }
 
     @Override

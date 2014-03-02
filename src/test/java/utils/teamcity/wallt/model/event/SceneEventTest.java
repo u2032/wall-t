@@ -13,32 +13,32 @@
  * If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 
-package utils.teamcity.wallt.model.build;
+package utils.teamcity.wallt.model.event;
 
+import javafx.scene.Scene;
+import org.hamcrest.CoreMatchers;
+import org.junit.Test;
+import utils.teamcity.wallt.view.configuration.ConfigurationScene;
+import utils.teamcity.wallt.view.wall.WallScene;
 
-import java.util.List;
-import java.util.Set;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
- * Date: 16/02/14
+ * Date: 01/03/14
  *
  * @author Cedric Longo
  */
-public interface IBuildManager {
+public class SceneEventTest {
 
-    void registerBuildTypes( List<BuildTypeData> typeList );
+    @Test
+    public void event_returns_the_correct_defined_type( ) {
+        // Setup
+        final SceneEvent event1 = new SceneEvent( ConfigurationScene.class );
+        final SceneEvent event2 = new SceneEvent( WallScene.class );
+        // Exercise
+        // Verify
+        assertThat( event1.getType( ), CoreMatchers.<Class<? extends Scene>>is( ConfigurationScene.class ) );
+        assertThat( event2.getType( ), CoreMatchers.<Class<? extends Scene>>is( WallScene.class ) );
+    }
 
-    List<BuildTypeData> getBuildTypes( );
-
-    List<BuildTypeData> getMonitoredBuildTypes( );
-
-    void activateMonitoring( BuildTypeData buildTypeData );
-
-    void unactivateMonitoring( BuildTypeData buildTypeData );
-
-    List<BuildTypeData> registerBuildTypesInQueue( Set<String> buildTypesInQueue );
-
-    int getPosition( BuildTypeData data );
-
-    void requestPosition( BuildTypeData data, int newValue );
 }

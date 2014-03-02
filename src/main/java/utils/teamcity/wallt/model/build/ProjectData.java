@@ -74,8 +74,8 @@ public final class ProjectData {
         return ImmutableList.copyOf( _buildTypes );
     }
 
-    public int getBuildTypeCount( final BuildStatus... status ) {
-        final List<BuildStatus> keptStatus = asList( status );
+    public int getBuildTypeCount( final BuildStatus... statusForLastFinished ) {
+        final List<BuildStatus> keptStatus = asList( statusForLastFinished );
         return (int) getBuildTypes( ).stream( )
                 .filter( bt -> {
                     final Optional<BuildData> lastBuild = bt.getLastBuild( BuildState.finished );
@@ -84,8 +84,8 @@ public final class ProjectData {
                 .count( );
     }
 
-    public boolean hasBuildTypeRunning( final BuildStatus... status ) {
-        final Set<BuildStatus> keptStatus = newEnumSet( asList( status ), BuildStatus.class );
+    public boolean hasBuildTypeRunning( final BuildStatus... statusForLastFinished ) {
+        final Set<BuildStatus> keptStatus = newEnumSet( asList( statusForLastFinished ), BuildStatus.class );
         return getBuildTypes( ).stream( )
                 .anyMatch( bt -> {
                     if ( !bt.hasRunningBuild( ) )

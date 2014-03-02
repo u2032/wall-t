@@ -38,7 +38,7 @@ final class ProjectManager implements IProjectManager {
     private final List<ProjectData> _monitoredProjects = Lists.newArrayList( );
 
     @Inject
-    public ProjectManager( final Configuration configuration ) {
+    ProjectManager( final Configuration configuration ) {
         for ( final SavedProjectData savedData : configuration.getSavedProjects( ) ) {
             final ProjectData data = new ProjectData( savedData.getId( ), savedData.getName( ), Optional.ofNullable( savedData.getParentId( ) ) );
             data.setAliasName( savedData.getAliasName( ) );
