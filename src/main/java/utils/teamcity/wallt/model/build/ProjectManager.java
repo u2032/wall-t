@@ -92,7 +92,8 @@ final class ProjectManager implements IProjectManager {
 
     @Override
     public synchronized void activateMonitoring( final ProjectData projectData ) {
-        _monitoredProjects.add( projectData );
+        if ( !_monitoredProjects.contains( projectData ) )
+            _monitoredProjects.add( projectData );
     }
 
     @Override

@@ -39,7 +39,7 @@ public class ConfigurationModuleTest {
 
     @Before
     public void setUp( ) throws Exception {
-        Guice.createInjector( TestModules.defaultModules( ) )
+        Guice.createInjector( TestModules.defaultModulesWithOverride( ConfigurationModule.class, new ConfigurationModule( ) ) )
                 .injectMembers( this );
     }
 
