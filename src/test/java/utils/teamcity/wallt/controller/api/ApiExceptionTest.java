@@ -13,34 +13,26 @@
  * If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 
-package utils.teamcity.wallt;
+package utils.teamcity.wallt.controller.api;
 
-import com.google.common.collect.ImmutableList;
-import com.google.inject.Module;
-import utils.teamcity.wallt.controller.configuration.ConfigurationModule;
+import org.junit.Test;
 
-import java.util.List;
-import java.util.stream.Collectors;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 
 /**
- * Date: 01/03/14
+ * Date: 02/03/14
  *
  * @author Cedric Longo
  */
-public final class TestModules {
+public class ApiExceptionTest {
 
-    private TestModules( ) {
+    @Test
+    public void error_message_is_set_on_exception( ) throws Exception {
+        // Setup
+        final ApiException exception = new ApiException( "Test Error Message" );
+        // Exercise
+        // Verify
+        assertThat( exception.getMessage( ), is( "Test Error Message" ) );
     }
-
-    public static List<Module> defaultModules( ) {
-        return defaultModulesWithOverride( ConfigurationModule.class, new TestConfigurationModule( ) );
-    }
-
-    public static List<Module> defaultModulesWithOverride( final Class<? extends Module> moduleToOverwrite, final Module module ) {
-        return new ImmutableList.Builder<Module>( )
-                .addAll( WallApplication.modules( ).stream( ).filter( m -> m.getClass( ) != moduleToOverwrite ).collect( Collectors.<Module>toList( ) ) )
-                .add( module )
-                .build( );
-    }
-
 }

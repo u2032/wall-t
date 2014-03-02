@@ -39,7 +39,7 @@ final class BuildTypeManager implements IBuildTypeManager {
 
     @Inject
     BuildTypeManager( final Configuration configuration ) {
-        for ( final SavedBuildTypeData savedData : configuration.getSavedBuilds( ) ) {
+        for ( final SavedBuildTypeData savedData : configuration.getSavedBuildTypes( ) ) {
             final BuildTypeData data = new BuildTypeData( savedData.getId( ), savedData.getName( ), savedData.getProjectId( ), savedData.getProjectName( ) );
             data.setAliasName( savedData.getAliasName( ) );
             _buildTypes.add( data );

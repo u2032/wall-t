@@ -15,7 +15,6 @@
 
 package utils.teamcity.wallt.controller.api;
 
-import com.google.common.base.Function;
 import com.google.common.collect.ImmutableMap;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
@@ -35,6 +34,7 @@ import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
 
 /**
  * Date: 15/02/14

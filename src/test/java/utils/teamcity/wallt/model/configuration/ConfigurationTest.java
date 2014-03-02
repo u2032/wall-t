@@ -66,7 +66,7 @@ public class ConfigurationTest {
         assertThat( configuration.getProxyCredentialsUser( ), is( "Titi" ) );
         assertThat( configuration.getProxyCredentialsPassword( ), is( "t1t1" ) );
         assertThat( configuration.isUseProxy( ), is( true ) );
-        assertThat( configuration.getSavedBuilds( ), Matchers.contains( buildType1, buildType2 ) );
+        assertThat( configuration.getSavedBuildTypes( ), Matchers.contains( buildType1, buildType2 ) );
         assertThat( configuration.getSavedProjects( ), Matchers.contains( project1, project2 ) );
     }
 }

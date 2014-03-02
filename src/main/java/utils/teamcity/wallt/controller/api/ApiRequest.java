@@ -26,7 +26,7 @@ import static com.google.common.base.Strings.isNullOrEmpty;
  */
 public final class ApiRequest {
 
-    public static final String GUEST_USER = "guest";
+    static final String GUEST_USER = "guest";
 
     private final URI _serverUrl;
     private final String _username;
@@ -36,21 +36,6 @@ public final class ApiRequest {
         _serverUrl = serverUrl;
         _username = username;
         _password = password;
-    }
-
-    public String getHost( ) {
-        return _serverUrl.getHost( );
-    }
-
-    public int getPort( ) {
-        final int port = _serverUrl.getPort( );
-        if ( port == -1 )
-            return useSSL( ) ? 443 : 80;
-        return port;
-    }
-
-    public boolean useSSL( ) {
-        return "https".equalsIgnoreCase( _serverUrl.getScheme( ) );
     }
 
     public String getURI( ) {

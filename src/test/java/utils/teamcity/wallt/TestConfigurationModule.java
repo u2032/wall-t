@@ -15,32 +15,30 @@
 
 package utils.teamcity.wallt;
 
-import com.google.common.collect.ImmutableList;
-import com.google.inject.Module;
-import utils.teamcity.wallt.controller.configuration.ConfigurationModule;
-
-import java.util.List;
-import java.util.stream.Collectors;
+import com.google.inject.AbstractModule;
+import com.google.inject.Provides;
+import com.google.inject.Scopes;
+import com.google.inject.Singleton;
+import utils.teamcity.wallt.controller.configuration.ConfigurationController;
+import utils.teamcity.wallt.controller.configuration.IConfigurationController;
+import utils.teamcity.wallt.model.configuration.Configuration;
 
 /**
- * Date: 01/03/14
+ * Date: 02/03/14
  *
  * @author Cedric Longo
  */
-public final class TestModules {
+public final class TestConfigurationModule extends AbstractModule {
 
-    private TestModules( ) {
+    @Override
+    protected void configure( ) {
+        bind( IConfigurationController.class ).to( ConfigurationController.class ).in( Scopes.SINGLETON );
     }
 
-    public static List<Module> defaultModules( ) {
-        return defaultModulesWithOverride( ConfigurationModule.class, new TestConfigurationModule( ) );
-    }
-
-    public static List<Module> defaultModulesWithOverride( final Class<? extends Module> moduleToOverwrite, final Module module ) {
-        return new ImmutableList.Builder<Module>( )
-                .addAll( WallApplication.modules( ).stream( ).filter( m -> m.getClass( ) != moduleToOverwrite ).collect( Collectors.<Module>toList( ) ) )
-                .add( module )
-                .build( );
+    @Provides
+    @Singleton
+    Configuration loadConfiguration( ) {
+        return new Configuration( );
     }
 
 }

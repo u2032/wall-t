@@ -141,6 +141,21 @@ public class ProjectManagerTest {
     }
 
     @Test
+    public void when_activating_monitoring_build_twice_only_one_is_kept( ) throws Exception {
+        // Setup
+        final ProjectData p1 = newProject( "p1" );
+        final List<ProjectData> projects = ImmutableList.of( p1, newProject( "p2" ) );
+        _projectManager.registerProjects( projects );
+        // Exercise
+        _projectManager.activateMonitoring( p1 );
+        _projectManager.activateMonitoring( p1 );
+        // Verify
+        final List<ProjectData> projectsInManager = _projectManager.getMonitoredProjects( );
+        assertThat( projectsInManager.size( ), is( 1 ) );
+        assertThat( projectsInManager.get( 0 ).getId( ), is( "p1" ) );
+    }
+
+    @Test
     public void when_unactivating_monitoring_build_is_removed_from_monitored_project_list( ) throws Exception {
         // Setup
         final ProjectData p1 = newProject( "p1" );

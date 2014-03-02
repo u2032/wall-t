@@ -28,46 +28,46 @@ import java.util.List;
  */
 public final class Configuration {
 
-    @SerializedName( "proxy.use" )
+    @SerializedName("proxy.use")
     private boolean _useProxy;
 
-    @SerializedName( "proxy.host" )
+    @SerializedName("proxy.host")
     private String _proxyHost;
 
-    @SerializedName( "proxy.port" )
+    @SerializedName("proxy.port")
     private int _proxyPort = 80;
 
-    @SerializedName( "proxy.credentials.user" )
+    @SerializedName("proxy.credentials.user")
     private String _proxyCredentialsUser;
 
-    @SerializedName( "proxy.credentials.password" )
+    @SerializedName("proxy.credentials.password")
     private String _proxyCredentialsPassword;
 
-    @SerializedName( "server.url" )
+    @SerializedName("server.url")
     private String _serverUrl;
 
-    @SerializedName( "server.credentials.user" )
+    @SerializedName("server.credentials.user")
     private String _credentialsUser = "guest";
 
-    @SerializedName( "server.credentials.password" )
+    @SerializedName("server.credentials.password")
     private String _credentialsPassword;
 
-    @SerializedName( "api.version" )
+    @SerializedName("api.version")
     private ApiVersion _apiVersion = ApiVersion.API_8_0;
 
-    @SerializedName( "pref.max.tiles.by.column" )
+    @SerializedName("pref.max.tiles.by.column")
     private int _maxTilesByColumn = 4;
 
-    @SerializedName( "pref.max.tiles.by.row" )
+    @SerializedName("pref.max.tiles.by.row")
     private int _maxTilesByRow = 4;
 
-    @SerializedName( "pref.light.mode" )
+    @SerializedName("pref.light.mode")
     private boolean _lightMode;
 
-    @SerializedName( "monitored_builds" )
+    @SerializedName("monitored_builds")
     private List<SavedBuildTypeData> _savedBuilds = Lists.newArrayList( );
 
-    @SerializedName( "monitored_projects" )
+    @SerializedName("monitored_projects")
     private List<SavedProjectData> _savedProjects = Lists.newArrayList( );
 
     public String getServerUrl( ) {
@@ -94,7 +94,7 @@ public final class Configuration {
         _credentialsPassword = credentialsPassword;
     }
 
-    public List<SavedBuildTypeData> getSavedBuilds( ) {
+    public List<SavedBuildTypeData> getSavedBuildTypes( ) {
         return _savedBuilds;
     }
 

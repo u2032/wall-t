@@ -56,15 +56,11 @@ public final class ApiRequestBuilder {
 
     public ApiRequestBuilder request( final String path ) {
         _path = nullToEmpty( path );
-        if ( _path.endsWith( "/" ) )
-            _path = _path.substring( 0, _path.length( ) - 1 );
         return this;
     }
 
     public ApiRequestBuilder forUser( final String username ) {
-        if ( !Strings.isNullOrEmpty( username ) )
-            _username = username;
-        else _username = ApiRequest.GUEST_USER;
+        _username = Strings.isNullOrEmpty( username ) ? ApiRequest.GUEST_USER : username;
         return this;
     }
 
