@@ -8,10 +8,6 @@ set JAVA=%JAVA8_HOME%
 rem -------- Do not edit under this line
 
 if "%JAVA%" == "" (
-set JAVA=%JAVA_HOME%
-)
-
-if "%JAVA%" == "" (
     echo Java path is not configured.
     echo Please define JAVA8_HOME environment variable or edit JAVA path into this script.
     pause
