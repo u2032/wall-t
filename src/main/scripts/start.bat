@@ -3,9 +3,13 @@ rem @ <-- workaround for http://jira.codehaus.org/browse/MRESOURCES-104
 @cd %~dp0
 rem @ <-- workaround for http://jira.codehaus.org/browse/MRESOURCES-104
 
-set JAVA=%JAVA8_HOME%
+set "JAVA=%JAVA8_HOME%"
 
 rem -------- Do not edit under this line
+
+if "%JAVA%" == "" (
+	set "JAVA=%JAVA_HOME%"
+)
 
 if "%JAVA%" == "" (
     echo Java path is not configured.
