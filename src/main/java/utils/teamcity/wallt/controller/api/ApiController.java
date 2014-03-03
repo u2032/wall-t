@@ -214,26 +214,33 @@ final class ApiController implements IApiController {
                 @Override
                 public void onSuccess( final BuildList result ) {
                     // We consider only last builds
-                    final List<Build> buildToRequest = result.getBuilds( ).stream( )
+                    final Set<Integer> buildToRequest = result.getBuilds( ).stream( )
                             .limit( MAX_BUILDS_TO_CONSIDER )
-                            .collect( Collectors.toList( ) );
+                            .map( Build::getId )
+                            .collect( Collectors.toSet( ) );
 
-                    // We remove builds which status is already known
-                    buildToRequest.removeIf( build -> {
-                        final Optional<BuildData> previousBuildStatus = buildType.getBuildById( build.getId( ) );
+                    // We remove builds which status is already known as finished
+                    buildToRequest.removeIf( buildId -> {
+                        final Optional<BuildData> previousBuildStatus = buildType.getBuildById( buildId );
                         return previousBuildStatus.isPresent( ) && previousBuildStatus.get( ).getState( ) == BuildState.finished;
                     } );
 
                     // We ignore builds which status is in error
-                    buildToRequest.removeIf( build -> {
-                        final Integer errorCount = _buildRequestErrorCounter.getIfPresent( build.getId( ) );
+                    buildToRequest.removeIf( buildId -> {
+                        final Integer errorCount = _buildRequestErrorCounter.getIfPresent( buildId );
                         return errorCount != null && errorCount >= ERROR_COUNT_BEFORE_IGNORING;
                     } );
 
+                    // We add all builds that are always in state running into data
+                    buildToRequest.addAll(
+                            buildType.getLastBuilds( BuildState.running, Integer.MAX_VALUE ).stream( )
+                                    .map( BuildData::getId )
+                                    .collect( Collectors.<Integer>toList( ) ) );
+
                     final List<ListenableFuture<Build>> futures = Lists.newArrayList( );
-                    for ( final Build build : buildToRequest ) {
-                        final ListenableFuture<Build> buildStatusFuture = _apiRequestController.sendRequest( getApiVersion( ), "builds/id:" + build.getId( ), Build.class );
-                        addCallback( buildStatusFuture, registerBuildStatus( buildType, build ) );
+                    for ( final int buildId : buildToRequest ) {
+                        final ListenableFuture<Build> buildStatusFuture = _apiRequestController.sendRequest( getApiVersion( ), "builds/id:" + buildId, Build.class );
+                        addCallback( buildStatusFuture, registerBuildStatus( buildType, buildId ) );
                         futures.add( buildStatusFuture );
                     }
 
@@ -261,7 +268,7 @@ final class ApiController implements IApiController {
         return ackFuture;
     }
 
-    private FutureCallback<Build> registerBuildStatus( final BuildTypeData buildType, final Build build ) {
+    private FutureCallback<Build> registerBuildStatus( final BuildTypeData buildType, final int buildId ) {
         return new FutureCallback<Build>( ) {
             @Override
             public void onSuccess( final Build result ) {
@@ -276,13 +283,13 @@ final class ApiController implements IApiController {
 
             @Override
             public void onFailure( final Throwable t ) {
-                LOGGER.error( "Error during loading full information for build with id " + build.getId( ) + ", build type: " + buildType.getId( ), t );
+                LOGGER.error( "Error during loading full information for build with id " + buildId + ", build type: " + buildType.getId( ), t );
 
-                final Integer errorCount = _buildRequestErrorCounter.getIfPresent( build.getId( ) );
+                final Integer errorCount = _buildRequestErrorCounter.getIfPresent( buildId );
                 final int newErrorCount = errorCount == null ? 1 : errorCount + 1;
-                _buildRequestErrorCounter.put( build.getId( ), newErrorCount );
+                _buildRequestErrorCounter.put( buildId, newErrorCount );
                 if ( newErrorCount >= ERROR_COUNT_BEFORE_IGNORING )
-                    LOGGER.info( "Build {} is now temporary ignored for about {} minutes due to {} failures.", build.getId( ), IGNORING_TIME_IN_MINUTES, ERROR_COUNT_BEFORE_IGNORING );
+                    LOGGER.info( "Build {} is now temporary ignored for about {} minutes due to {} failures.", buildId, IGNORING_TIME_IN_MINUTES, ERROR_COUNT_BEFORE_IGNORING );
             }
         };
     }
