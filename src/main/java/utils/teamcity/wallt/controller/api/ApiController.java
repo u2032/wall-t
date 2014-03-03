@@ -15,6 +15,8 @@
 
 package utils.teamcity.wallt.controller.api;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.Lists;
 import com.google.common.eventbus.EventBus;
 import com.google.common.util.concurrent.FutureCallback;
@@ -34,6 +36,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -48,6 +51,9 @@ final class ApiController implements IApiController {
 
     private static final int MAX_BUILDS_TO_CONSIDER = 3;
 
+    private static final int ERROR_COUNT_BEFORE_IGNORING = 2;
+    private static final int IGNORING_TIME_IN_MINUTES = 20;
+
     private static final Logger LOGGER = LoggerFactory.getLogger( Loggers.MAIN );
 
     private final IBuildTypeManager _buildManager;
@@ -60,6 +66,12 @@ final class ApiController implements IApiController {
     private final Map<ApiVersion, Function<Build, BuildData>> _buildProvider;
     private final Map<ApiVersion, Function<BuildType, BuildTypeData>> _buildTypeProvider;
     private final Map<ApiVersion, Function<Project, ProjectData>> _projectProvider;
+
+    // Build id -> error count
+    private final Cache<Integer, Integer> _buildRequestErrorCounter = CacheBuilder.newBuilder( )
+            .concurrencyLevel( Runtime.getRuntime( ).availableProcessors( ) * 2 )
+            .expireAfterWrite( IGNORING_TIME_IN_MINUTES, TimeUnit.MINUTES )
+            .build( );
 
     @Inject
     ApiController( final Configuration configuration, final IProjectManager projectManager, final IBuildTypeManager buildManager, final IApiRequestController apiRequestController, final EventBus eventBus, final ExecutorService executorService, final Map<ApiVersion, Function<Build, BuildData>> buildFunctionsByVersion, final Map<ApiVersion, Function<BuildType, BuildTypeData>> buildTypeProvider, final Map<ApiVersion, Function<Project, ProjectData>> projectProvider ) {
@@ -192,6 +204,8 @@ final class ApiController implements IApiController {
         if ( !getApiVersion( ).isSupported( ApiFeature.BUILD_TYPE_STATUS ) )
             return Futures.immediateFuture( null );
 
+        _buildRequestErrorCounter.cleanUp( );
+
         final SettableFuture<Void> ackFuture = SettableFuture.create( );
 
         runInWorkerThread( ( ) -> {
@@ -204,10 +218,16 @@ final class ApiController implements IApiController {
                             .limit( MAX_BUILDS_TO_CONSIDER )
                             .collect( Collectors.toList( ) );
 
-                    // We removed from list builds which status is already known
+                    // We remove builds which status is already known
                     buildToRequest.removeIf( build -> {
                         final Optional<BuildData> previousBuildStatus = buildType.getBuildById( build.getId( ) );
                         return previousBuildStatus.isPresent( ) && previousBuildStatus.get( ).getState( ) == BuildState.finished;
+                    } );
+
+                    // We ignore builds which status is in error
+                    buildToRequest.removeIf( build -> {
+                        final Integer errorCount = _buildRequestErrorCounter.getIfPresent( build.getId( ) );
+                        return errorCount != null && errorCount >= ERROR_COUNT_BEFORE_IGNORING;
                     } );
 
                     final List<ListenableFuture<Build>> futures = Lists.newArrayList( );
@@ -257,6 +277,12 @@ final class ApiController implements IApiController {
             @Override
             public void onFailure( final Throwable t ) {
                 LOGGER.error( "Error during loading full information for build with id " + build.getId( ) + ", build type: " + buildType.getId( ), t );
+
+                final Integer errorCount = _buildRequestErrorCounter.getIfPresent( build.getId( ) );
+                final int newErrorCount = errorCount == null ? 1 : errorCount + 1;
+                _buildRequestErrorCounter.put( build.getId( ), newErrorCount );
+                if ( newErrorCount >= ERROR_COUNT_BEFORE_IGNORING )
+                    LOGGER.info( "Build {} is now temporary ignored for about {} minutes due to {} failures.", build.getId( ), IGNORING_TIME_IN_MINUTES, ERROR_COUNT_BEFORE_IGNORING );
             }
         };
     }
@@ -264,4 +290,5 @@ final class ApiController implements IApiController {
     private ApiVersion getApiVersion( ) {
         return _configuration.getApiVersion( );
     }
+
 }
