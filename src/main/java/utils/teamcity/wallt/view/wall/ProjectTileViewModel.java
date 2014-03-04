@@ -40,16 +40,16 @@ final class ProjectTileViewModel {
     private final IProjectManager _projectManager;
     private final ProjectData _projectData;
 
-    private final StringProperty _displayedName = new SimpleStringProperty();
-    private final ObjectProperty<Background> _background = new SimpleObjectProperty<>();
+    private final StringProperty _displayedName = new SimpleStringProperty( );
+    private final ObjectProperty<Background> _background = new SimpleObjectProperty<>( );
 
     private final IntegerProperty _successCount = new SimpleIntegerProperty( -1 );
     private final IntegerProperty _failureCount = new SimpleIntegerProperty( -1 );
 
-    private final BooleanProperty _hasSuccessRunning = new SimpleBooleanProperty();
-    private final BooleanProperty _hasFailureRunning = new SimpleBooleanProperty();
+    private final BooleanProperty _hasSuccessRunning = new SimpleBooleanProperty( );
+    private final BooleanProperty _hasFailureRunning = new SimpleBooleanProperty( );
 
-    private final BooleanProperty _lightMode = new SimpleBooleanProperty();
+    private final BooleanProperty _lightMode = new SimpleBooleanProperty( );
 
 
     interface Factory {
@@ -66,104 +66,104 @@ final class ProjectTileViewModel {
 
     @Subscribe
     public final void updateProjectViewModel( final ProjectData data ) {
-        final Set<ProjectData> allProjects = getAllInterestingProjects();
+        final Set<ProjectData> allProjects = getAllInterestingProjects( );
 
         if ( !allProjects.contains( data ) )
             return;
 
-        Platform.runLater( () -> {
-            _displayedName.set( Strings.isNullOrEmpty( _projectData.getAliasName() ) ? _projectData.getName() : _projectData.getAliasName() );
-            updateSuccessFailureCount();
-            updateBackground();
+        Platform.runLater( ( ) -> {
+            _displayedName.set( Strings.isNullOrEmpty( _projectData.getAliasName( ) ) ? _projectData.getName( ) : _projectData.getAliasName( ) );
+            updateSuccessFailureCount( );
+            updateBackground( );
         } );
     }
 
-    private void updateSuccessFailureCount() {
-        final Set<ProjectData> allProjects = getAllInterestingProjects();
-        _failureCount.setValue( allProjects.stream().map( p -> p.getBuildTypeCount( BuildStatus.FAILURE, BuildStatus.ERROR ) ).reduce( 0, Integer::sum ) );
-        _successCount.setValue( allProjects.stream().map( p -> p.getBuildTypeCount( BuildStatus.SUCCESS ) ).reduce( 0, Integer::sum ) );
+    private void updateSuccessFailureCount( ) {
+        final Set<ProjectData> allProjects = getAllInterestingProjects( );
+        _failureCount.setValue( allProjects.stream( ).map( p -> p.getBuildTypeCount( BuildStatus.FAILURE, BuildStatus.ERROR ) ).reduce( 0, Integer::sum ) );
+        _successCount.setValue( allProjects.stream( ).map( p -> p.getBuildTypeCount( BuildStatus.SUCCESS ) ).reduce( 0, Integer::sum ) );
 
-        _hasFailureRunning.set( allProjects.stream().anyMatch( p -> p.hasBuildTypeRunning( BuildStatus.FAILURE, BuildStatus.ERROR ) ) );
-        _hasSuccessRunning.set( allProjects.stream().anyMatch( p -> p.hasBuildTypeRunning( BuildStatus.SUCCESS ) ) );
+        _hasFailureRunning.set( allProjects.stream( ).anyMatch( p -> p.hasBuildTypeRunning( BuildStatus.FAILURE, BuildStatus.ERROR ) ) );
+        _hasSuccessRunning.set( allProjects.stream( ).anyMatch( p -> p.hasBuildTypeRunning( BuildStatus.SUCCESS ) ) );
     }
 
     @Subscribe
     public void updateConfiguration( final Configuration configuration ) {
-        Platform.runLater( () -> {
-            _lightMode.setValue( configuration.isLightMode() );
+        Platform.runLater( ( ) -> {
+            _lightMode.setValue( configuration.isLightMode( ) );
         } );
     }
 
-    private void updateBackground() {
-        if ( getFailureCount() + getSuccessCount() == 0 ) {
-            _background.setValue( BuildBackground.UNKNOWN.getMain() );
+    private void updateBackground( ) {
+        if ( getFailureCount( ) + getSuccessCount( ) == 0 ) {
+            _background.setValue( BuildBackground.UNKNOWN.getMain( ) );
             return;
         }
         // Setting main background according to failure count
-        _background.setValue( getFailureCount() == 0 ? BuildBackground.SUCCESS.getMain() : BuildBackground.FAILURE.getMain() );
+        _background.setValue( getFailureCount( ) == 0 ? BuildBackground.SUCCESS.getMain( ) : BuildBackground.FAILURE.getMain( ) );
     }
 
 
-    private Set<ProjectData> getAllInterestingProjects() {
-        return ImmutableSet.<ProjectData>builder()
+    private Set<ProjectData> getAllInterestingProjects( ) {
+        return ImmutableSet.<ProjectData>builder( )
                 .add( _projectData )
                 .addAll( _projectManager.getAllChildrenOf( _projectData ) )
-                .build();
+                .build( );
     }
 
-    String getDisplayedName() {
-        return _displayedName.get();
+    String getDisplayedName( ) {
+        return _displayedName.get( );
     }
 
-    StringProperty displayedNameProperty() {
+    StringProperty displayedNameProperty( ) {
         return _displayedName;
     }
 
-    Background getBackground() {
-        return _background.get();
+    Background getBackground( ) {
+        return _background.get( );
     }
 
-    ObjectProperty<Background> backgroundProperty() {
+    ObjectProperty<Background> backgroundProperty( ) {
         return _background;
     }
 
-    BooleanProperty lightModeProperty() {
+    BooleanProperty lightModeProperty( ) {
         return _lightMode;
     }
 
-    public boolean isLightMode() {
-        return _lightMode.get();
+    public boolean isLightMode( ) {
+        return _lightMode.get( );
     }
 
-    int getSuccessCount() {
-        return _successCount.get();
+    int getSuccessCount( ) {
+        return _successCount.get( );
     }
 
-    IntegerProperty successCountProperty() {
+    IntegerProperty successCountProperty( ) {
         return _successCount;
     }
 
-    int getFailureCount() {
-        return _failureCount.get();
+    int getFailureCount( ) {
+        return _failureCount.get( );
     }
 
-    IntegerProperty failureCountProperty() {
+    IntegerProperty failureCountProperty( ) {
         return _failureCount;
     }
 
-    boolean hasSuccessRunning() {
-        return _hasSuccessRunning.get();
+    boolean hasSuccessRunning( ) {
+        return _hasSuccessRunning.get( );
     }
 
-    BooleanProperty hasSuccessRunningProperty() {
+    BooleanProperty hasSuccessRunningProperty( ) {
         return _hasSuccessRunning;
     }
 
-    boolean hasFailureRunning() {
-        return _hasFailureRunning.get();
+    boolean hasFailureRunning( ) {
+        return _hasFailureRunning.get( );
     }
 
-    BooleanProperty hasFailureRunningProperty() {
+    BooleanProperty hasFailureRunningProperty( ) {
         return _hasFailureRunning;
     }
 
