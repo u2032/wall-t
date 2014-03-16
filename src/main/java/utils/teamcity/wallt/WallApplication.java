@@ -109,14 +109,16 @@ public final class WallApplication extends Application {
         primaryStage.setHeight( MIN_HEIGHT );
 
         _apiMonitoringService.start( );
-        _eventBus.post( new SceneEvent( ConfigurationScene.class ) );
 
         primaryStage.show( );
+
+        _eventBus.post( new SceneEvent( ConfigurationScene.class ) );
     }
 
     @Override
     public void stop( ) throws Exception {
         LOGGER.info( "Stopping ..." );
+        LOGGER.info( "----\n" );
         _injector.getInstance( AsyncHttpClientConfig.class ).executorService( ).shutdownNow( );
         _injector.getInstance( AsyncHttpClient.class ).close( );
 

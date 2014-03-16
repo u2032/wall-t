@@ -121,6 +121,7 @@ final class TileView extends StackPane {
         // Box with icons
         final HBox statusBox = new HBox( );
         statusBox.setAlignment( Pos.CENTER );
+        statusBox.setSpacing( 10 );
 
         final ImageView queuedIcon = queueImageView( build );
 
@@ -211,6 +212,7 @@ final class TileView extends StackPane {
 
     private ImageView queueImageView( final TileViewModel build ) {
         final ImageView queuedIcon = new ImageView( UIUtils.createImage( "icons/queued.png" ) );
+        queuedIcon.setFitHeight( 45 );
         queuedIcon.setPreserveRatio( true );
         queuedIcon.visibleProperty( ).bind( build.queuedProperty( ) );
 

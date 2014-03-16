@@ -83,7 +83,7 @@ final class ProjectTileViewModel {
         _failureCount.setValue( allProjects.stream( ).map( p -> p.getBuildTypeCount( BuildStatus.FAILURE, BuildStatus.ERROR ) ).reduce( 0, Integer::sum ) );
         _successCount.setValue( allProjects.stream( ).map( p -> p.getBuildTypeCount( BuildStatus.SUCCESS ) ).reduce( 0, Integer::sum ) );
 
-        _hasFailureRunning.set( allProjects.stream( ).anyMatch( p -> p.hasBuildTypeRunning( BuildStatus.FAILURE, BuildStatus.FAILURE ) ) );
+        _hasFailureRunning.set( allProjects.stream( ).anyMatch( p -> p.hasBuildTypeRunning( BuildStatus.FAILURE, BuildStatus.ERROR ) ) );
         _hasSuccessRunning.set( allProjects.stream( ).anyMatch( p -> p.hasBuildTypeRunning( BuildStatus.SUCCESS ) ) );
     }
 
