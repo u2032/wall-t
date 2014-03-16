@@ -11,7 +11,6 @@
             <level>INFO</level>
         </filter>
         <file>logs/main.log</file>
-        <append>false</append>
         <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
             <fileNamePattern>logs/main.%i.log</fileNamePattern>
             <minIndex>1</minIndex>
@@ -27,7 +26,6 @@
 
     <appender name="NETWORK_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>logs/network.log</file>
-        <append>false</append>
         <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
             <fileNamePattern>logs/network.%i.log</fileNamePattern>
             <minIndex>1</minIndex>

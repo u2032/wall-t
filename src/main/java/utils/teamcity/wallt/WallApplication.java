@@ -117,6 +117,7 @@ public final class WallApplication extends Application {
     @Override
     public void stop( ) throws Exception {
         LOGGER.info( "Stopping ..." );
+        LOGGER.info( "----\n" );
         _injector.getInstance( AsyncHttpClientConfig.class ).executorService( ).shutdownNow( );
         _injector.getInstance( AsyncHttpClient.class ).close( );
 
