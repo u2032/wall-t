@@ -2,7 +2,9 @@
 
 cd $(dirname "$0")
 
+# For example: JAVA=/etc/java/jre8
 JAVA=$JAVA8_HOME
+
 
 # -------- Do not edit under this line
 
@@ -29,4 +31,4 @@ else
         exit
 fi
 
-$JAVA/bin/java -jar ./bin/${project.artifactId}.jar
+$JAVA/bin/java -jar ./bin/${project.artifactId}.jar > /dev/null &
