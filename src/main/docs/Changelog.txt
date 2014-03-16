@@ -1,5 +1,16 @@
 
 
+=== Version 1.0 ===
+Release date: 2013-03-21.
+
+* When status can't be retreived from server for a build (timeout for any reason), build is now ignored for monitoring during 20 minutes to not flood server
+* Log files are now rolling to save space on disk
+* Fix. Sometimes running build status was not correctly updated when build was finished
+* Fix. ERROR status was ignored for project view (only SUCCESS and FAILURE status were considered)
+* Fix. On Windows, the start script didn't work correctly when space was present into jre 8 path
+* Fix. On linux, resizing the window to fix layout is no more needed
+
+
 === Version 1.0-beta ===
 Release date: 2013-03-03.
 

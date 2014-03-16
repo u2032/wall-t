@@ -2,7 +2,7 @@
 
 ==== What is it ? ====
 
-This application is a buil radiator to monitor builds status over a TeamCity continous integration server.
+This application is a buil radiator to monitor build status over a TeamCity continous integration server.
 
 
 ==== Quick Start ====
