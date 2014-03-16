@@ -109,9 +109,10 @@ public final class WallApplication extends Application {
         primaryStage.setHeight( MIN_HEIGHT );
 
         _apiMonitoringService.start( );
-        _eventBus.post( new SceneEvent( ConfigurationScene.class ) );
 
         primaryStage.show( );
+
+        _eventBus.post( new SceneEvent( ConfigurationScene.class ) );
     }
 
     @Override
