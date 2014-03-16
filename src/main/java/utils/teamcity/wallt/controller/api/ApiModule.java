@@ -45,7 +45,6 @@ public final class ApiModule extends AbstractModule {
 
     @Override
     protected void configure( ) {
-        bind( IApiRequestController.class ).to( ApiRequestController.class ).in( Scopes.SINGLETON );
         bind( IApiController.class ).to( ApiController.class ).in( Scopes.SINGLETON );
         bind( IApiMonitoringService.class ).to( ApiMonitoringService.class ).asEagerSingleton( );
     }

@@ -31,6 +31,7 @@ import javafx.stage.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import utils.teamcity.wallt.controller.api.ApiModule;
+import utils.teamcity.wallt.controller.api.ApiRequestModule;
 import utils.teamcity.wallt.controller.api.IApiMonitoringService;
 import utils.teamcity.wallt.controller.configuration.ConfigurationModule;
 import utils.teamcity.wallt.model.build.BuildDataModule;
@@ -78,11 +79,12 @@ public final class WallApplication extends Application {
         Application.launch( WallApplication.class, args );
     }
 
-    static List<Module> modules( ) {
+    public static List<Module> modules( ) {
         return ImmutableList.<Module>of(
                 new WallApplicationModule( ),
                 new ThreadingModule( ),
                 new ApiModule( ),
+                new ApiRequestModule( ),
                 new BuildDataModule( ),
                 new ConfigurationModule( ),
                 new ConfigurationViewModule( ),

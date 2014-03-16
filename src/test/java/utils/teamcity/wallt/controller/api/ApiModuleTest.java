@@ -78,18 +78,6 @@ public class ApiModuleTest {
     }
 
     @Test
-    public void can_inject_ApiRequestController_as_IApiController_in_singleton( ) throws Exception {
-        // Setup
-        // Exercise
-        final IApiRequestController instance = _injector.getInstance( IApiRequestController.class );
-        final IApiRequestController instance2 = _injector.getInstance( IApiRequestController.class );
-        // Verify
-        assertThat( instance, is( notNullValue( ) ) );
-        assertThat( instance, is( instanceOf( ApiRequestController.class ) ) );
-        assertThat( instance, is( sameInstance( instance2 ) ) );
-    }
-
-    @Test
     public void can_inject_AsyncHttpClientConfig_in_singleton( ) throws Exception {
         // Setup
         // Exercise

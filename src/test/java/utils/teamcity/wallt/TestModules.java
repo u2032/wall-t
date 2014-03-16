@@ -33,12 +33,12 @@ public final class TestModules {
     }
 
     public static List<Module> defaultModules( ) {
-        return defaultModulesWithOverride( ConfigurationModule.class, new TestConfigurationModule( ) );
+        return modulesWithOverride( WallApplication.modules( ), ConfigurationModule.class, new TestConfigurationModule( ) );
     }
 
-    public static List<Module> defaultModulesWithOverride( final Class<? extends Module> moduleToOverwrite, final Module module ) {
+    public static List<Module> modulesWithOverride( final List<Module> modules, final Class<? extends Module> moduleToOverwrite, final Module module ) {
         return new ImmutableList.Builder<Module>( )
-                .addAll( WallApplication.modules( ).stream( ).filter( m -> m.getClass( ) != moduleToOverwrite ).collect( Collectors.<Module>toList( ) ) )
+                .addAll( modules.stream( ).filter( m -> m.getClass( ) != moduleToOverwrite ).collect( Collectors.<Module>toList( ) ) )
                 .add( module )
                 .build( );
     }

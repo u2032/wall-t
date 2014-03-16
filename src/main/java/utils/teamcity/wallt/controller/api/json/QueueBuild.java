@@ -24,10 +24,17 @@ import com.google.gson.annotations.SerializedName;
  */
 public final class QueueBuild {
 
-    @SerializedName( "buildTypeId" )
+    @SerializedName("buildTypeId")
     private String _buildTypeId;
 
     public String getBuildTypeId( ) {
         return _buildTypeId;
+    }
+
+    public QueueBuild( ) {
+    }
+
+    public QueueBuild( final String buildTypeId ) {
+        _buildTypeId = buildTypeId;
     }
 }

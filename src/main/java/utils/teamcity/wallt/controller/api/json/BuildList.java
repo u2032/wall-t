@@ -15,10 +15,11 @@
 
 package utils.teamcity.wallt.controller.api.json;
 
+import com.google.common.annotations.VisibleForTesting;
+import com.google.common.collect.Lists;
 import com.google.gson.annotations.SerializedName;
 import utils.teamcity.wallt.controller.api.ApiResponse;
 
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -28,10 +29,15 @@ import java.util.List;
  */
 public final class BuildList implements ApiResponse {
 
-    @SerializedName( "build" )
-    private List<Build> _builds = Collections.emptyList( );
+    @SerializedName("build")
+    private List<Build> _builds = Lists.newLinkedList( );
 
     public List<Build> getBuilds( ) {
         return _builds;
+    }
+
+    @VisibleForTesting
+    public void addBuild( final Build build ) {
+        _builds.add( build );
     }
 }

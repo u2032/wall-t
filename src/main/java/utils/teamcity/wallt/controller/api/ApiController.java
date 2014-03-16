@@ -49,7 +49,7 @@ import static com.google.common.util.concurrent.Futures.addCallback;
  */
 final class ApiController implements IApiController {
 
-    private static final int MAX_BUILDS_TO_CONSIDER = 3;
+    static final int MAX_BUILDS_TO_CONSIDER = 3;
 
     private static final int ERROR_COUNT_BEFORE_IGNORING = 2;
     private static final int IGNORING_TIME_IN_MINUTES = 20;

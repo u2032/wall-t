@@ -15,6 +15,7 @@
 
 package utils.teamcity.wallt.controller.api.json;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -24,13 +25,13 @@ import com.google.gson.annotations.SerializedName;
  */
 public final class Project {
 
-    @SerializedName( "id" )
+    @SerializedName("id")
     private String _id;
 
-    @SerializedName( "name" )
+    @SerializedName("name")
     private String _name;
 
-    @SerializedName( "parentProjectId" )
+    @SerializedName("parentProjectId")
     private String _parentId;
 
     public String getId( ) {
@@ -43,5 +44,15 @@ public final class Project {
 
     public String getParentId( ) {
         return _parentId;
+    }
+
+    public Project( ) {
+    }
+
+    @VisibleForTesting
+    public Project( final String id, final String name, final String parentId ) {
+        _id = id;
+        _name = name;
+        _parentId = parentId;
     }
 }

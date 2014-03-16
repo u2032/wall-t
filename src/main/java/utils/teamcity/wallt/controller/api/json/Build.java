@@ -30,28 +30,28 @@ import java.time.LocalDateTime;
  */
 public final class Build implements ApiResponse {
 
-    @SerializedName( "id" )
+    @SerializedName("id")
     private int _id;
 
-    @SerializedName( "buildType" )
+    @SerializedName("buildType")
     private BuildType _buildType;
 
-    @SerializedName( "status" )
+    @SerializedName("status")
     private BuildStatus _status;
 
-    @SerializedName( "state" )
+    @SerializedName("state")
     private BuildState _state;
 
-    @SerializedName( "running" )
+    @SerializedName("running")
     private boolean _running;
 
-    @SerializedName( "startDate" )
+    @SerializedName("startDate")
     private String _startDate;
 
-    @SerializedName( "finishDate" )
+    @SerializedName("finishDate")
     private String _finishDate;
 
-    @SerializedName( "running-info" )
+    @SerializedName("running-info")
     private BuildRunningInfo _runningInformation;
 
     public int getId( ) {
@@ -84,5 +84,16 @@ public final class Build implements ApiResponse {
 
     public boolean isRunning( ) {
         return _running;
+    }
+
+    public Build( ) {
+    }
+
+    public Build( final int id, final BuildType buildType, final BuildStatus status, final BuildState state, final boolean running ) {
+        _id = id;
+        _buildType = buildType;
+        _status = status;
+        _state = state;
+        _running = running;
     }
 }

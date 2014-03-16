@@ -15,10 +15,10 @@
 
 package utils.teamcity.wallt.controller.api.json;
 
+import com.google.common.collect.Lists;
 import com.google.gson.annotations.SerializedName;
 import utils.teamcity.wallt.controller.api.ApiResponse;
 
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -28,11 +28,14 @@ import java.util.List;
  */
 public final class QueuedBuildList implements ApiResponse {
 
-    @SerializedName( "build" )
-    private List<QueueBuild> _builds = Collections.emptyList( );
+    @SerializedName("build")
+    private List<QueueBuild> _builds = Lists.newLinkedList( );
 
     public List<QueueBuild> getQueueBuild( ) {
         return _builds;
     }
 
+    public void addBuildType( final QueueBuild queueBuild ) {
+        _builds.add( queueBuild );
+    }
 }

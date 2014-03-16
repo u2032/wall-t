@@ -13,57 +13,45 @@
  * If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 
-package utils.teamcity.wallt.controller.configuration;
+package utils.teamcity.wallt.controller.api;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import org.junit.Before;
 import org.junit.Test;
 import utils.teamcity.wallt.TestModules;
-import utils.teamcity.wallt.WallApplication;
-import utils.teamcity.wallt.model.configuration.Configuration;
 
 import javax.inject.Inject;
 
-import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
 
 /**
- * Date: 01/03/14
+ * Date: 16/03/14
  *
  * @author Cedric Longo
  */
-public class ConfigurationModuleTest {
+public class ApiRequestModuleTest {
 
     @Inject
     private Injector _injector;
 
     @Before
     public void setUp( ) throws Exception {
-        Guice.createInjector( TestModules.modulesWithOverride( WallApplication.modules( ), ConfigurationModule.class, new ConfigurationModule( ) ) )
+        Guice.createInjector( TestModules.defaultModules( ) )
                 .injectMembers( this );
     }
 
     @Test
-    public void can_inject_Configuration_in_singleton( ) {
+    public void can_inject_ApiRequestController_as_IApiController_in_singleton( ) throws Exception {
         // Setup
         // Exercise
-        final Configuration instance = _injector.getInstance( Configuration.class );
-        final Configuration instance2 = _injector.getInstance( Configuration.class );
+        final IApiRequestController instance = _injector.getInstance( IApiRequestController.class );
+        final IApiRequestController instance2 = _injector.getInstance( IApiRequestController.class );
         // Verify
-        assertThat( instance, notNullValue( ) );
-        assertThat( instance, sameInstance( instance2 ) );
+        assertThat( instance, is( notNullValue( ) ) );
+        assertThat( instance, is( instanceOf( ApiRequestController.class ) ) );
+        assertThat( instance, is( sameInstance( instance2 ) ) );
     }
 
-    @Test
-    public void can_inject_ConfigurationController_as_IConfigurationController_in_singleton( ) {
-        // Setup
-        // Exercise
-        final IConfigurationController instance = _injector.getInstance( IConfigurationController.class );
-        final IConfigurationController instance2 = _injector.getInstance( IConfigurationController.class );
-        // Verify
-        assertThat( instance, notNullValue( ) );
-        assertThat( instance, instanceOf( ConfigurationController.class ) );
-        assertThat( instance, sameInstance( instance2 ) );
-    }
 }

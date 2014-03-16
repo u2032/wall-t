@@ -13,31 +13,20 @@
  * If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 
-package utils.teamcity.wallt.controller.api.json;
+package utils.teamcity.wallt.controller.api;
 
-import com.google.common.annotations.VisibleForTesting;
-import com.google.common.collect.Lists;
-import com.google.gson.annotations.SerializedName;
-import utils.teamcity.wallt.controller.api.ApiResponse;
-
-import java.util.List;
+import com.google.inject.AbstractModule;
+import com.google.inject.Scopes;
 
 /**
- * Date: 16/02/14
+ * Date: 16/03/14
  *
  * @author Cedric Longo
  */
-public final class BuildTypeList implements ApiResponse {
+public class ApiRequestModule extends AbstractModule {
 
-    @SerializedName("buildType")
-    private List<BuildType> _builds = Lists.newLinkedList( );
-
-    public List<BuildType> getBuildTypes( ) {
-        return _builds;
-    }
-
-    @VisibleForTesting
-    public void addBuildType( final BuildType buildType ) {
-        _builds.add( buildType );
+    @Override
+    protected void configure( ) {
+        bind( IApiRequestController.class ).to( ApiRequestController.class ).in( Scopes.SINGLETON );
     }
 }

@@ -28,7 +28,7 @@ import static java.util.concurrent.Executors.newScheduledThreadPool;
  *
  * @author Cedric Longo
  */
-final class ThreadingModule extends AbstractModule {
+public final class ThreadingModule extends AbstractModule {
 
     @Override
     protected void configure( ) {
