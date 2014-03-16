@@ -5,6 +5,7 @@ Release date: 2013-03-21.
 
 * When status can't be retreived from server for a build (timeout for any reason), build is now ignored for monitoring during 20 minutes to not flood server
 * Log files are now rolling to save space on disk
+* Start scripts launch the application in background mode (no console)
 * Fix. Sometimes running build status was not correctly updated when build was finished
 * Fix. ERROR status was ignored for project view (only SUCCESS and FAILURE status were considered)
 * Fix. On Windows, the start script didn't work correctly when space was present into jre 8 path

@@ -3,7 +3,9 @@ rem @ <-- workaround for http://jira.codehaus.org/browse/MRESOURCES-104
 @cd %~dp0
 rem @ <-- workaround for http://jira.codehaus.org/browse/MRESOURCES-104
 
+rem For example: set "JAVA=C:\Progam Files\java\jdk8"
 set "JAVA=%JAVA8_HOME%"
+
 
 rem -------- Do not edit under this line
 
@@ -26,4 +28,4 @@ if %JAVA_VER% LSS 18 (
     exit
 )
 
-"%JAVA%\bin\java.exe" -jar ./bin/${project.artifactId}.jar
+start "Wall-T" /B "%JAVA%\bin\java.exe" -jar ./bin/${project.artifactId}.jar
