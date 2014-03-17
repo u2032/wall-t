@@ -28,4 +28,4 @@ if %JAVA_VER% LSS 18 (
     exit
 )
 
-start "Wall-T" /B "%JAVA%\bin\java.exe" -jar ./bin/${project.artifactId}.jar
+start "Wall-T" /B "%JAVA%\bin\javaw.exe" -jar ./bin/${project.artifactId}.jar
