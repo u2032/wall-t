@@ -10,7 +10,7 @@ Feel free to send any issue or suggestion by opening a report on the Issue tab.
 
 ## Quick Start
 
-1. [Download latest zip archive](https://github.com/u2032/wall-t/#downloads)
+1. [Download the latest zip archive](https://github.com/u2032/wall-t/releases/)
 1. Unzip the archive
 1. Edit the included start script or define JAVA8_HOME environment variable to a JRE 8+
 1. Launch the start script
@@ -74,7 +74,7 @@ Press F11 to switch to fullscreen mode.
 Press ESC to switch to configuration view.
 
 ### Api notes
-Application currently supports TeamCity API version from 6 to 8.1.
+Application currently supports TeamCity API version from 6 to 8.1 (which are all included in the last version of TeamCity)  
 
 #### 6.0 -> 8.0
 * Support of build types
@@ -84,34 +84,11 @@ Application currently supports TeamCity API version from 6 to 8.1.
 * Project status reflects now status of all child build types (ie also build type included in a subchild project)
 
 ### Known "Issues"
-Right now, application doesn't support branch feature of teamcity server.
-When modification is applied to server side (addind new projet, new build configuration, or deleting one, etc.), the radiator ignores it. You can press "Connect to server" button on configuration view to refresh data.
+* API 9.1 adds support of build which failed to start **(not used by this project yet)**
+* API 10.0 adds support of hanging build **(not used by this project yet)**
+* Right now, application doesn't support branch feature of teamcity server.
+* When modification is applied to server side (addind new projet, new build configuration, or deleting one, etc.), the radiator ignores it. You can press "Connect to server" button on configuration view to refresh data.
 
 ## Downloads
+Go to the [Download Page](https://github.com/u2032/wall-t/releases/) 
 
-Version | Release Date | File | Tags 
---------|--------------|------|------ 
-1.0 | 2014-03-19 | [Wall-T-1.0.zip](https://goo.gl/Z8kCUI) | #latest #recommended
-1.0-beta | 2014-03-03 | *removed* | #deprecated 
-
-## Changelog
-
-### Version 1.0 (2013-03-21)
-
-* When status can't be retreived from server for a build (timeout for any reason), build is now ignored for monitoring during 20 minutes not to flood server
-* Log files are now rolling to save space on disk
-* Start scripts launch the application in background mode (no console)
-* Fix. Sometimes running build status was not correctly updated when build was finished
-* Fix. ERROR status was ignored for project view (only SUCCESS and FAILURE status were considered)
-* Fix. On Windows, the start script didn't work correctly when space was present into jre 8 path
-* Fix. On linux, resizing the window to fix layout is no more needed
-
-### Version 1.0-beta (2013-03-03)
-* Initial version
-* Uses JavaFX 8 and requires Java 1.8+
-* Support of Teamcity version 6.0 to 8.1
-* Support of both guest and authenticated mode
-* Support of http proxy configuration
-* Wall view can display both in full mode (with information and icons) and light mode (less information)
-* User can choose how many max builds are displayed by screen
-* Support of project status monitoring (reflecting the status of child build types)
