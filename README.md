@@ -10,7 +10,7 @@ Feel free to send any issue or suggestion by opening a report on the Issue tab.
 
 ## Quick Start
 
-1. Download latest zip archive
+1. [Download latest zip archive](https://github.com/u2032/wall-t/#downloads)
 1. Unzip the archive
 1. Edit the included start script or define JAVA8_HOME environment variable to a JRE 8+
 1. Launch the start script
@@ -25,7 +25,7 @@ Wall-T is written using JavaFX and Java 8. You need a Java Runtime Environment v
 
 You can donwload [Java 8+ on this link](http://www.oracle.com/technetwork/java/javase/downloads/jre8-downloads-2133155.html).
 
-## Server Configuration
+### Server Configuration
 When the application starts, a configuration view is available to configure or customize the radiator view (we also talk about wall view).
 
 First, you must configure the teamcity server url and credentials. You can use use the guest mode by keeping empty the username or setting it at the value 'guest'. Note that the guest mode let you connect to the server only if the server authorize the guest mode. You can also use a specific user login to connect to the server. Only HTTP and HTTPS protocol are currently supported: the server url must start with either of them.
@@ -89,10 +89,10 @@ When modification is applied to server side (addind new projet, new build config
 
 ## Downloads
 
-Version | Release Date | File | Tags | Info 
---------|--------------|------|------| - 
-1.0 | 2014-03-19 | Wall-T-1.0.zip | #latest #recommended | Downloaded 650+ times
-1.0-beta | 2014-03-03 | *removed* | #deprecated | Downloaded 15+ times
+Version | Release Date | File | Tags 
+--------|--------------|------|------ 
+1.0 | 2014-03-19 | [Wall-T-1.0.zip](https://goo.gl/Z8kCUI) | #latest #recommended
+1.0-beta | 2014-03-03 | *removed* | #deprecated 
 
 ## Changelog
 
